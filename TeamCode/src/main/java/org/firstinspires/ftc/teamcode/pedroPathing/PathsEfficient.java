@@ -86,7 +86,7 @@ public class PathsEfficient {
         RedRow1ToGate1 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(125.200, 83.762), new Pose(125.200, 70.930))
+                        new BezierLine(new Pose(125.200, 83.762), new Pose(119.200, 72.930))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
@@ -94,7 +94,7 @@ public class PathsEfficient {
         RedRow1ToGate2 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(125.200, 70.930), new Pose(129.353, 70.930))
+                        new BezierLine(new Pose(119.200, 72.930), new Pose(125.200, 72.930))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
@@ -112,7 +112,7 @@ public class PathsEfficient {
         RedGateToShooter = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(129.353, 70.930), new Pose(96, 95.8))
+                        new BezierLine(new Pose(125.200, 72.930), new Pose(96, 95.8))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build();

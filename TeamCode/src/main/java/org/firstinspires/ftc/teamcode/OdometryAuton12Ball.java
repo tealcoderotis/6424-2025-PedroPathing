@@ -24,6 +24,7 @@ public class OdometryAuton12Ball extends LinearOpMode {
     private static final String LIMELIGHT_HARDWARE_MAP_NAME = "limelight";*/
     private Timer gateTimer;
     private static final int GATE_TIME = 500;
+    private static final double BALL_INTAKE_MOVEMENT_SPEED=0.5;
 
     @Override
     public void runOpMode() {
@@ -105,7 +106,7 @@ public class OdometryAuton12Ball extends LinearOpMode {
             case 3:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(BALL_INTAKE_MOVEMENT_SPEED);
                     follower.followPath(paths.RedRow1IntakeEnd);
                     pathState = 4;
                 }
@@ -129,12 +130,10 @@ public class OdometryAuton12Ball extends LinearOpMode {
                 break;
             case 6:
                 if (!follower.isBusy()) {
-                    gateTimer.resetTimer();
-                    if (gateTimer.getElapsedTime() >= GATE_TIME) {
-                        follower.setMaxPower(1);
-                        follower.followPath(paths.RedGateToShooter);
-                        pathState = 7;
-                    }
+                    follower.setMaxPower(1);
+
+                    follower.followPath(paths.RedGateToShooter);
+                    pathState = 7;
                 }
                 break;
             case 7:
@@ -152,7 +151,7 @@ public class OdometryAuton12Ball extends LinearOpMode {
             case 9:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(BALL_INTAKE_MOVEMENT_SPEED);
                     follower.followPath(paths.RedRow2IntakeEnd);
                     pathState = 10;
                 }
@@ -181,7 +180,7 @@ public class OdometryAuton12Ball extends LinearOpMode {
             case 13:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(BALL_INTAKE_MOVEMENT_SPEED);
                     follower.followPath(paths.RedRow3IntakeEnd);
                     pathState = 14;
                 }

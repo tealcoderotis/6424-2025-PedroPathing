@@ -25,7 +25,7 @@ public class ShooterIntakeEfficient {
     private static final int REV_TIME = 1500;
     private static final int INTAKE_END_TIME = 500;
     private static final double SHOOTER_SPEED = 1575;
-    private static final double INDEXER_POWER = 0.65;
+    private static final double INDEXER_POWER = 1;
     private static final double INDEXER_BACK_POWER = -0.35;
     private static final double SHOOTER_BACK_POWER = 0.65;
     private int ballsToShoot = 0;

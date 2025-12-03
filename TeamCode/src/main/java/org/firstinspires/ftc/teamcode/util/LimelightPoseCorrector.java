@@ -18,10 +18,10 @@ public class LimelightPoseCorrector {
     }
 
     public Pose correctPose(Pose pose) {
-        LLResult result = limelight.getLatestResult();
+        /*LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid()) {
             pose = PoseConverter.pose2DToPose(PoseDimensionConverter.pose3DToPose2D(result.getBotpose()), InvertedFTCCoordinates.INSTANCE);
-        }
+        }*/
         return pose;
     }
 }

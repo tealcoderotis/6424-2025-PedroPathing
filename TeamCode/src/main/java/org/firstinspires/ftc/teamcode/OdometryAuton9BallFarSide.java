@@ -2,13 +2,23 @@ package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.FTCCoordinates;
+import com.pedropathing.ftc.InvertedFTCCoordinates;
+import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.pedroPathing.PathsEfficient;
+import org.firstinspires.ftc.teamcode.util.LimelightPoseCorrector;
+import org.firstinspires.ftc.teamcode.util.PoseDimensionConverter;
+
+import java.util.List;
 
 @Configurable
 @Autonomous(name = "Odometry 9 Ball Auton (Far Side)")
@@ -19,8 +29,7 @@ public class OdometryAuton9BallFarSide extends LinearOpMode {
     private PathsEfficient paths;
     //-1 unknown; 0 red; 1 blue
     private int alliance;
-    /*private Limelight3A limelight;
-    private static final String LIMELIGHT_HARDWARE_MAP_NAME = "limelight";*/
+    private LimelightPoseCorrector poseCorrector;
 
     @Override
     public void runOpMode() {
@@ -35,7 +44,7 @@ public class OdometryAuton9BallFarSide extends LinearOpMode {
         DcMotor rightBackDrive = (DcMotor) hardwareMap.get("rightBackDrive");
         DcMotor leftFrontDrive = (DcMotor) hardwareMap.get("leftFrontDrive");
         DcMotor leftBackDrive = (DcMotor) hardwareMap.get("leftBackDrive");
-        //limelight = hardwareMap.get(Limelight3A.class, LIMELIGHT_HARDWARE_MAP_NAME);
+        poseCorrector = new LimelightPoseCorrector(hardwareMap);
         while (opModeInInit()) {
             if (gamepad1.bWasPressed()) {
                 //Red starting pose
@@ -55,6 +64,7 @@ public class OdometryAuton9BallFarSide extends LinearOpMode {
             while (opModeIsActive()) {
                 //update shooter and follower
                 shooterIntake.update();
+                follower.setPose(poseCorrector.correctPose(follower.getPose()));
                 follower.update();
                 if (alliance == 0) {
                     autonomousRedPathUpdate();

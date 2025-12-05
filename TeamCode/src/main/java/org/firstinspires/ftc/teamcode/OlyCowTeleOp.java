@@ -64,6 +64,7 @@ public class OlyCowTeleOp extends OpMode {
     double leftBackPower;
     double rightBackPower;
     double trackingAngle;
+    double currentShootVelocity = 1575;
     boolean overrideShootVelocity = false;
 
     @Override
@@ -146,24 +147,22 @@ public class OlyCowTeleOp extends OpMode {
             feeder.setPower(STOP_SPEED);
         }
         if (gamepad2.y) {
-            launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
+            launcher.setVelocity(currentShootVelocity);
         }
         if (gamepad2.dpad_up) {
-            launcher.setVelocity(LAUNCHER_MAX_VELOCITY);
+            currentShootVelocity = LAUNCHER_MAX_VELOCITY;
             overrideShootVelocity = true;
         }
 
         if (gamepad2.dpad_down) {
-            launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
+            currentShootVelocity = LAUNCHER_MIN_VELOCITY;
             overrideShootVelocity = true;
         }
         if(!overrideShootVelocity && alliance != Alliance.UNKNOWN) {
             if (alliance == Alliance.RED) {
-                launcher.setVelocity(shootermath.ballVelocityToFlywheel(shootermath.findLateralVelocity(
-                follower.getPose(), 144, 144)));
+                currentShootVelocity = shootermath.ballVelocityToFlywheel(shootermath.findLateralVelocity(follower.getPose(), 144, 144));
             } else {
-                launcher.setVelocity(shootermath.ballVelocityToFlywheel(shootermath.findLateralVelocity(
-                follower.getPose(), 0, 144)));
+                currentShootVelocity = shootermath.ballVelocityToFlywheel(shootermath.findLateralVelocity(follower.getPose(), 0, 144));
             }
         }
         else {

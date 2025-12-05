@@ -27,6 +27,7 @@ import java.util.List;
 @TeleOp(name = "OlyCowTeleOp (Android Studio Version)")
 //@Disabled
 public class OlyCowTeleOp extends OpMode {
+    private ShooterMath shootermath;
     final double FEED_TIME_SECONDS = 0.5;
     final double STOP_SPEED = 0.0;
     final double HALF_SPEED = 0.5;
@@ -63,6 +64,7 @@ public class OlyCowTeleOp extends OpMode {
     double leftBackPower;
     double rightBackPower;
     double trackingAngle;
+    boolean overrideShootVelocity = false;
 
     @Override
     public void init() {
@@ -148,10 +150,21 @@ public class OlyCowTeleOp extends OpMode {
         }
         if (gamepad2.dpad_up) {
             launcher.setVelocity(LAUNCHER_MAX_VELOCITY);
+            overrideShootVelocity = true;
         }
 
         if (gamepad2.dpad_down) {
             launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
+            overrideShootVelocity = true;
+        }
+        if(!overrideShootVelocity && alliance != Alliance.UNKNOWN) {
+            if (alliance == Alliance.RED) {
+                launcher.setVelocity(shootermath.ballVelocityToFlywheel(shootermath.findLateralVelocity(
+                follower.getPose(), 144, 144)));
+            } else {
+                launcher.setVelocity(shootermath.ballVelocityToFlywheel(shootermath.findLateralVelocity(
+                follower.getPose(), 0, 144)));
+            }
         }
         else {
             feeder.setPower(STOP_SPEED);

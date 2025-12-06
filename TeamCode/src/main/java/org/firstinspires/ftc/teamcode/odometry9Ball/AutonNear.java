@@ -7,7 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.LimelightPoseCorrector;
 
 @Configurable
@@ -17,8 +19,7 @@ public class AutonNear extends LinearOpMode {
     private ShooterIntake shooterIntake;
     private int pathState;
     private Paths paths;
-    //-1 unknown; 0 red; 1 blue
-    private int alliance;
+    private Alliance alliance;
     private LimelightPoseCorrector poseCorrector;
     private boolean useLimelight = false;
 
@@ -30,7 +31,7 @@ public class AutonNear extends LinearOpMode {
         follower.setMaxPower(1);
         paths = new Paths(follower);
         pathState = 0;
-        alliance = -1;
+        alliance = Alliance.UNKNOWN;
         DcMotor rightFrontDrive = (DcMotor) hardwareMap.get("rightFrontDrive");
         DcMotor rightBackDrive = (DcMotor) hardwareMap.get("rightBackDrive");
         DcMotor leftFrontDrive = (DcMotor) hardwareMap.get("leftFrontDrive");
@@ -39,13 +40,13 @@ public class AutonNear extends LinearOpMode {
             if (gamepad1.bWasPressed()) {
                 //Red starting pose
                 follower.setStartingPose(new Pose(110.36335877862595, 134.10687022900763, Math.toRadians(0)));
-                alliance = 0;
+                alliance = Alliance.RED;
                 telemetry.addLine("Red alliance");
                 telemetry.update();
             } else if (gamepad1.xWasPressed()) {
                 //Blue starting pose
                 follower.setStartingPose(new Pose(33.85648854961832, 134.10687022900763, Math.toRadians(180)));
-                alliance = 1;
+                alliance = Alliance.BLUE;
                 telemetry.addLine("Blue alliance");
                 telemetry.update();
             }
@@ -60,7 +61,8 @@ public class AutonNear extends LinearOpMode {
                 telemetry.update();
             }
         }
-        if (alliance != -1) {
+        if (alliance != Alliance.UNKNOWN) {
+            Globals.resetGlobals();
             if (useLimelight) {
                 poseCorrector = new LimelightPoseCorrector(hardwareMap);
             }
@@ -71,9 +73,9 @@ public class AutonNear extends LinearOpMode {
                     follower.setPose(poseCorrector.correctPose(follower.getPose()));
                 }
                 follower.update();
-                if (alliance == 0) {
+                if (alliance == Alliance.RED) {
                     autonomousRedPathUpdate();
-                } else if (alliance == 1) {
+                } else if (alliance == Alliance.BLUE) {
                     autonomousBluePathUpdate();
                 }
                 telemetry.addData("path state", pathState);
@@ -86,6 +88,8 @@ public class AutonNear extends LinearOpMode {
                 telemetry.addData("rightBackDrive", rightBackDrive.getPower());
                 telemetry.update();
             }
+            Globals.alliance = alliance;
+            Globals.endingPose = follower.getPose().copy();
         } else {
             //if we start and do not specify an alliance, the OpMode will stop
             requestOpModeStop();

@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.ShooterMath;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -104,18 +105,24 @@ public class OlyCowTeleOp extends OpMode {
 
     @Override
     public void init_loop() {
-        if (gamepad1.bWasPressed()) {
-            //Red starting pose
-            follower.setStartingPose(new Pose(125.200, 70.930, Math.toRadians(0)));
-            alliance = Alliance.RED;
-            telemetry.addLine("Red alliance");
-            telemetry.update();
-        } else if (gamepad1.xWasPressed()) {
-            //Blue starting pose
-            follower.setStartingPose(new Pose(46.892, 59.798, Math.toRadians(180)));
-            alliance = Alliance.BLUE;
-            telemetry.addLine("Blue alliance");
-            telemetry.update();
+        if (Globals.alliance != Alliance.UNKNOWN) {
+            alliance = Globals.alliance;
+            follower.setStartingPose(Globals.endingPose.copy());
+        }
+        else {
+            if (gamepad1.bWasPressed()) {
+                //Red starting pose
+                follower.setStartingPose(new Pose(125.200, 70.930, Math.toRadians(0)));
+                alliance = Alliance.RED;
+                telemetry.addLine("Red alliance");
+                telemetry.update();
+            } else if (gamepad1.xWasPressed()) {
+                //Blue starting pose
+                follower.setStartingPose(new Pose(46.892, 59.798, Math.toRadians(180)));
+                alliance = Alliance.BLUE;
+                telemetry.addLine("Blue alliance");
+                telemetry.update();
+            }
         }
     }
 
@@ -136,6 +143,7 @@ public class OlyCowTeleOp extends OpMode {
             }
             double P = 0.05;
             double headingCorrectionNeeded = ShooterMath.angleFromGoal(follower.getPose(), GoalX, GoalY); //Degrees
+            telemetry.addData("Heading correction needed", headingCorrectionNeeded);
             double rotate = P*headingCorrectionNeeded;
             if (Math.abs(rotate) > 1) {
                 rotate = rotate/Math.abs(rotate);
@@ -153,6 +161,9 @@ public class OlyCowTeleOp extends OpMode {
         if (gamepad2.a) {
             feeder.setDirection(DcMotor.Direction.FORWARD);
             feeder.setPower(FULL_SPEED);
+        }
+        else {
+            feeder.setPower(STOP_SPEED);
         }
 
         if (gamepad2.b) {
@@ -182,9 +193,10 @@ public class OlyCowTeleOp extends OpMode {
             } else {
                 currentShootVelocity = shootermath.ballVelocityToFlywheel(shootermath.findLateralVelocity(follower.getPose(), 0, 144));
             }
+            telemetry.addData("Calculated Shooter Speed", currentShootVelocity);
         }
-        else {
-            feeder.setPower(STOP_SPEED);
+        else{
+            telemetry.addData("Constant Shooter Speed", currentShootVelocity);
         }
 
         launch(gamepad2.rightBumperWasPressed());

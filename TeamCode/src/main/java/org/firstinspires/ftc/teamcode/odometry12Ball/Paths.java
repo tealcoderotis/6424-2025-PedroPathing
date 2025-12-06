@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.odometry12Ball;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
@@ -6,7 +6,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 
 //PedroPathing Paths
-public class PathsEfficient {
+public class Paths {
     //declare all of our paths
     public PathChain RedStart;
     public PathChain RedRow1IntakeBegin;
@@ -58,7 +58,7 @@ public class PathsEfficient {
     public PathChain BlueLeave12Ball;
 
     //initalize all of our paths
-    public PathsEfficient(Follower follower) {
+    public Paths(Follower follower) {
         RedStart = follower
                 .pathBuilder()
                 .addPath(

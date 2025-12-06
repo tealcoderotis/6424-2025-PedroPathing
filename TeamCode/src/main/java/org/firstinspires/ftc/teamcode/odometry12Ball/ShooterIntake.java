@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.odometry12Ball;
 
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.VoltagePowerCompensator;
 
-public class ShooterIntakeEfficient {
+public class ShooterIntake {
     private DcMotor indexer;
     private DcMotorEx shooter;
     private Timer shootTimer;
@@ -34,7 +34,7 @@ public class ShooterIntakeEfficient {
     private VoltagePowerCompensator voltageCompensator;
     private Telemetry telemetry;
     private boolean hasIndexed = false;
-    public ShooterIntakeEfficient(HardwareMap hardwareMap) {
+    public ShooterIntake(HardwareMap hardwareMap) {
         shootTimer = new Timer();
         intakeTimer = new Timer();
         indexer = (DcMotor)hardwareMap.get("feeder");
@@ -51,7 +51,7 @@ public class ShooterIntakeEfficient {
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
     }
 
-    public ShooterIntakeEfficient(HardwareMap hardwareMap, Telemetry telemetry) {
+    public ShooterIntake(HardwareMap hardwareMap, Telemetry telemetry) {
         this(hardwareMap);
         this.telemetry = telemetry;
     }

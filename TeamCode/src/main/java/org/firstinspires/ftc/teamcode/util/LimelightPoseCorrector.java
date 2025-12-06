@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class LimelightPoseCorrector {
     private Limelight3A limelight;
     private static final String LIMELIGHT_HARDWARE_MAP_NAME = "limelight";
+    private long lastTimeStamp = 0;
 
     public LimelightPoseCorrector(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, LIMELIGHT_HARDWARE_MAP_NAME);
@@ -18,10 +19,14 @@ public class LimelightPoseCorrector {
     }
 
     public Pose correctPose(Pose pose) {
-        /*LLResult result = limelight.getLatestResult();
-        if (result != null && result.isValid()) {
-            pose = PoseConverter.pose2DToPose(PoseDimensionConverter.pose3DToPose2D(result.getBotpose()), InvertedFTCCoordinates.INSTANCE);
-        }*/
+        LLResult result = limelight.getLatestResult();
+        if (result != null) {
+            if (result.isValid() && result.getControlHubTimeStamp() > lastTimeStamp) {
+                Pose limelightPose = PoseConverter.pose2DToPose(PoseDimensionConverter.pose3DToPose2D(result.getBotpose()), InvertedFTCCoordinates.INSTANCE);
+                pose = pose.setHeading(limelightPose.getHeading());
+                lastTimeStamp = result.getControlHubTimeStamp();
+            }
+        }
         return pose;
     }
 }

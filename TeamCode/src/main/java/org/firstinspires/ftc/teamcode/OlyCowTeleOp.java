@@ -66,6 +66,7 @@ public class OlyCowTeleOp extends OpMode {
     double trackingAngle;
     double currentShootVelocity = 1575;
     boolean overrideShootVelocity = false;
+    boolean lockOn = false; //Whether to use a PIDF to lock on the goal.
 
     @Override
     public void init() {
@@ -127,8 +128,22 @@ public class OlyCowTeleOp extends OpMode {
 
     @Override
     public void loop() {
-
-        mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        if (!lockOn) {
+            mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        } else {
+            //PIDF to control rotation rate while locked on the goal
+            int GoalX = 0; int GoalY=144;
+            if(!overrideShootVelocity && alliance != Alliance.UNKNOWN) {
+                if (alliance == Alliance.RED) {GoalX = 144;}
+            }
+            double P = 0.05;
+            double headingCorrectionNeeded = ShooterMath.angleFromGoal(follower.getPose(), GoalX, GoalY); //Degrees
+            double rotate = P*headingCorrectionNeeded;
+            if (Math.abs(rotate) > 1) {
+                rotate = rotate/Math.abs(rotate);
+            }
+            mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
+        }
 
         if (gamepad2.x){
             launcher.setDirection(DcMotor.Direction.REVERSE);
@@ -157,6 +172,11 @@ public class OlyCowTeleOp extends OpMode {
         if (gamepad2.dpad_down) {
             currentShootVelocity = LAUNCHER_MIN_VELOCITY;
             overrideShootVelocity = true;
+        }
+        if (gamepad1.dpad_down) {
+            lockOn = true;
+        } else if (gamepad1.dpad_up) {
+            lockOn = false;
         }
         if(!overrideShootVelocity && alliance != Alliance.UNKNOWN) {
             if (alliance == Alliance.RED) {

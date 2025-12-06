@@ -14,17 +14,16 @@ public class ShooterMath {
         //Finding DIST_MIN ends up needing lots of 2x2 determinants, this is easier to debug
         return x_1*y_2-x_2*y_1;
     }
-    public double findLateralVelocity(Pose CurrentPose, int GoalX, int GoalY){
+    public double findLateralVelocity(Pose CurrentPose, int x_2, int y_2){
         double IntersectX; double IntersectY;
-        double DIST_MAX = Math.sqrt(Math.pow((CurrentPose.getX()-GoalX),2)+Math.pow((CurrentPose.getY()-GoalY),2));
+        double DIST_MAX = Math.sqrt(Math.pow((CurrentPose.getX()-x_2),2)+Math.pow((CurrentPose.getY()-y_2),2));
         double v_MAX = Math.sqrt((g*DIST_MAX*DIST_MAX)/(2*(TOP_GOAL_RELATIVE_HEIGHT-DIST_MAX*Math.tan(ANGLE))*((Math.cos(ANGLE))*Math.cos(ANGLE))));
         //The distance to the closest part of the goal in the ball path is not simple, it needs an intersection as the goal is not just a single point
         //First Line
         double x_1 = CurrentPose.getX(); double y_1 = CurrentPose.getY();
-        double x_2 = GoalX; double y_2 = GoalY;
         //Second Line depends on alliance
-        double x_3 = 0; double y_3 = 0; double x_4 = 0; double y_4 = 0;
-        if (GoalX > 72) {
+        double x_3; double y_3; double x_4; double y_4;
+        if (x_2 > 72) {
             //Red Alliance
             x_3 = 120; y_3 = 144;
             x_4 = 132.75; y_4 = 120;
@@ -48,5 +47,15 @@ public class ShooterMath {
     public double ballVelocityToFlywheel(double BallV) {
         double d = (BallV*Math.cos(ANGLE)/g)*(BallV*Math.sin(ANGLE)+Math.sqrt(BallV*BallV*Math.sin(ANGLE)*Math.sin(ANGLE)+2*g*EXIT_HEIGHT));
         return (-1*REGRESSION_B+Math.sqrt(REGRESSION_B*REGRESSION_B+4*REGRESSION_A*d))/(2*REGRESSION_A);
+    }
+    public static double angleFromGoal(Pose CurrentPose, int GoalX, int GoalY){
+        //Math.atan2 -> RADIANS -> DEGREES
+        //.getHeading -> DEGREES
+        double uncorrected = (CurrentPose.getHeading() - Math.atan2((CurrentPose.getY()-GoalY),(CurrentPose.getX()-GoalX)))*180/Math.PI;
+        if (Math.abs(uncorrected)>180) {
+            return 360-uncorrected;
+        } else {
+            return uncorrected;
+        }
     }
 }

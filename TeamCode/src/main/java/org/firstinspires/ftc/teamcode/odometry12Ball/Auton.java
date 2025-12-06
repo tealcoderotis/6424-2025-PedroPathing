@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.odometry12Ball;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
@@ -9,16 +9,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.pedroPathing.PathsEfficient;
 import org.firstinspires.ftc.teamcode.util.LimelightPoseCorrector;
 
 @Configurable
 @Autonomous(name = "Odometry 12 Ball Auton")
-public class OdometryAuton12Ball extends LinearOpMode {
+public class Auton extends LinearOpMode {
     private Follower follower;
-    private ShooterIntakeEfficient shooterIntake;
+    private ShooterIntake shooterIntake;
     private int pathState;
-    private PathsEfficient paths;
+    private Paths paths;
     //-1 unknown; 0 red; 1 blue
     private int alliance;
     private LimelightPoseCorrector poseCorrector;
@@ -30,10 +29,10 @@ public class OdometryAuton12Ball extends LinearOpMode {
     public void runOpMode() {
         //initialization
         gateTimer = new Timer();
-        shooterIntake = new ShooterIntakeEfficient(hardwareMap, telemetry);
+        shooterIntake = new ShooterIntake(hardwareMap, telemetry);
         follower = Constants.createFollower(hardwareMap);
         follower.setMaxPower(1);
-        paths = new PathsEfficient(follower);
+        paths = new Paths(follower);
         pathState = 0;
         alliance = -1;
         DcMotor rightFrontDrive = (DcMotor) hardwareMap.get("rightFrontDrive");

@@ -1,32 +1,22 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.odometry9Ball;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.ftc.FTCCoordinates;
-import com.pedropathing.ftc.InvertedFTCCoordinates;
-import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.pedroPathing.PathsEfficient;
 import org.firstinspires.ftc.teamcode.util.LimelightPoseCorrector;
-import org.firstinspires.ftc.teamcode.util.PoseDimensionConverter;
-
-import java.util.List;
 
 @Configurable
 @Autonomous(name = "Odometry 9 Ball Auton (Far Side)")
-public class OdometryAuton9BallFarSide extends LinearOpMode {
+public class AutonFar extends LinearOpMode {
     private Follower follower;
-    private ShooterIntakeEfficient shooterIntake;
+    private ShooterIntake shooterIntake;
     private int pathState;
-    private PathsEfficient paths;
+    private Paths paths;
     //-1 unknown; 0 red; 1 blue
     private int alliance;
     private LimelightPoseCorrector poseCorrector;
@@ -34,10 +24,10 @@ public class OdometryAuton9BallFarSide extends LinearOpMode {
     @Override
     public void runOpMode() {
         //initialization
-        shooterIntake = new ShooterIntakeEfficient(hardwareMap, telemetry);
+        shooterIntake = new ShooterIntake(hardwareMap, telemetry);
         follower = Constants.createFollower(hardwareMap);
         follower.setMaxPower(1);
-        paths = new PathsEfficient(follower);
+        paths = new Paths(follower);
         pathState = 0;
         alliance = -1;
         DcMotor rightFrontDrive = (DcMotor) hardwareMap.get("rightFrontDrive");

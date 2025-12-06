@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.VoltagePowerCompensator;
 
 public class ShooterIntake {
+    //TODO Figure out how to shoot continuously
     private DcMotor indexer;
     private DcMotorEx shooter;
     private Timer shootTimer;

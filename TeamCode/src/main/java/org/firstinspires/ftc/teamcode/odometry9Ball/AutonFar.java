@@ -20,6 +20,7 @@ public class AutonFar extends LinearOpMode {
     //-1 unknown; 0 red; 1 blue
     private int alliance;
     private LimelightPoseCorrector poseCorrector;
+    private boolean useLimelight = false;
 
     @Override
     public void runOpMode() {
@@ -34,7 +35,6 @@ public class AutonFar extends LinearOpMode {
         DcMotor rightBackDrive = (DcMotor) hardwareMap.get("rightBackDrive");
         DcMotor leftFrontDrive = (DcMotor) hardwareMap.get("leftFrontDrive");
         DcMotor leftBackDrive = (DcMotor) hardwareMap.get("leftBackDrive");
-        poseCorrector = new LimelightPoseCorrector(hardwareMap);
         while (opModeInInit()) {
             if (gamepad1.bWasPressed()) {
                 //Red starting pose
@@ -49,12 +49,27 @@ public class AutonFar extends LinearOpMode {
                 telemetry.addLine("Blue alliance");
                 telemetry.update();
             }
+            if (gamepad1.yWasPressed()) {
+                useLimelight = !useLimelight;
+                if (useLimelight) {
+                    telemetry.addLine("Use limelight");
+                }
+                else {
+                    telemetry.addLine("Don't use limelight");
+                }
+                telemetry.update();
+            }
         }
         if (alliance != -1) {
+            if (useLimelight) {
+                poseCorrector = new LimelightPoseCorrector(hardwareMap);
+            }
             while (opModeIsActive()) {
                 //update shooter and follower
                 shooterIntake.update();
-                follower.setPose(poseCorrector.correctPose(follower.getPose()));
+                if (useLimelight) {
+                    follower.setPose(poseCorrector.correctPose(follower.getPose()));
+                }
                 follower.update();
                 if (alliance == 0) {
                     autonomousRedPathUpdate();

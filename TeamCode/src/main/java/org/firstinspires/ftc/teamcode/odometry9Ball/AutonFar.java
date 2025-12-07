@@ -101,7 +101,7 @@ public class AutonFar extends LinearOpMode {
     public void autonomousRedPathUpdate() {
         switch (pathState) {
             case 0:
-                shooterIntake.beginReving(2100);
+                shooterIntake.beginReving(2000);
                 follower.followPath(paths.RedFarStart);
                 pathState = 1;
                 break;
@@ -127,7 +127,7 @@ public class AutonFar extends LinearOpMode {
                 break;
             case 4:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving(2100);
+                    shooterIntake.beginReving(2000);
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
                     follower.followPath(paths.RedFarRow1ToShooter);
@@ -156,7 +156,7 @@ public class AutonFar extends LinearOpMode {
                 break;
             case 8:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving(2100);
+                    shooterIntake.beginReving(2000);
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
                     follower.followPath(paths.RedFarRow2ToShooter);
@@ -188,7 +188,7 @@ public class AutonFar extends LinearOpMode {
     public void autonomousBluePathUpdate() {
         switch (pathState) {
             case 0:
-                shooterIntake.beginReving(2100);
+                shooterIntake.beginReving(2000);
                 follower.followPath(paths.BlueFarStart);
                 pathState = 1;
                 break;
@@ -214,7 +214,7 @@ public class AutonFar extends LinearOpMode {
                 break;
             case 4:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving(2100);
+                    shooterIntake.beginReving(2000);
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
                     follower.followPath(paths.BlueFarRow1ToShooter);
@@ -243,7 +243,7 @@ public class AutonFar extends LinearOpMode {
                 break;
             case 8:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving(2100);
+                    shooterIntake.beginReving(2000);
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
                     follower.followPath(paths.BlueFarRow2ToShooter);

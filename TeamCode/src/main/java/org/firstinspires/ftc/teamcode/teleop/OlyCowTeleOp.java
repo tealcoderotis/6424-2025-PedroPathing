@@ -194,8 +194,10 @@ public class OlyCowTeleOp extends OpMode {
         }
         if(!overrideShootVelocity && alliance != Alliance.UNKNOWN) {
             if (alliance == Alliance.RED) {
+                telemetry.addData("Goal ball velocity", shootermath.findLateralVelocity(follower.getPose(), 144, 144));
                 currentShootVelocity = shootermath.ballVelocityToFlywheel(shootermath.findLateralVelocity(follower.getPose(), 144, 144));
             } else {
+                telemetry.addData("Goal ball velocity", shootermath.findLateralVelocity(follower.getPose(), 0, 144));
                 currentShootVelocity = shootermath.ballVelocityToFlywheel(shootermath.findLateralVelocity(follower.getPose(), 0, 144));
             }
             telemetry.addData("Calculated Shooter Speed", currentShootVelocity);
@@ -253,9 +255,9 @@ public class OlyCowTeleOp extends OpMode {
             telemetry.addData("y", follower.getPose().getY());
             telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
             telemetry.addData("angleToShooter", Math.toDegrees(trackingAngle));
-            follower.update();
         }
         telemetry.addData("Status", "Initialized");
+        follower.update();
     }
 
     @Override

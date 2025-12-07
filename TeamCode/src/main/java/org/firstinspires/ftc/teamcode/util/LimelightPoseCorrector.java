@@ -29,4 +29,15 @@ public class LimelightPoseCorrector {
         }
         return pose;
     }
+
+    public Pose getLimelightPose() {
+        LLResult result = limelight.getLatestResult();
+        if (result != null) {
+            if (result.isValid()) {
+                Pose limelightPose = PoseConverter.pose2DToPose(PoseDimensionConverter.pose3DToPose2D(result.getBotpose()), InvertedFTCCoordinates.INSTANCE);
+                return limelightPose;
+            }
+        }
+        return null;
+    }
 }

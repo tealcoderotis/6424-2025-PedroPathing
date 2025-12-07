@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -23,6 +24,7 @@ import org.firstinspires.ftc.teamcode.util.PoseTrig;
 
 import java.util.List;
 
+@Configurable
 @TeleOp(name = "OlyCowTeleOp (Android Studio Version)")
 //@Disabled
 public class OlyCowTeleOp extends OpMode {

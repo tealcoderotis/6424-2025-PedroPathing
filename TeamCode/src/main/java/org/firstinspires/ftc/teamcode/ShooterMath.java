@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.geometry.Pose;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class ShooterMath {
     private static final double ANGLE = Math.toRadians(53);
     private static final double GOAL_HEIGHT = 28.75;
@@ -10,6 +12,7 @@ public class ShooterMath {
     private static final double GOAL_RELATIVE_HEIGHT = GOAL_HEIGHT-EXIT_HEIGHT;
     private static final double TOP_GOAL_RELATIVE_HEIGHT = TOP_GOAL_HEIGHT-EXIT_HEIGHT;
     private static final double g = 386.1; //inches/s^2
+    private Telemetry telemetry;
     private double det(double x_1, double x_2, double y_1, double y_2) {
         //Finding DIST_MIN ends up needing lots of 2x2 determinants, this is easier to debug
         return x_1*y_2-x_2*y_1;
@@ -38,6 +41,7 @@ public class ShooterMath {
         IntersectY = det(y_2-y_1, x_1*y_2-x_2*y_1, y_4-y_3, x_3*y_4-x_4*y_3)/denominator;
         double DIST_MIN = Math.sqrt(Math.pow((CurrentPose.getX()-IntersectX),2)+Math.pow((CurrentPose.getY()-IntersectY),2));
         double v_MIN = Math.sqrt((g*DIST_MIN*DIST_MIN)/(2*(GOAL_RELATIVE_HEIGHT-DIST_MIN*Math.tan(ANGLE))*((Math.cos(ANGLE))*Math.cos(ANGLE))));
+        telemetry.addData("Calculated Ball Velocity", (v_MAX+v_MIN)/2);
         return (v_MAX+v_MIN)/2; //Velocity in inches/second, remember
         //Function output: (Hit top of goal speed+Hit lip of goal speed)/2
     }
@@ -48,14 +52,22 @@ public class ShooterMath {
         double d = (BallV*Math.cos(ANGLE)/g)*(BallV*Math.sin(ANGLE)+Math.sqrt(BallV*BallV*Math.sin(ANGLE)*Math.sin(ANGLE)+2*g*EXIT_HEIGHT));
         return (-1*REGRESSION_B+Math.sqrt(REGRESSION_B*REGRESSION_B+4*REGRESSION_A*d))/(2*REGRESSION_A);
     }
-    public static double angleFromGoal(Pose CurrentPose, int GoalX, int GoalY){
+    public double angleFromGoal(Pose CurrentPose, int GoalX, int GoalY){
         //Math.atan2 -> RADIANS -> DEGREES
         //.getHeading -> DEGREES
-        double uncorrected = (CurrentPose.getHeading() - Math.atan2((CurrentPose.getY()-GoalY),(CurrentPose.getX()-GoalX)))*180/Math.PI;
+        telemetry.addData("GoalX", GoalX);
+        telemetry.addData("GoalY", GoalY);
+        double heading = CurrentPose.getHeading() % Math.PI * 2;
+        double uncorrected = (heading - Math.atan2((CurrentPose.getY()-GoalY),(CurrentPose.getX()-GoalX)))*180/Math.PI;
+        telemetry.addData("uncorrected", uncorrected);
         if (Math.abs(uncorrected)>180) {
             return 360-uncorrected;
         } else {
             return uncorrected;
         }
+    }
+
+    public ShooterMath(Telemetry telemetry) {
+        this.telemetry = telemetry;
     }
 }

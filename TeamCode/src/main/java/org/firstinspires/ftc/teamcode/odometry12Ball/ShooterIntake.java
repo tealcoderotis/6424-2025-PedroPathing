@@ -28,7 +28,7 @@ public class ShooterIntake {
     private static final double SHOOTER_SPEED = 1575;
     private static final double INDEXER_POWER = 1;
     private static final double INDEXER_BACK_POWER = -0.35;
-    private static final double SHOOTER_BACK_POWER = 0.65;
+    private static final double SHOOTER_BACK_POWER = -0.5;
     private int ballsToShoot = 0;
     private int currentBall = -1;
     private double shooterSpeed = 0;

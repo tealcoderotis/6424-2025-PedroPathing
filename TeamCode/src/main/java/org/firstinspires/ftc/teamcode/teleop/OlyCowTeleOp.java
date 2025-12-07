@@ -69,6 +69,7 @@ public class OlyCowTeleOp extends OpMode {
 
     @Override
     public void init() {
+        shootermath = new ShooterMath(telemetry);
         launchState = LaunchState.IDLE;
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
@@ -124,17 +125,21 @@ public class OlyCowTeleOp extends OpMode {
                 telemetry.update();
             }
         }
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        follower.update();
     }
 
     @Override
     public void start() {
         limelight.start();
+        follower.startTeleOpDrive(false);
     }
 
     @Override
     public void loop() {
         if (!lockOn) {
-            mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, false);
         } else {
             //PIDF to control rotation rate while locked on the goal
             int GoalX = 0; int GoalY=144;
@@ -142,13 +147,13 @@ public class OlyCowTeleOp extends OpMode {
                 if (alliance == Alliance.RED) {GoalX = 144;}
             }
             double P = 0.05;
-            double headingCorrectionNeeded = ShooterMath.angleFromGoal(follower.getPose(), GoalX, GoalY); //Degrees
+            double headingCorrectionNeeded = shootermath.angleFromGoal(follower.getPose(), GoalX, GoalY); //Degrees
             telemetry.addData("Heading correction needed", headingCorrectionNeeded);
             double rotate = P*headingCorrectionNeeded;
             if (Math.abs(rotate) > 1) {
                 rotate = rotate/Math.abs(rotate);
             }
-            mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
+            follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate, false);
         }
 
         if (gamepad2.x){
@@ -257,7 +262,7 @@ public class OlyCowTeleOp extends OpMode {
     public void stop() {
     }
 
-    void mecanumDrive(double forward, double strafe, double rotate){
+    void mecanumDrive(double forward, double strafe, double rotate) {
 
         double denominator = Math.max(Math.abs(forward) + Math.abs(strafe) + Math.abs(rotate), 1);
 

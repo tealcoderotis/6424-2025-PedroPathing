@@ -152,7 +152,7 @@ public class Paths {
         RedRow3IntakeBegin = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(96, 95.8), new Pose(97.108, 35.383))
+                        new BezierLine(new Pose(96, 95.8), new Pose(97.108, 35.005))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(42), Math.toRadians(0))
                 .build();
@@ -160,7 +160,7 @@ public class Paths {
         RedRow3IntakeEnd = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(97.108, 35.383), new Pose(125.200, 35.383))
+                        new BezierLine(new Pose(97.108, 35.005), new Pose(125.200, 35.383))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();

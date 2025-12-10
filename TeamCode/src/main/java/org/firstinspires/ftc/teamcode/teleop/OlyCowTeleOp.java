@@ -141,7 +141,7 @@ public class OlyCowTeleOp extends OpMode {
     @Override
     public void loop() {
         if (!lockOn) {
-            follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, false);
+            follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         } else {
             //PIDF to control rotation rate while locked on the goal
             int GoalX = 0; int GoalY=144;
@@ -155,7 +155,7 @@ public class OlyCowTeleOp extends OpMode {
             if (Math.abs(rotate) > 1) {
                 rotate = rotate/Math.abs(rotate);
             }
-            follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate, false);
+            follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, rotate, false);
         }
 
         if (gamepad2.x){
@@ -179,12 +179,16 @@ public class OlyCowTeleOp extends OpMode {
         }
         if (gamepad2.y) {
             launcher.setVelocity(currentShootVelocity);
+        } else {
+            launcher.setVelocity(STOP_SPEED);
         }
         if (gamepad2.dpad_up) {
             currentShootVelocity = LAUNCHER_MAX_VELOCITY;
             overrideShootVelocity = true;
         }
-
+        if (gamepad2.dpad_left) {
+            overrideShootVelocity = false;
+        }
         if (gamepad2.dpad_down) {
             currentShootVelocity = LAUNCHER_MIN_VELOCITY;
             overrideShootVelocity = true;
@@ -195,13 +199,15 @@ public class OlyCowTeleOp extends OpMode {
             lockOn = false;
         }
         if(!overrideShootVelocity && alliance != Alliance.UNKNOWN) {
+            double goalBallVelocity;
             if (alliance == Alliance.RED) {
-                telemetry.addData("Goal ball velocity", shootermath.findLateralVelocity(follower.getPose(), 144, 144));
-                currentShootVelocity = shootermath.ballVelocityToFlywheel(shootermath.findLateralVelocity(follower.getPose(), 144, 144));
+                goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 144, 144);
+                currentShootVelocity = shootermath.ballVelocityToFlywheel(goalBallVelocity);
             } else {
-                telemetry.addData("Goal ball velocity", shootermath.findLateralVelocity(follower.getPose(), 0, 144));
-                currentShootVelocity = shootermath.ballVelocityToFlywheel(shootermath.findLateralVelocity(follower.getPose(), 0, 144));
+                goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 0, 144);
+                currentShootVelocity = shootermath.ballVelocityToFlywheel(goalBallVelocity);
             }
+            telemetry.addData("Goal Ball Velocity", goalBallVelocity);
             telemetry.addData("Calculated Shooter Speed", currentShootVelocity);
         }
         else{

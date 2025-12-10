@@ -25,7 +25,7 @@ public class ShooterIntake {
     private static final int INTAKE_TIME = 250;
     private static final int REV_TIME = 1500;
     private static final int INTAKE_END_TIME = 500;
-    private static final double SHOOTER_SPEED = 1400;
+    private static final double SHOOTER_SPEED = 1520;
     private static final double INDEXER_POWER = 1;
     private static final double INDEXER_BACK_POWER = -0.35;
     private static final double SHOOTER_BACK_POWER = -0.5;

@@ -13,7 +13,7 @@ public class VisionTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Follower follower = Constants.createFollower(hardwareMap);
-        LimelightPoseCorrector poseCorrector = new LimelightPoseCorrector(hardwareMap);
+        LimelightPoseCorrector poseCorrector = new LimelightPoseCorrector(hardwareMap, telemetry);
         follower.setStartingPose(new Pose(72, 120, Math.toRadians(90)));
         waitForStart();
         while (opModeIsActive()) {

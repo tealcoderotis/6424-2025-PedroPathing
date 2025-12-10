@@ -135,11 +135,11 @@ public class Auton extends LinearOpMode {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(0.75);
-                    follower.followPath(paths.RedRow1ToGate1);
-                    pathState = 5;
+                    follower.followPath(paths.RedRow1ToShooter);
+                    pathState = 8;
                 }
                 break;
-            case 5:
+            /*case 5:
                 if (!follower.isBusy()) {
 
                     follower.setMaxPower(1);
@@ -159,7 +159,7 @@ public class Auton extends LinearOpMode {
                     follower.followPath(paths.RedGateToShooter);
                     pathState = 8;
                 }
-                break;
+                break;*/
             case 8:
                 if (!follower.isBusy()) {
                     shooterIntake.beginShooting(3);

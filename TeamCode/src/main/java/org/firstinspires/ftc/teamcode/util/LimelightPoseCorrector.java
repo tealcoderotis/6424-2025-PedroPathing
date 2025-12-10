@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 public class LimelightPoseCorrector {
     private Limelight3A limelight;
@@ -18,6 +19,7 @@ public class LimelightPoseCorrector {
 
     public LimelightPoseCorrector(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, LIMELIGHT_HARDWARE_MAP_NAME);
+        limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);
         limelight.start();
     }
@@ -31,8 +33,11 @@ public class LimelightPoseCorrector {
         LLResult result = limelight.getLatestResult();
         if (result != null) {
             if (result.isValid() && result.getControlHubTimeStamp() > lastTimeStamp) {
-                Pose limelightPose = PoseConverter.pose2DToPose(PoseDimensionConverter.pose3DToPose2D(result.getBotpose()), InvertedFTCCoordinates.INSTANCE);
-                pose = pose.setHeading(limelightPose.getHeading());
+                Pose3D ftcCordinateSystemLimelightPose = result.getBotpose();
+                if (ftcCordinateSystemLimelightPose != null) {
+                    Pose limelightPose = PoseConverter.pose2DToPose(PoseDimensionConverter.pose3DToPose2D(ftcCordinateSystemLimelightPose), InvertedFTCCoordinates.INSTANCE);
+                    pose = pose.setHeading(limelightPose.getHeading());
+                }
                 lastTimeStamp = result.getControlHubTimeStamp();
             }
         }
@@ -43,13 +48,16 @@ public class LimelightPoseCorrector {
         LLResult result = limelight.getLatestResult();
         if (result != null) {
             if (result.isValid()) {
-                if (telemetry != null) {
-                    telemetry.addData("x", result.getBotpose().getPosition().x);
-                    telemetry.addData("y", result.getBotpose().getPosition().y);
-                    telemetry.addData("heading", result.getBotpose().getOrientation().getYaw(AngleUnit.RADIANS));
+                Pose3D ftcCordinateSystemLimelightPose = result.getBotpose();
+                if (ftcCordinateSystemLimelightPose != null) {
+                    if (telemetry != null) {
+                        telemetry.addData("x", result.getBotpose().getPosition().x);
+                        telemetry.addData("y", result.getBotpose().getPosition().y);
+                        telemetry.addData("heading", result.getBotpose().getOrientation().getYaw(AngleUnit.RADIANS));
+                    }
+                    Pose limelightPose = PoseConverter.pose2DToPose(PoseDimensionConverter.pose3DToPose2D(result.getBotpose()), InvertedFTCCoordinates.INSTANCE);
+                    return limelightPose;
                 }
-                Pose limelightPose = PoseConverter.pose2DToPose(PoseDimensionConverter.pose3DToPose2D(result.getBotpose()), InvertedFTCCoordinates.INSTANCE);
-                return limelightPose;
             }
         }
         return null;

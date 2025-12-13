@@ -36,7 +36,7 @@ public class LimelightPoseCorrector {
                 Pose3D ftcCordinateSystemLimelightPose = result.getBotpose();
                 if (ftcCordinateSystemLimelightPose != null) {
                     Pose limelightPose = PoseConverter.pose2DToPose(PoseDimensionConverter.pose3DToPose2D(ftcCordinateSystemLimelightPose), InvertedFTCCoordinates.INSTANCE);
-                    pose = pose.setHeading(limelightPose.getHeading());
+                    pose = limelightPose.copy();
                 }
                 lastTimeStamp = result.getControlHubTimeStamp();
             }

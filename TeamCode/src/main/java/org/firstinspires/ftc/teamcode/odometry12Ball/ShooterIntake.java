@@ -4,7 +4,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+//import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Globals;
@@ -12,10 +12,10 @@ import org.firstinspires.ftc.teamcode.util.VoltagePowerCompensator;
 
 public class ShooterIntake {
     //TODO Figure out how to shoot continuously
-    private DcMotor indexer;
-    private DcMotorEx shooter;
-    private Timer shootTimer;
-    private Timer intakeTimer;
+    private final DcMotor indexer;
+    private final DcMotorEx shooter;
+    private final Timer shootTimer;
+    private final Timer intakeTimer;
     private boolean isShooterBusy = false;
     private boolean isReving = false;
     private boolean isIntaking = false;

@@ -12,7 +12,7 @@ public class ShooterMath {
     private static final double GOAL_RELATIVE_HEIGHT = GOAL_HEIGHT-EXIT_HEIGHT;
     private static final double TOP_GOAL_RELATIVE_HEIGHT = TOP_GOAL_HEIGHT-EXIT_HEIGHT;
     private static final double g = 386.1; //inches/s^2
-    private Telemetry telemetry;
+    private final Telemetry telemetry;
     private double det(double x_1, double x_2, double y_1, double y_2) {
         //Finding DIST_MIN ends up needing lots of 2x2 determinants, this is easier to debug
         return x_1*y_2-x_2*y_1;
@@ -25,15 +25,15 @@ public class ShooterMath {
         //First Line
         double x_1 = CurrentPose.getX(); double y_1 = CurrentPose.getY();
         //Second Line depends on alliance
-        double x_3; double y_3; double x_4; double y_4;
+        double x_3; double y_3 = 144; double x_4; double y_4 = 120;
         if (x_2 > 72) {
             //Red Alliance
-            x_3 = 120; y_3 = 144;
-            x_4 = 132.75; y_4 = 120;
+            x_3 = 120;
+            x_4 = 132.75;
         } else {
             //Blue Alliance
-            x_3 = 24; y_3 = 144;
-            x_4 = 11.25; y_4 = 120;
+            x_3 = 24;
+            x_4 = 11.25;
         }
         //Cramer's Rule based formula found online for intersection
         double denominator = det(y_2-y_1, x_1-x_2, y_4-y_3, x_3-x_4);
@@ -41,7 +41,6 @@ public class ShooterMath {
         IntersectY = det(y_2-y_1, x_1*y_2-x_2*y_1, y_4-y_3, x_3*y_4-x_4*y_3)/denominator;
         double DIST_MIN = Math.sqrt(Math.pow((CurrentPose.getX()-IntersectX),2)+Math.pow((CurrentPose.getY()-IntersectY),2));
         double v_MIN = Math.sqrt((g*DIST_MIN*DIST_MIN)/(2*(GOAL_RELATIVE_HEIGHT-DIST_MIN*Math.tan(ANGLE))*((Math.cos(ANGLE))*Math.cos(ANGLE))));
-        telemetry.addData("Calculated Ball Velocity", (v_MAX+v_MIN)/2);
         return (v_MAX+v_MIN)/2; //Velocity in inches/second, remember
         //Function output: (Hit top of goal speed+Hit lip of goal speed)/2
     }
@@ -53,12 +52,10 @@ public class ShooterMath {
         return (-1*REGRESSION_B+Math.sqrt(REGRESSION_B*REGRESSION_B+4*REGRESSION_A*d))/(2*REGRESSION_A);
     }
     public double angleFromGoal(Pose CurrentPose, int GoalX, int GoalY){
-        //Math.atan2 -> RADIANS -> DEGREES
-        //.getHeading -> DEGREES
         telemetry.addData("GoalX", GoalX);
         telemetry.addData("GoalY", GoalY);
-        double heading = CurrentPose.getHeading() % Math.PI * 2;
-        double uncorrected = (heading - Math.atan2((CurrentPose.getY()-GoalY),(CurrentPose.getX()-GoalX)))*180/Math.PI;
+        double heading = CurrentPose.getHeading();
+        double uncorrected = ((heading - Math.atan2((CurrentPose.getY()-GoalY),(CurrentPose.getX()-GoalX)))*180/Math.PI) % 360;
         telemetry.addData("uncorrected", uncorrected);
         if (Math.abs(uncorrected)>180) {
             return 360-uncorrected;

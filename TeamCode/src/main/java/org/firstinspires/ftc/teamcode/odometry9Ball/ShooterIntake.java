@@ -12,10 +12,10 @@ import org.firstinspires.ftc.teamcode.util.VoltagePowerCompensator;
 
 public class ShooterIntake {
     //TODO Figure out how to shoot continuously
-    private DcMotor indexer;
-    private DcMotorEx shooter;
-    private Timer shootTimer;
-    private Timer intakeTimer;
+    private final DcMotor indexer;
+    private final DcMotorEx shooter;
+    private final Timer shootTimer;
+    private final Timer intakeTimer;
     private boolean isShooterBusy = false;
     private boolean isReving = false;
     private boolean isIntaking = false;
@@ -65,7 +65,7 @@ public class ShooterIntake {
         currentBall = 0;
         if (!isReving) {
             shootTimer.resetTimer();
-            shooter.setVelocity(-shooterSpeed);;
+            shooter.setVelocity(-shooterSpeed);
             isReving = true;
         }
         hasIndexed = false;

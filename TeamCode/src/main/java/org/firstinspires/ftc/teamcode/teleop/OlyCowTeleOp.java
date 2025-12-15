@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+//import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.ShooterMath;
@@ -31,7 +31,7 @@ public class OlyCowTeleOp extends OpMode {
     private ShooterMath shootermath;
     final double FEED_TIME_SECONDS = 0.5;
     final double STOP_SPEED = 0.0;
-    final double HALF_SPEED = 0.5;
+    //final double HALF_SPEED = 0.5;
     final double FULL_SPEED = 1.0;
 
     final double LAUNCHER_MAX_VELOCITY = 1575;
@@ -125,6 +125,8 @@ public class OlyCowTeleOp extends OpMode {
                 alliance = Alliance.BLUE;
                 telemetry.addLine("Blue alliance");
                 telemetry.update();
+            } else {
+                telemetry.addLine("ALLIANCE UNKNOWN");
             }
         }
         telemetry.addData("x", follower.getPose().getX());
@@ -202,16 +204,19 @@ public class OlyCowTeleOp extends OpMode {
             double goalBallVelocity;
             if (alliance == Alliance.RED) {
                 goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 144, 144);
-                currentShootVelocity = shootermath.ballVelocityToFlywheel(goalBallVelocity);
             } else {
                 goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 0, 144);
-                currentShootVelocity = shootermath.ballVelocityToFlywheel(goalBallVelocity);
             }
+            currentShootVelocity = shootermath.ballVelocityToFlywheel(goalBallVelocity);
             telemetry.addData("Goal Ball Velocity", goalBallVelocity);
             telemetry.addData("Calculated Shooter Speed", currentShootVelocity);
+            telemetry.addData("Overridden", false);
         }
         else{
             telemetry.addData("Constant Shooter Speed", currentShootVelocity);
+            if (overrideShootVelocity){
+                telemetry.addData("Overridden", true);
+            }
         }
 
         launch(gamepad2.rightBumperWasPressed());

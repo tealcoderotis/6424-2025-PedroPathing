@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 public class Globals {
     public static Alliance alliance = Alliance.UNKNOWN;
     public static Pose endingPose = null;
-    public static final PIDFCoefficients SHOOTER_PIDF = new PIDFCoefficients(300, 0, 100, 10, MotorControlAlgorithm.PIDF);
+    public static final PIDFCoefficients SHOOTER_PIDF = new PIDFCoefficients(300, 0, 0, 10, MotorControlAlgorithm.PIDF);
     public static final double SHOOTER_VELOCITY = 1400;
 
     public static void resetGlobals() {

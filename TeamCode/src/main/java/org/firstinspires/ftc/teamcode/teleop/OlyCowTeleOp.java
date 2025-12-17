@@ -195,6 +195,7 @@ public class OlyCowTeleOp extends OpMode {
             currentShootVelocity = LAUNCHER_MIN_VELOCITY;
             overrideShootVelocity = true;
         }
+        telemetry.addData("Overridden = ", overrideShootVelocity);
         if (gamepad1.dpad_down) {
             lockOn = true;
         } else if (gamepad1.dpad_up) {

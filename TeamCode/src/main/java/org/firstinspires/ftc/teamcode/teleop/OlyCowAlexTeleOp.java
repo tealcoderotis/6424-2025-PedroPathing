@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.ShooterMath;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @TeleOp(name = "OlyCowAlexTeleOp")
 //@Disabled
@@ -65,6 +66,7 @@ public class OlyCowAlexTeleOp extends OpMode {
     public void init() {
         shootermath = new ShooterMath(telemetry);
         launchState = LaunchState.IDLE;
+        follower = Constants.createFollower(hardwareMap);
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
@@ -114,8 +116,6 @@ public class OlyCowAlexTeleOp extends OpMode {
                 alliance = Alliance.BLUE;
                 telemetry.addLine("Blue alliance");
                 telemetry.update();
-            } else {
-                telemetry.addLine("ALLIANCE UNKNOWN");
             }
         }
         telemetry.addData("x", follower.getPose().getX());
@@ -177,11 +177,13 @@ public class OlyCowAlexTeleOp extends OpMode {
             feeder.setPower(STOP_SPEED);
         }
         if (gamepad2.dpad_left) {
-            double goalBallVelocity;
+            double goalBallVelocity = 0;
             if (alliance == Alliance.RED) {
                 goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 144, 144);
-            } else {
+            } else if (alliance == Alliance.BLUE) {
                 goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 0, 144);
+            } else {
+                telemetry.addData("Goal Ball Velocity", "UNKNOWN ALLIANCE");
             }
             telemetry.addData("Goal Ball Velocity", goalBallVelocity);
             double flywheelVelocity = shootermath.ballVelocityToFlywheel(goalBallVelocity);

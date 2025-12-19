@@ -20,7 +20,7 @@ public class ShooterMath {
     public double findLateralVelocity(Pose CurrentPose, int x_2, int y_2){
         double IntersectX; double IntersectY;
         double DIST_MAX = Math.sqrt(Math.pow((CurrentPose.getX()-x_2),2)+Math.pow((CurrentPose.getY()-y_2),2));
-        double v_MAX = Math.sqrt((g*DIST_MAX*DIST_MAX)/(2*(TOP_GOAL_RELATIVE_HEIGHT-DIST_MAX*Math.tan(ANGLE))*((Math.cos(ANGLE))*Math.cos(ANGLE))));
+        double v_MAX = Math.sqrt((-g*DIST_MAX*DIST_MAX)/(2*(TOP_GOAL_RELATIVE_HEIGHT-DIST_MAX*Math.tan(ANGLE))*((Math.cos(ANGLE))*Math.cos(ANGLE))));
         //The distance to the closest part of the goal in the ball path is not simple, it needs an intersection as the goal is not just a single point
         //First Line
         double x_1 = CurrentPose.getX(); double y_1 = CurrentPose.getY();
@@ -40,7 +40,7 @@ public class ShooterMath {
         IntersectX = det(x_1*y_2-x_2*y_1, x_1-x_2, x_3*y_4-x_4*y_3, x_3-x_4)/denominator;
         IntersectY = det(y_2-y_1, x_1*y_2-x_2*y_1, y_4-y_3, x_3*y_4-x_4*y_3)/denominator;
         double DIST_MIN = Math.sqrt(Math.pow((CurrentPose.getX()-IntersectX),2)+Math.pow((CurrentPose.getY()-IntersectY),2));
-        double v_MIN = Math.sqrt((g*DIST_MIN*DIST_MIN)/(2*(GOAL_RELATIVE_HEIGHT-DIST_MIN*Math.tan(ANGLE))*((Math.cos(ANGLE))*Math.cos(ANGLE))));
+        double v_MIN = Math.sqrt((-g*DIST_MIN*DIST_MIN)/(2*(GOAL_RELATIVE_HEIGHT-DIST_MIN*Math.tan(ANGLE))*((Math.cos(ANGLE))*Math.cos(ANGLE))));
         return (v_MAX+v_MIN)/2; //Velocity in inches/second, remember
         //Function output: (Hit top of goal speed+Hit lip of goal speed)/2
     }

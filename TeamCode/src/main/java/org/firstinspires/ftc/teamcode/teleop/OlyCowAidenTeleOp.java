@@ -1,33 +1,35 @@
 package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "OlyCowTeleOp")
+@TeleOp(name = "OlyCowAidenTeleOp")
 //@Disabled
-public class OlyCowTeleOp extends OpMode {
-    final double FEED_TIME_SECONDS = 0.5;
+public class OlyCowAidenTeleOp extends OpMode {
+    final double FEED_TIME_SECONDS = 0.20;
     final double STOP_SPEED = 0.0;
-    final double HALF_SPEED = 0.5;
     final double FULL_SPEED = 1.0;
 
-    final double LAUNCHER_MAX_VELOCITY = 2000;
+    final double LAUNCHER_TARGET_VELOCITY = 2175;
     final double LAUNCHER_MIN_VELOCITY = 1450;
 
     private DcMotor leftFrontDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightBackDrive = null;
-    private DcMotorEx launcher = null;
-    private DcMotorEx feeder = null;
-
+    private DcMotorEx shooterMotor = null;
+    private DcMotorEx indexMotor = null;
     ElapsedTime feederTimer = new ElapsedTime();
+
+    public double konst = 0.6;
 
     private enum LaunchState {
         IDLE,
@@ -51,26 +53,22 @@ public class OlyCowTeleOp extends OpMode {
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
-        launcher = hardwareMap.get(DcMotorEx.class, "launcher");
-        feeder = hardwareMap.get(DcMotorEx.class, "feeder");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "launcher");
+        indexMotor = hardwareMap.get(DcMotorEx.class, "feeder");
 
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        launcher.setDirection(DcMotor.Direction.REVERSE);
+        shooterMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         leftFrontDrive.setZeroPowerBehavior(BRAKE);
         rightFrontDrive.setZeroPowerBehavior(BRAKE);
         leftBackDrive.setZeroPowerBehavior(BRAKE);
         rightBackDrive.setZeroPowerBehavior(BRAKE);
-        launcher.setZeroPowerBehavior(BRAKE);
-
-        feeder.setPower(STOP_SPEED);
-
-        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
+        shooterMotor.setZeroPowerBehavior(BRAKE);
 
         telemetry.addData("Status", "Initialized");
     }
@@ -88,40 +86,54 @@ public class OlyCowTeleOp extends OpMode {
 
         mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-        if (gamepad2.x){
-            launcher.setDirection(DcMotor.Direction.REVERSE);
-            launcher.setPower(0.25);
-            feeder.setDirection(DcMotor.Direction.REVERSE);
-            feeder.setPower(FULL_SPEED);
-        }
-
         if (gamepad2.a) {
-            feeder.setDirection(DcMotor.Direction.FORWARD);
-            feeder.setPower(FULL_SPEED);
+            shooterMotor.setDirection(DcMotor.Direction.FORWARD);
+            shooterMotor.setPower(0.3);
+            indexMotor.setDirection(DcMotor.Direction.FORWARD);
+            indexMotor.setPower(0.5);
+        } else if (gamepad2.y) {
+            shooterMotor.setDirection(DcMotor.Direction.FORWARD);
+            shooterMotor.setPower(0.4);
+            indexMotor.setDirection(DcMotor.Direction.REVERSE);
+            indexMotor.setPower(0.3);
+        } else if (gamepad2.b) {
+            shooterMotor.setDirection(DcMotor.Direction.REVERSE);
+            shooterMotor.setVelocity(LAUNCHER_TARGET_VELOCITY);
+            //shooterMotor.setPower(0.55);
+            if (gamepad2.dpad_up) {
+                indexMotor.setDirection(DcMotor.Direction.FORWARD);
+                indexMotor.setPower(0.4);
+            } else if (gamepad2.dpad_down) {
+                indexMotor.setDirection(DcMotor.Direction.REVERSE);
+                indexMotor.setPower(0.4);
+            } else {
+                indexMotor.setDirection(DcMotor.Direction.REVERSE);
+                indexMotor.setPower(0);
+            }
         }
-
-        if (gamepad2.b) {
-            launcher.setVelocity(STOP_SPEED);
-            feeder.setPower(STOP_SPEED);
+        else if (gamepad2.x) {
+            shooterMotor.setDirection(DcMotor.Direction.REVERSE);
+            shooterMotor.setVelocity(LAUNCHER_MIN_VELOCITY);
+            //shooterMotor.setPower(0.8);
+            shooterMotor.setPower(0.5);
+            if (gamepad2.dpad_up) {
+                indexMotor.setDirection(DcMotor.Direction.FORWARD);
+                indexMotor.setPower(0.4);
+            } else if (gamepad2.dpad_down) {
+                indexMotor.setDirection(DcMotor.Direction.REVERSE);
+                indexMotor.setPower(0.4);
+            } else {
+                indexMotor.setDirection(DcMotor.Direction.REVERSE);
+                indexMotor.setPower(0);
+            }
+        } else {
+            shooterMotor.setPower(0);
+            indexMotor.setPower(0);
         }
-        if (gamepad2.y) {
-            launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
-        }
-        if (gamepad2.dpad_up) {
-            launcher.setVelocity(LAUNCHER_MAX_VELOCITY);
-        }
-
-        if (gamepad2.dpad_down) {
-            launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
-        }
-        else {
-            feeder.setPower(STOP_SPEED);
-        }
-
-        launch(gamepad2.rightBumperWasPressed());
 
         telemetry.addData("State", launchState);
-        telemetry.addData("motorSpeed", launcher.getVelocity());
+        telemetry.addData("motorVelocity", shooterMotor.getVelocity());
+        telemetry.addData("indexPower", shooterMotor.getPower());
 
     }
 
@@ -130,8 +142,10 @@ public class OlyCowTeleOp extends OpMode {
     }
 
     void mecanumDrive(double forward, double strafe, double rotate){
+        if (gamepad1.a) {konst = 0.3;}
+        else {konst = 0.6;}
 
-        double denominator = Math.max(Math.abs(forward) + Math.abs(strafe) + Math.abs(rotate), 1);
+        double denominator = (Math.max(Math.abs(forward) + Math.abs(strafe) + Math.abs(rotate), 1)) * konst;
 
         leftFrontPower = (forward + strafe + rotate) / denominator;
         rightFrontPower = (forward - strafe - rotate) / denominator;
@@ -153,18 +167,16 @@ public class OlyCowTeleOp extends OpMode {
                 }
                 break;
             case SPIN_UP:
-                launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
-                if (launcher.getVelocity() > LAUNCHER_MIN_VELOCITY) {
+                shooterMotor.setVelocity(LAUNCHER_TARGET_VELOCITY);
+                if (shooterMotor.getVelocity() > LAUNCHER_MIN_VELOCITY) {
                     launchState = LaunchState.LAUNCH;
                 }
                 break;
             case LAUNCH:
-                feeder.setPower(FULL_SPEED);
                 feederTimer.reset();
                 launchState = LaunchState.LAUNCHING;
                 break;
             case LAUNCHING:
-                feeder.setPower(FULL_SPEED);
                 if (feederTimer.seconds() > FEED_TIME_SECONDS) {
                     launchState = LaunchState.IDLE;
                 }
@@ -172,3 +184,5 @@ public class OlyCowTeleOp extends OpMode {
         }
     }
 }
+
+

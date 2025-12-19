@@ -1,27 +1,27 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.odometry9Ball;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.pedroPathing.Paths;
+import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.LimelightPoseCorrector;
 
 @Configurable
-@Autonomous
-public class OdometryAuton extends LinearOpMode {
+@Autonomous(name = "Odometry 9 Ball Auton (Far Side)")
+public class AutonFar extends LinearOpMode {
     private Follower follower;
     private ShooterIntake shooterIntake;
     private int pathState;
     private Paths paths;
-    //-1 unknown; 0 red; 1 blue
-    private int alliance;
-    /*private Limelight3A limelight;
-    private static final String LIMELIGHT_HARDWARE_MAP_NAME = "limelight";*/
+    private Alliance alliance;
+    private LimelightPoseCorrector poseCorrector;
+    private boolean useLimelight = false;
 
     @Override
     public void runOpMode() {
@@ -31,37 +31,51 @@ public class OdometryAuton extends LinearOpMode {
         follower.setMaxPower(1);
         paths = new Paths(follower);
         pathState = 0;
-        alliance = -1;
-        DcMotor rightFrontDrive = (DcMotor)hardwareMap.get("rightFrontDrive");
-        DcMotor rightBackDrive = (DcMotor)hardwareMap.get("rightBackDrive");
-        DcMotor leftFrontDrive = (DcMotor)hardwareMap.get("leftFrontDrive");
-        DcMotor leftBackDrive = (DcMotor)hardwareMap.get("leftBackDrive");
-        //limelight = hardwareMap.get(Limelight3A.class, LIMELIGHT_HARDWARE_MAP_NAME);
+        alliance = Alliance.UNKNOWN;
+        DcMotor rightFrontDrive = (DcMotor) hardwareMap.get("rightFrontDrive");
+        DcMotor rightBackDrive = (DcMotor) hardwareMap.get("rightBackDrive");
+        DcMotor leftFrontDrive = (DcMotor) hardwareMap.get("leftFrontDrive");
+        DcMotor leftBackDrive = (DcMotor) hardwareMap.get("leftBackDrive");
         while (opModeInInit()) {
             if (gamepad1.bWasPressed()) {
                 //Red starting pose
-                follower.setStartingPose(new Pose(110.36335877862595, 134.10687022900763, Math.toRadians(0)));
-                alliance = 0;
+                follower.setStartingPose(new Pose(84.000, 9.7, Math.toRadians(90)));
+                alliance = Alliance.RED;
                 telemetry.addLine("Red alliance");
                 telemetry.update();
-            }
-            else if (gamepad1.xWasPressed()) {
+            } else if (gamepad1.xWasPressed()) {
                 //Blue starting pose
-                follower.setStartingPose(new Pose(33.85648854961832, 134.10687022900763, Math.toRadians(180)));
-                alliance = 1;
+                follower.setStartingPose(new Pose(60.000, 9.7, Math.toRadians(90)));
+                alliance = Alliance.BLUE;
                 telemetry.addLine("Blue alliance");
                 telemetry.update();
             }
+            if (gamepad1.yWasPressed()) {
+                useLimelight = !useLimelight;
+                if (useLimelight) {
+                    telemetry.addLine("Use limelight");
+                }
+                else {
+                    telemetry.addLine("Don't use limelight");
+                }
+                telemetry.update();
+            }
         }
-        if (alliance != -1) {
+        if (alliance != Alliance.UNKNOWN) {
+            Globals.resetGlobals();
+            if (useLimelight) {
+                poseCorrector = new LimelightPoseCorrector(hardwareMap);
+            }
             while (opModeIsActive()) {
                 //update shooter and follower
                 shooterIntake.update();
-                follower.update();
-                if (alliance == 0) {
-                    autonomousRedPathUpdate();
+                if (useLimelight) {
+                    follower.setPose(poseCorrector.correctPose(follower.getPose()));
                 }
-                else if (alliance == 1) {
+                follower.update();
+                if (alliance == Alliance.RED) {
+                    autonomousRedPathUpdate();
+                } else if (alliance == Alliance.BLUE) {
                     autonomousBluePathUpdate();
                 }
                 telemetry.addData("path state", pathState);
@@ -74,8 +88,9 @@ public class OdometryAuton extends LinearOpMode {
                 telemetry.addData("rightBackDrive", rightBackDrive.getPower());
                 telemetry.update();
             }
-        }
-        else {
+            Globals.alliance = alliance;
+            Globals.endingPose = follower.getPose().copy();
+        } else {
             //if we start and do not specify an alliance, the OpMode will stop
             requestOpModeStop();
         }
@@ -86,8 +101,8 @@ public class OdometryAuton extends LinearOpMode {
     public void autonomousRedPathUpdate() {
         switch (pathState) {
             case 0:
-                shooterIntake.beginReving();
-                follower.followPath(paths.RedStart);
+                shooterIntake.beginReving(2000);
+                follower.followPath(paths.RedFarStart);
                 pathState = 1;
                 break;
             case 1:
@@ -98,7 +113,7 @@ public class OdometryAuton extends LinearOpMode {
                 break;
             case 2:
                 if (!shooterIntake.isBusy()) {
-                    follower.followPath(paths.RedRow1IntakeBegin);
+                    follower.followPath(paths.RedFarRow1IntakeBegin);
                     pathState = 3;
                 }
                 break;
@@ -106,16 +121,16 @@ public class OdometryAuton extends LinearOpMode {
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(0.25);
-                    follower.followPath(paths.RedRow1IntakeEnd);
+                    follower.followPath(paths.RedFarRow1IntakeEnd);
                     pathState = 4;
                 }
                 break;
             case 4:
                 if (!follower.isBusy()) {
+                    shooterIntake.beginReving(2000);
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
-                    shooterIntake.beginReving();
-                    follower.followPath(paths.RedRow1ToShooter);
+                    follower.followPath(paths.RedFarRow1ToShooter);
                     pathState = 5;
                 }
                 break;
@@ -127,7 +142,7 @@ public class OdometryAuton extends LinearOpMode {
                 break;
             case 6:
                 if (!shooterIntake.isBusy()) {
-                    follower.followPath(paths.RedRow2IntakeBegin);
+                    follower.followPath(paths.RedFarRow2IntakeBegin);
                     pathState = 7;
                 }
                 break;
@@ -135,16 +150,16 @@ public class OdometryAuton extends LinearOpMode {
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(0.25);
-                    follower.followPath(paths.RedRow2IntakeEnd);
+                    follower.followPath(paths.RedFarRow2IntakeEnd);
                     pathState = 8;
                 }
                 break;
             case 8:
                 if (!follower.isBusy()) {
+                    shooterIntake.beginReving(2000);
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
-                    shooterIntake.beginReving();
-                    follower.followPath(paths.RedRow2ToShooter);
+                    follower.followPath(paths.RedFarRow2ToShooter);
                     pathState = 9;
                 }
                 break;
@@ -156,7 +171,7 @@ public class OdometryAuton extends LinearOpMode {
                 break;
             case 10:
                 if (!shooterIntake.isBusy()) {
-                    follower.followPath(paths.RedLeave);
+                    follower.followPath(paths.RedFarLeave);
                     pathState = 11;
                 }
                 break;
@@ -173,8 +188,8 @@ public class OdometryAuton extends LinearOpMode {
     public void autonomousBluePathUpdate() {
         switch (pathState) {
             case 0:
-                shooterIntake.beginReving();
-                follower.followPath(paths.BlueStart);
+                shooterIntake.beginReving(2000);
+                follower.followPath(paths.BlueFarStart);
                 pathState = 1;
                 break;
             case 1:
@@ -185,7 +200,7 @@ public class OdometryAuton extends LinearOpMode {
                 break;
             case 2:
                 if (!shooterIntake.isBusy()) {
-                    follower.followPath(paths.BlueRow1IntakeBegin);
+                    follower.followPath(paths.BlueFarRow1IntakeBegin);
                     pathState = 3;
                 }
                 break;
@@ -193,16 +208,16 @@ public class OdometryAuton extends LinearOpMode {
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(0.25);
-                    follower.followPath(paths.BlueRow1IntakeEnd);
+                    follower.followPath(paths.BlueFarRow1IntakeEnd);
                     pathState = 4;
                 }
                 break;
             case 4:
                 if (!follower.isBusy()) {
+                    shooterIntake.beginReving(2000);
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
-                    shooterIntake.beginReving();
-                    follower.followPath(paths.BlueRow1ToShooter);
+                    follower.followPath(paths.BlueFarRow1ToShooter);
                     pathState = 5;
                 }
                 break;
@@ -214,7 +229,7 @@ public class OdometryAuton extends LinearOpMode {
                 break;
             case 6:
                 if (!shooterIntake.isBusy()) {
-                    follower.followPath(paths.BlueRow2IntakeBegin);
+                    follower.followPath(paths.BlueFarRow2IntakeBegin);
                     pathState = 7;
                 }
                 break;
@@ -222,16 +237,16 @@ public class OdometryAuton extends LinearOpMode {
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(0.25);
-                    follower.followPath(paths.BlueRow2IntakeEnd);
+                    follower.followPath(paths.BlueFarRow2IntakeEnd);
                     pathState = 8;
                 }
                 break;
             case 8:
                 if (!follower.isBusy()) {
+                    shooterIntake.beginReving(2000);
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
-                    shooterIntake.beginReving();
-                    follower.followPath(paths.BlueRow2ToShooter);
+                    follower.followPath(paths.BlueFarRow2ToShooter);
                     pathState = 9;
                 }
                 break;
@@ -243,7 +258,7 @@ public class OdometryAuton extends LinearOpMode {
                 break;
             case 10:
                 if (!shooterIntake.isBusy()) {
-                    follower.followPath(paths.BlueLeave);
+                    follower.followPath(paths.BlueFarLeave);
                     pathState = 11;
                 }
                 break;

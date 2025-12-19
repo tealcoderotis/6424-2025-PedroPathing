@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.odometry6Ball;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
@@ -11,17 +11,11 @@ public class Paths {
     public PathChain RedStart;
     public PathChain RedRow1IntakeBegin;
     public PathChain RedRow1IntakeEnd;
-    public PathChain RedRow1ToGate1;
-    public PathChain RedRow1ToGate2;
-    public PathChain GateToShooter;
     public PathChain RedRow1ToShooter;
     public PathChain RedRow2IntakeBegin;
     public PathChain RedRow2IntakeEnd;
     public PathChain RedRow2ToShooter;
     public PathChain RedLeave;
-    public PathChain RedRow3IntakeBegin;
-    public PathChain RedRow3IntakeEnd;
-    public PathChain RedRow3ToShooter;
     public PathChain BlueStart;
     public PathChain BlueRow1IntakeBegin;
     public PathChain BlueRow1IntakeEnd;
@@ -31,7 +25,7 @@ public class Paths {
     public PathChain BlueRow2ToShooter;
     public PathChain BlueLeave;
 
-    //initialize all of our paths
+    //initalize all of our paths
     public Paths(Follower follower) {
         RedStart = follower
                 .pathBuilder()
@@ -53,30 +47,6 @@ public class Paths {
                 .pathBuilder()
                 .addPath(
                         new BezierLine(new Pose(97.108, 83.762), new Pose(125.200, 83.762))
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
-                .build();
-
-        RedRow1ToGate1 = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(125.200, 83.762), new Pose(125.200, 70.930))
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
-                .build();
-
-        RedRow1ToGate2 = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(125.200, 70.930), new Pose(129.353, 70.930))
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
-                .build();
-
-        GateToShooter = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(129.353, 70.930), new Pose(83.392, 132.938))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
@@ -116,38 +86,10 @@ public class Paths {
         RedLeave = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(83.392, 132.938), new Pose(125.200, 70.930))
+                        new BezierLine(new Pose(83.392, 132.938), new Pose(97.108, 59.579))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
-
-        RedRow3IntakeBegin = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(83.392, 132.938), new Pose(97.108, 35.383))
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
-                .build();
-
-        RedRow3IntakeEnd = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(97.108, 35.383), new Pose(125.200, 35.383))
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
-                .build();
-
-        RedRow3ToShooter = follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(125.200, 35.383), new Pose(83.392, 132.938))
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
-                .build();
-
-        //RedLeave Should still be called after this
-
-        // New set of paths
 
         BlueStart = follower
                 .pathBuilder()

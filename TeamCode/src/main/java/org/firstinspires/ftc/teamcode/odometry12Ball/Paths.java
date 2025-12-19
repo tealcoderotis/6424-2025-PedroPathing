@@ -356,7 +356,7 @@ public class Paths {
                 .addPath(
                         new BezierLine(new Pose(46.892, 35.383), new Pose(18.800, 35.383))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
 
         BlueRow3ToShooter = follower

@@ -147,25 +147,29 @@ public class OlyCowAlexTeleOp extends OpMode {
         }
         if (gamepad2.x) {
             launcher.setDirection(DcMotor.Direction.REVERSE);
+            telemetry.addData("Goal Ball Velocity", LAUNCHER_IDLE_VELOCITY);
             launcher.setVelocity(LAUNCHER_IDLE_VELOCITY);
+            telemetry.addData("Shooter Speed", LAUNCHER_IDLE_VELOCITY);
             feeder.setDirection(DcMotor.Direction.REVERSE);
             feeder.setVelocity(FEEDER_INTAKE_VELOCITY);
         }
 
         if (gamepad2.b) {
+            telemetry.addData("Goal Ball Velocity", LAUNCHER_IDLE_VELOCITY);
             launcher.setVelocity(LAUNCHER_IDLE_VELOCITY);
+            telemetry.addData("Shooter Speed", LAUNCHER_IDLE_VELOCITY);
         }
         if (gamepad2.y) {
             launcher.setVelocity(LAUNCHER_SPINUP_VELOCITY);
         }
         if (gamepad2.dpad_up) {
-            telemetry.addData("Goal Ball Velocity", "NOT CALCULATED");
+            telemetry.addData("Goal Ball Velocity", "MAXIMUM");
             launcher.setVelocity(LAUNCHER_MAX_VELOCITY);
             telemetry.addData("Shooter Speed", "MAXIMUM");
         }
 
         if (gamepad2.dpad_down) {
-            telemetry.addData("Goal Ball Velocity", "NOT CALCULATED");
+            telemetry.addData("Goal Ball Velocity", "MINIMUM");
             launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
             telemetry.addData("Shooter Speed", "MINIMUM");
         }

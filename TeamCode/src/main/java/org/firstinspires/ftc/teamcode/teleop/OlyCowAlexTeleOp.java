@@ -177,12 +177,13 @@ public class OlyCowAlexTeleOp extends OpMode {
             double goalBallVelocity = 0;
             if (alliance == Alliance.RED) {
                 goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 144, 144);
+                telemetry.addData("Goal Ball Velocity", goalBallVelocity);
             } else if (alliance == Alliance.BLUE) {
                 goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 0, 144);
+                telemetry.addData("Goal Ball Velocity", goalBallVelocity);
             } else {
                 telemetry.addData("Goal Ball Velocity", "UNKNOWN ALLIANCE");
             }
-            telemetry.addData("Goal Ball Velocity", goalBallVelocity);
             double flywheelVelocity = shootermath.ballVelocityToFlywheel(goalBallVelocity);
             launcher.setVelocity(flywheelVelocity);
             telemetry.addData("Shooter Speed", flywheelVelocity);

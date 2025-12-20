@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Globals;
 
 //PedroPathing Constants
 public class Constants {
@@ -46,12 +47,7 @@ public class Constants {
             .forwardEncoderDirection(Encoder.FORWARD)
             .strafeEncoderDirection(Encoder.FORWARD)
             .IMU_HardwareMapName("imu")
-            .IMU_Orientation(
-                    new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-                            RevHubOrientationOnRobot.UsbFacingDirection.LEFT
-                    )
-            );
+            .IMU_Orientation(Globals.IMU_ORIENTATION);
 
     public static ThreeWheelIMUConstants threeWheelLocalizerConstants = new ThreeWheelIMUConstants()
             .leftEncoder_HardwareMapName("leftFrontDrive")
@@ -67,12 +63,7 @@ public class Constants {
             .rightEncoderDirection(Encoder.REVERSE)
             .strafeEncoderDirection(Encoder.FORWARD)
             .IMU_HardwareMapName("imu")
-            .IMU_Orientation(
-                    new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-                            RevHubOrientationOnRobot.UsbFacingDirection.LEFT
-                    )
-            );
+            .IMU_Orientation(Globals.IMU_ORIENTATION);
 
 
     public static Follower createFollower(HardwareMap hardwareMap) {

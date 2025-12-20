@@ -108,16 +108,13 @@ public class OlyCowAlexTeleOp extends OpMode {
                 //Red starting pose
                 follower.setStartingPose(new Pose(125.200, 70.930, Math.toRadians(0)));
                 alliance = Alliance.RED;
-                telemetry.addLine("Red alliance");
-                telemetry.update();
             } else if (gamepad1.xWasPressed()) {
                 //Blue starting pose
                 follower.setStartingPose(new Pose(46.892, 59.798, Math.toRadians(180)));
                 alliance = Alliance.BLUE;
-                telemetry.addLine("Blue alliance");
-                telemetry.update();
             }
         }
+        telemetry.addData("alliance", alliance.toString());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         follower.update();
@@ -195,6 +192,9 @@ public class OlyCowAlexTeleOp extends OpMode {
 
         telemetry.addData("State", launchState);
         telemetry.addData("motorSpeed", launcher.getVelocity());
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        follower.update();
     }
 
     void mecanumDrive(double forward, double strafe, double rotate){

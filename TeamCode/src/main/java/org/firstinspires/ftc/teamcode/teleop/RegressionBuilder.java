@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
@@ -105,8 +106,11 @@ public class RegressionBuilder extends OpMode {
         if (gamepad2.a) {
             feeder.setDirection(DcMotor.Direction.FORWARD);
             feeder.setVelocity(FEEDER_INTAKE_VELOCITY);
-            launcher.setDirection(DcMotor.Direction.FORWARD);
+            launcher.setDirection(DcMotor.Direction.REVERSE);
             launcher.setVelocity(launchVelocity);
+        } else {
+            feeder.setVelocity(0);
+            launcher.setVelocity(0);
         }
         if (gamepad2.dpadUpWasPressed()) {
             launchVelocity = launchVelocity + 10;
@@ -120,7 +124,7 @@ public class RegressionBuilder extends OpMode {
         if (gamepad2.yWasPressed()) {
             launchVelocity = launchVelocity - 100;
         }
-        telemetry.addData("motorSpeed", launcher.getVelocity());
+        telemetry.addData("motorSpeed", launchVelocity);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         follower.update();

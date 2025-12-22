@@ -124,7 +124,7 @@ public class RegressionBuilder extends OpMode {
         if (gamepad2.yWasPressed()) {
             launchVelocity = launchVelocity - 100;
         }
-        telemetry.addData("motorSpeed", launcher.getVelocity());
+        telemetry.addData("motorSpeed", launchVelocity);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         follower.update();

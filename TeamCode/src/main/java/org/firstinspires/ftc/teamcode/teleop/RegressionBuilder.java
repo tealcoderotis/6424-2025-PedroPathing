@@ -58,6 +58,7 @@ public class RegressionBuilder extends OpMode {
         feeder.setPower(0);
 
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
+        follower.setStartingPose(new Pose(110.36335877862595, 134.10687022900763, Math.toRadians(0)));
 
         telemetry.addData("Status", "Initialized");
     }
@@ -79,7 +80,6 @@ public class RegressionBuilder extends OpMode {
                 alliance = Alliance.BLUE;
             }
         }*/
-        follower.setStartingPose(new Pose(110.36335877862595, 134.10687022900763, Math.toRadians(0)));
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         follower.update();

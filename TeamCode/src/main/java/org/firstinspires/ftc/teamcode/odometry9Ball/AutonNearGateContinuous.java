@@ -124,7 +124,7 @@ public class AutonNearGateContinuous extends LinearOpMode {
             case 3:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow1IntakeEnd);
                     pathState = 4;
                 }
@@ -168,7 +168,7 @@ public class AutonNearGateContinuous extends LinearOpMode {
             case 9:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow2IntakeEnd);
                     pathState = 10;
                 }
@@ -226,7 +226,7 @@ public class AutonNearGateContinuous extends LinearOpMode {
             case 3:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow1IntakeEnd);
                     pathState = 4;
                 }
@@ -270,7 +270,7 @@ public class AutonNearGateContinuous extends LinearOpMode {
             case 9:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow2IntakeEnd);
                     pathState = 10;
                 }

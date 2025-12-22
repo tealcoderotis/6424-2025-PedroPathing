@@ -24,7 +24,6 @@ public class AutonGate extends LinearOpMode {
     private LimelightPoseCorrector poseCorrector;
     private Timer gateTimer;
     private static final int GATE_TIME = 500;
-    private static final double BALL_INTAKE_MOVEMENT_SPEED=0.5;
     private boolean useLimelight = false;
 
     @Override
@@ -125,7 +124,7 @@ public class AutonGate extends LinearOpMode {
             case 3:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow1IntakeEnd);
                     pathState = 4;
                 }
@@ -135,7 +134,7 @@ public class AutonGate extends LinearOpMode {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
-                    follower.followPath(paths.RedRow1ToShooter);
+                    follower.followPath(paths.RedRow1ToGate1);
                     pathState = 5;
                 }
                 break;
@@ -174,7 +173,7 @@ public class AutonGate extends LinearOpMode {
             case 10:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow2IntakeEnd);
                     pathState = 11;
                 }
@@ -203,7 +202,7 @@ public class AutonGate extends LinearOpMode {
             case 14:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow3IntakeEnd);
                     pathState = 15;
                 }
@@ -261,7 +260,7 @@ public class AutonGate extends LinearOpMode {
             case 3:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow1IntakeEnd);
                     pathState = 4;
                 }
@@ -271,13 +270,12 @@ public class AutonGate extends LinearOpMode {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
-                    follower.followPath(paths.BlueRow1ToShooter);
+                    follower.followPath(paths.BlueRow1ToGate1);
                     pathState = 5;
                 }
                 break;
             case 5:
                 if (!follower.isBusy()) {
-
                     follower.setMaxPower(1);
                     follower.followPath(paths.BlueRow1ToGate2);
                     pathState = 6;
@@ -311,7 +309,7 @@ public class AutonGate extends LinearOpMode {
             case 10:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow2IntakeEnd);
                     pathState = 11;
                 }
@@ -340,7 +338,7 @@ public class AutonGate extends LinearOpMode {
             case 14:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow3IntakeEnd);
                     pathState = 15;
                 }

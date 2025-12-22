@@ -280,18 +280,18 @@ public class Paths {
         BlueRow1ToGate1 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(18.800, 83.762), new Pose(18.800, 70.930))
+                        new BezierLine(new Pose(18.800, 83.762), new Pose(24.8, 72.930))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
 
         BlueRow1ToGate2 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(18.800, 70.930), new Pose(14.647, 70.930))
+                        new BezierLine(new Pose(24.8, 70.930), new Pose(18.8, 70.930))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
         BlueRow1ToGate = follower
@@ -300,13 +300,13 @@ public class Paths {
                         new BezierLine(new Pose(18.8, 83.762)/*, new Pose(20.9, 70.300)*/, new Pose(14.647, 70.930))
                         //Find out how to add a control point, Coming at the gate diagonally like this could cause a problem with rubber band intakes.
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
         BlueGateToShooter = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(129.353, 70.930), new Pose(48, 95.8))
+                        new BezierLine(new Pose(18.8, 70.930), new Pose(48, 95.8))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(137))
                 .build();

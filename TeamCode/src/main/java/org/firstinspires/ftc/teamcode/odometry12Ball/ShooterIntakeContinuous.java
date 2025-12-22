@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Globals;
-import org.firstinspires.ftc.teamcode.util.VoltagePowerCompensator;
 
 public class ShooterIntakeContinuous {
     private final DcMotorEx indexer;
@@ -87,7 +86,7 @@ public class ShooterIntakeContinuous {
         isIntaking = true;
         shootTimer.resetTimer();
         indexer.setPower(Globals.FEEDER_INTAKE_VELOCITY);
-        shooter.setPower(Globals.SHOOOTER_BACK_VELOCITY);
+        shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
         isShooterBusy = true;
     }
 
@@ -150,7 +149,7 @@ public class ShooterIntakeContinuous {
 
     public void stopIntaking() {
         indexer.setPower(Globals.FEEDER_INTAKE_BACK_VELOCITY);
-        shooter.setPower(Globals.SHOOOTER_BACK_VELOCITY);
+        shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
         intakeTimer.resetTimer();
         shootTimer.resetTimer();
         isIntaking = false;

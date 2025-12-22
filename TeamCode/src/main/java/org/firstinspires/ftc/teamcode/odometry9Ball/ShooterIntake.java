@@ -4,15 +4,14 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+//import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.util.VoltagePowerCompensator;
 
 public class ShooterIntake {
-    //TODO Figure out how to shoot continuously
-    private final DcMotor indexer;
+    private final DcMotorEx indexer;
     private final DcMotorEx shooter;
     private final Timer shootTimer;
     private final Timer intakeTimer;
@@ -22,32 +21,26 @@ public class ShooterIntake {
     private boolean isIntakeContinuous = false;
     private boolean isIntakeMovingBack = false;
     private static final int SHOOTING_TIME = 1500;
-    private static final int INDEX_TIME = 250;
+    private static final int INDEX_TIME = 300;
     private static final int INTAKE_TIME = 250;
-    private static final int REV_TIME = 1500;
-    private static final int INTAKE_END_TIME = 300;
+    private static final int INTAKE_END_TIME = 500;
     private static final double SHOOTER_SPEED = Globals.SHOOTER_VELOCITY;
-    private static final double INDEXER_POWER = 0.65;
-    private static final double INDEXER_BACK_POWER = -0.35;
-    private static final double SHOOTER_BACK_POWER = 0.5;
     private int ballsToShoot = 0;
     private int currentBall = -1;
     private double shooterSpeed = 0;
-    private VoltagePowerCompensator voltageCompensator;
     private Telemetry telemetry;
     private boolean hasIndexed = false;
     public ShooterIntake(HardwareMap hardwareMap) {
         shootTimer = new Timer();
         intakeTimer = new Timer();
-        indexer = (DcMotor)hardwareMap.get("feeder");
+        indexer = (DcMotorEx)hardwareMap.get("feeder");
         shooter = (DcMotorEx)hardwareMap.get("launcher");
-        voltageCompensator = new VoltagePowerCompensator(hardwareMap);
         resetEncoders();
     }
 
     private void resetEncoders() {
         indexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        indexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        indexer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Globals.SHOOTER_PIDF);
@@ -65,7 +58,7 @@ public class ShooterIntake {
         currentBall = 0;
         if (!isReving) {
             shootTimer.resetTimer();
-            shooter.setVelocity(-shooterSpeed);
+            shooter.setVelocity(-shooterSpeed);;
             isReving = true;
         }
         hasIndexed = false;
@@ -98,8 +91,7 @@ public class ShooterIntake {
         isIntakeContinuous = continuous;
         isIntaking = true;
         shootTimer.resetTimer();
-        indexer.setPower(voltageCompensator.compensate(INDEXER_POWER));
-        shooter.setPower(voltageCompensator.compensate(SHOOTER_BACK_POWER));
+        indexer.setPower(Globals.FEEDER_INTAKE_VELOCITY);
         isShooterBusy = true;
     }
 
@@ -129,9 +121,10 @@ public class ShooterIntake {
             }
             else {
                 if (isReving) {
-                    if (shootTimer.getElapsedTime() >= REV_TIME && currentBall != -1) {
+                    double differenceFromTarget = Math.abs(-shooter.getVelocity() - this.shooterSpeed);
+                    if (differenceFromTarget <= Globals.VELOCITY_TOLERANCE && currentBall != -1) {
                         isReving = false;
-                        indexer.setPower(voltageCompensator.compensate(INDEXER_POWER));
+                        indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);
                         shootTimer.resetTimer();
                     }
                 }
@@ -145,7 +138,7 @@ public class ShooterIntake {
                         hasIndexed = true;
                     }
                     if (shootTimer.getElapsedTime() >= SHOOTING_TIME) {
-                        indexer.setPower(voltageCompensator.compensate(INDEXER_POWER));
+                        indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);
                         shootTimer.resetTimer();
                         hasIndexed = false;
                     }
@@ -171,8 +164,8 @@ public class ShooterIntake {
     }
 
     public void stopIntaking() {
-        indexer.setPower(voltageCompensator.compensate(INDEXER_BACK_POWER));
-        shooter.setPower(voltageCompensator.compensate(SHOOTER_BACK_POWER));
+        indexer.setPower(Globals.FEEDER_INTAKE_BACK_VELOCITY);
+        shooter.setPower(Globals.SHOOOTER_BACK_VELOCITY);
         intakeTimer.resetTimer();
         shootTimer.resetTimer();
         isIntaking = false;

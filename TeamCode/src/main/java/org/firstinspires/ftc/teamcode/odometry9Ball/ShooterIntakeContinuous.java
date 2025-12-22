@@ -4,17 +4,17 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+//import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.util.VoltagePowerCompensator;
 
 public class ShooterIntakeContinuous {
-    private DcMotor indexer;
-    private DcMotorEx shooter;
-    private Timer shootTimer;
-    private Timer intakeTimer;
+    private final DcMotorEx indexer;
+    private final DcMotorEx shooter;
+    private final Timer shootTimer;
+    private final Timer intakeTimer;
     private boolean isShooterBusy = false;
     private boolean isReving = false;
     private boolean isIntaking = false;
@@ -22,28 +22,22 @@ public class ShooterIntakeContinuous {
     private boolean isIntakeMovingBack = false;
     private static final int INDEX_TIME = 300;
     private static final int INTAKE_TIME = 250;
-    private static final int REV_TIME = 1500;
     private static final int INTAKE_END_TIME = 300;
     private static final double SHOOTER_SPEED = Globals.SHOOTER_VELOCITY;
-    private static final double INDEXER_POWER = 0.65;
-    private static final double INDEXER_BACK_POWER = -0.35;
-    private static final double SHOOTER_BACK_POWER = 0.5;
     private int shootingTime = -1;
     private double shooterSpeed = 0;
-    private VoltagePowerCompensator voltageCompensator;
     private Telemetry telemetry;
     public ShooterIntakeContinuous(HardwareMap hardwareMap) {
         shootTimer = new Timer();
         intakeTimer = new Timer();
-        indexer = (DcMotor)hardwareMap.get("feeder");
+        indexer = (DcMotorEx)hardwareMap.get("feeder");
         shooter = (DcMotorEx)hardwareMap.get("launcher");
-        voltageCompensator = new VoltagePowerCompensator(hardwareMap);
         resetEncoders();
     }
 
     private void resetEncoders() {
         indexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        indexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        indexer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Globals.SHOOTER_PIDF);
@@ -60,7 +54,7 @@ public class ShooterIntakeContinuous {
         shootingTime = INDEX_TIME * ballsToShoot;
         if (!isReving) {
             shootTimer.resetTimer();
-            shooter.setVelocity(-shooterSpeed);;
+            shooter.setVelocity(-shooterSpeed);
             isReving = true;
         }
         isShooterBusy = true;
@@ -92,8 +86,8 @@ public class ShooterIntakeContinuous {
         isIntakeContinuous = continuous;
         isIntaking = true;
         shootTimer.resetTimer();
-        indexer.setPower(voltageCompensator.compensate(INDEXER_POWER));
-        shooter.setPower(voltageCompensator.compensate(SHOOTER_BACK_POWER));
+        indexer.setPower(Globals.FEEDER_INTAKE_VELOCITY);
+        shooter.setPower(Globals.SHOOOTER_BACK_VELOCITY);
         isShooterBusy = true;
     }
 
@@ -123,9 +117,10 @@ public class ShooterIntakeContinuous {
             }
             else {
                 if (isReving) {
-                    if (shootTimer.getElapsedTime() >= REV_TIME && shootingTime != -1) {
+                    double differenceFromTarget = Math.abs(-shooter.getVelocity() - this.shooterSpeed);
+                    if (differenceFromTarget <= Globals.VELOCITY_TOLERANCE && shootingTime != -1) {
                         isReving = false;
-                        indexer.setPower(voltageCompensator.compensate(INDEXER_POWER));
+                        indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);
                         shootTimer.resetTimer();
                     }
                 }
@@ -154,8 +149,8 @@ public class ShooterIntakeContinuous {
     }
 
     public void stopIntaking() {
-        indexer.setPower(voltageCompensator.compensate(INDEXER_BACK_POWER));
-        shooter.setPower(voltageCompensator.compensate(SHOOTER_BACK_POWER));
+        indexer.setPower(Globals.FEEDER_INTAKE_BACK_VELOCITY);
+        shooter.setPower(Globals.SHOOOTER_BACK_VELOCITY);
         intakeTimer.resetTimer();
         shootTimer.resetTimer();
         isIntaking = false;

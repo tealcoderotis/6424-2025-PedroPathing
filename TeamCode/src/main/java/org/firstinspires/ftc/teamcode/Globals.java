@@ -17,6 +17,12 @@ public class Globals {
             RevHubOrientationOnRobot.UsbFacingDirection.LEFT
     );
 
+    public static final double FEEDER_INTAKE_VELOCITY = 2000;
+    public static final double FEEDER_LAUNCH_VELOCITY = 1000;
+    public static final double FEEDER_INTAKE_BACK_VELOCITY = -1100;
+    public static final double SHOOOTER_BACK_VELOCITY = -1100;
+    public static final double VELOCITY_TOLERANCE = 50;
+
     public static void resetGlobals() {
         alliance = Alliance.UNKNOWN;
         endingPose = null;

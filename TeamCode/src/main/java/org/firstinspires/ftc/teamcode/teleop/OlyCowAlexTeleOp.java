@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 //@Disabled
 public class OlyCowAlexTeleOp extends OpMode {
     ShooterMath shootermath;
-    final double FEED_TIME_SECONDS = 0.75;
+    final double FEED_TIME_SECONDS = 0.1;
     final double STOP_SPEED = 0.0;
 
     final double LAUNCHER_IDLE_VELOCITY = 0;

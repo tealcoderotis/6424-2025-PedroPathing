@@ -33,6 +33,7 @@ public class OlyCowAlexTeleOp extends OpMode {
     final double LAUNCHER_SPINUP_VELOCITY = 1200;
     final double FEEDER_INTAKE_VELOCITY = 1700;
     final double FEEDER_LAUNCH_VELOCITY = 1700;
+    final double FEEDER_REVERSE_VELOCITY = 900;
 
     private DcMotor leftFrontDrive = null;
     private DcMotor rightFrontDrive = null;
@@ -149,7 +150,7 @@ public class OlyCowAlexTeleOp extends OpMode {
             launcher.setVelocity(LAUNCHER_IDLE_VELOCITY);
             telemetry.addData("Shooter Speed", LAUNCHER_IDLE_VELOCITY);
             feeder.setDirection(DcMotor.Direction.REVERSE);
-            feeder.setVelocity(FEEDER_INTAKE_VELOCITY);
+            feeder.setVelocity(FEEDER_REVERSE_VELOCITY);
         }
 
         if (gamepad2.b) {
@@ -209,7 +210,7 @@ public class OlyCowAlexTeleOp extends OpMode {
             telemetry.addData("Shooter Speed", flywheelVelocity);
         }
         if (gamepad2.right_bumper){
-            follower.setStartingPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
+            follower.setPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
         }
         launch(gamepad2.right_trigger >= 0.1);
 

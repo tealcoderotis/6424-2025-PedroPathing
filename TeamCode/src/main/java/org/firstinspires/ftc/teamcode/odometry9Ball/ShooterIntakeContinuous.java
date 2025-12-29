@@ -148,7 +148,7 @@ public class ShooterIntakeContinuous {
     }
 
     public void stopIntaking() {
-        indexer.setPower(Globals.FEEDER_INTAKE_BACK_VELOCITY);
+        indexer.setPower(Globals.FEEDER_BACK_VELOCITY);
         shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
         intakeTimer.resetTimer();
         shootTimer.resetTimer();

@@ -22,7 +22,7 @@ public class ShooterIntake {
     private static final int SHOOTING_TIME = 1500;
     private static final int INDEX_TIME = 300;
     private static final int INTAKE_TIME = 250;
-    private static final int INTAKE_END_TIME = 500;
+    private static final int INTAKE_END_TIME = Globals.INTAKE_BACK_TIME;
     private static final double SHOOTER_SPEED = Globals.SHOOTER_VELOCITY;
     private int ballsToShoot = 0;
     private int currentBall = -1;
@@ -163,7 +163,7 @@ public class ShooterIntake {
     }
 
     public void stopIntaking() {
-        indexer.setPower(Globals.FEEDER_INTAKE_BACK_VELOCITY);
+        indexer.setPower(Globals.FEEDER_BACK_VELOCITY);
         shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
         intakeTimer.resetTimer();
         shootTimer.resetTimer();

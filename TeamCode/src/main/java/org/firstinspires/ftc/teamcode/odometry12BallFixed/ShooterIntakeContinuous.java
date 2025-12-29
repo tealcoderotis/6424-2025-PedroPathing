@@ -21,7 +21,7 @@ public class ShooterIntakeContinuous {
     private boolean isIntakeMovingBack = false;
     private static final int INDEX_TIME = 300;
     private static final int INTAKE_TIME = 250;
-    private static final int INTAKE_END_TIME = 300;
+    private static final int INTAKE_END_TIME = Globals.INTAKE_BACK_TIME;
     private static final double SHOOTER_SPEED = Globals.SHOOTER_VELOCITY;
     private int shootingTime = -1;
     private double shooterSpeed = 0;
@@ -148,7 +148,7 @@ public class ShooterIntakeContinuous {
     }
 
     public void stopIntaking() {
-        indexer.setPower(Globals.FEEDER_INTAKE_BACK_VELOCITY);
+        indexer.setPower(Globals.FEEDER_BACK_VELOCITY);
         shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
         intakeTimer.resetTimer();
         shootTimer.resetTimer();

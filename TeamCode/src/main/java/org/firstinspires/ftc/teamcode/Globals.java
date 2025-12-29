@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.MotorControlAlgorithm;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
@@ -30,4 +31,9 @@ public class Globals {
     public static final double SHOOTER_BACK_VELOCITY = 1700;
     public static final int INTAKE_BACK_TIME = 100;
     public static final double VELOCITY_TOLERANCE = 50;
+    public static final String FEEDER_HARDWARE_MAP_NAME = "feeder";
+    public static final String SHOOTER_1_HARDWARE_MAP_NAME = "launcher1";
+    public static final String SHOOTER_2_HARDWARE_MAP_NAME = "launcher2";
+    public static final DcMotorSimple.Direction SHOOTER_1_DIRECTION = DcMotorSimple.Direction.FORWARD;
+    public static final DcMotorSimple.Direction SHOOTER_2_DIRECTION = DcMotorSimple.Direction.FORWARD;
 }

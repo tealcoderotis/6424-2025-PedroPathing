@@ -11,7 +11,8 @@ import org.firstinspires.ftc.teamcode.Globals;
 
 public class ShooterIntakeContinuous {
     private final DcMotorEx indexer;
-    private final DcMotorEx shooter;
+    private final DcMotorEx shooter1;
+    private final DcMotorEx shooter2;
     private final Timer shootTimer;
     private final Timer intakeTimer;
     private boolean isShooterBusy = false;
@@ -29,17 +30,23 @@ public class ShooterIntakeContinuous {
     public ShooterIntakeContinuous(HardwareMap hardwareMap) {
         shootTimer = new Timer();
         intakeTimer = new Timer();
-        indexer = (DcMotorEx)hardwareMap.get("feeder");
-        shooter = (DcMotorEx)hardwareMap.get("launcher");
+        indexer = (DcMotorEx)hardwareMap.get(Globals.FEEDER_HARDWARE_MAP_NAME);
+        shooter1 = (DcMotorEx)hardwareMap.get(Globals.SHOOTER_1_HARDWARE_MAP_NAME);
+        shooter2 = (DcMotorEx)hardwareMap.get(Globals.SHOOTER_2_HARDWARE_MAP_NAME);
+        shooter1.setDirection(Globals.SHOOTER_1_DIRECTION);
+        shooter2.setDirection(Globals.SHOOTER_2_DIRECTION);
         resetEncoders();
     }
 
     private void resetEncoders() {
         indexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         indexer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Globals.SHOOTER_PIDF);
+        shooter1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Globals.SHOOTER_PIDF);
+        shooter2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Globals.SHOOTER_PIDF);
     }
 
     public ShooterIntakeContinuous(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -53,7 +60,8 @@ public class ShooterIntakeContinuous {
         shootingTime = INDEX_TIME * ballsToShoot;
         if (!isReving) {
             shootTimer.resetTimer();
-            shooter.setVelocity(-shooterSpeed);
+            shooter1.setVelocity(-shooterSpeed);
+            shooter2.setVelocity(-shooterSpeed);
             isReving = true;
         }
         isShooterBusy = true;
@@ -68,7 +76,8 @@ public class ShooterIntakeContinuous {
             shootingTime = -1;
             isIntaking = false;
             shootTimer.resetTimer();
-            shooter.setVelocity(-shooterSpeed);
+            shooter1.setVelocity(-shooterSpeed);
+            shooter2.setVelocity(-shooterSpeed);
             isShooterBusy = true;
         }
         this.shooterSpeed = shooterSpeed;
@@ -86,7 +95,8 @@ public class ShooterIntakeContinuous {
         isIntaking = true;
         shootTimer.resetTimer();
         indexer.setPower(Globals.FEEDER_INTAKE_VELOCITY);
-        shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
+        shooter1.setPower(Globals.SHOOTER_BACK_VELOCITY);
+        shooter2.setPower(Globals.SHOOTER_BACK_VELOCITY);
         isShooterBusy = true;
     }
 
@@ -96,7 +106,8 @@ public class ShooterIntakeContinuous {
             if (isIntakeMovingBack) {
                 if (intakeTimer.getElapsedTime() >= INTAKE_END_TIME) {
                     indexer.setPower(0);
-                    shooter.setPower(0);
+                    shooter1.setPower(0);
+                    shooter2.setPower(0);
                     isIntakeMovingBack = false;
                     if (!isReving) {
                         stop();
@@ -116,8 +127,9 @@ public class ShooterIntakeContinuous {
             }
             else {
                 if (isReving) {
-                    double differenceFromTarget = Math.abs(-shooter.getVelocity() - this.shooterSpeed);
-                    if (differenceFromTarget <= Globals.VELOCITY_TOLERANCE && shootingTime != -1) {
+                    double differenceFromTarget1 = Math.abs(-shooter1.getVelocity() - this.shooterSpeed);
+                    double differenceFromTarget2 = Math.abs(-shooter2.getVelocity() - this.shooterSpeed);
+                    if ((differenceFromTarget1 <= Globals.VELOCITY_TOLERANCE && differenceFromTarget2 <= Globals.VELOCITY_TOLERANCE) && shootingTime != -1) {
                         isReving = false;
                         indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);
                         shootTimer.resetTimer();
@@ -132,13 +144,15 @@ public class ShooterIntakeContinuous {
         }
         if (telemetry != null) {
             telemetry.addData("Indexer Encoder Position", indexer.getCurrentPosition());
-            telemetry.addData("Shooter Encoder Position", shooter.getCurrentPosition());
+            telemetry.addData("Shooter 1 Encoder Position", shooter1.getCurrentPosition());
+            telemetry.addData("Shooter 2 Encoder Position", shooter2.getCurrentPosition());
         }
     }
 
     //stops the shooter
     public void stop() {
-        shooter.setPower(0);
+        shooter1.setPower(0);
+        shooter2.setPower(0);
         indexer.setPower(0);
         isShooterBusy = false;
         isReving = false;
@@ -149,7 +163,8 @@ public class ShooterIntakeContinuous {
 
     public void stopIntaking() {
         indexer.setPower(Globals.FEEDER_BACK_VELOCITY);
-        shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
+        shooter1.setPower(Globals.SHOOTER_BACK_VELOCITY);
+        shooter2.setPower(Globals.SHOOTER_BACK_VELOCITY);
         intakeTimer.resetTimer();
         shootTimer.resetTimer();
         isIntaking = false;

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleop;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "OlyCowAidenTeleOp")
+@TeleOp(name = "OlyCowAidenTeleOp (Android Studio Version)")
 //@Disabled
 public class OlyCowAidenTeleOp extends OpMode {
     final double FEED_TIME_SECONDS = 0.20;

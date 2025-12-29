@@ -174,17 +174,28 @@ public class OlyCowAlexTeleOp extends OpMode {
             feeder.setPower(STOP_SPEED);
         }
         if (gamepad2.dpad_left) {
-            double goalBallVelocity = 0;
+            double dist = 0;
             if (alliance == Alliance.RED) {
-                goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 144, 144);
-                telemetry.addData("Goal Ball Velocity", goalBallVelocity);
+                dist = Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2));
             } else if (alliance == Alliance.BLUE) {
-                goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 0, 144);
-                telemetry.addData("Goal Ball Velocity", goalBallVelocity);
+                dist = Math.sqrt(Math.pow(0-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2));
             } else {
                 telemetry.addData("Goal Ball Velocity", "UNKNOWN ALLIANCE");
             }
-            double flywheelVelocity = shootermath.ballVelocityToFlywheel(goalBallVelocity);
+            double flywheelVelocity;
+            if (dist < 60) {
+                flywheelVelocity = 1360 + 5.89098 * (dist - 50.99677);
+            } else if (dist < 69.57418) {
+                flywheelVelocity = 1420 + 3.22973 * (dist - 69.57418);
+            } else if (dist < 84.84786) {
+                flywheelVelocity = 1530 + 7.20193 * (dist - 84.84786);
+            } else if (dist < 102.93725) {
+                flywheelVelocity = 1650 + 6.63372 * (dist - 102.93725);
+            } else if (dist < 118.13214) {
+                flywheelVelocity = 1740 + 5.923044 * (dist - 118.13214);
+            } else {
+                flywheelVelocity = 1740 + 5.89098 * (dist - 118.13214);
+            }
             launcher.setVelocity(flywheelVelocity);
             telemetry.addData("Shooter Speed", flywheelVelocity);
         }

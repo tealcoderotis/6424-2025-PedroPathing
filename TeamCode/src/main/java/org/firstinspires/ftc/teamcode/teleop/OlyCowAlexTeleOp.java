@@ -42,7 +42,8 @@ public class OlyCowAlexTeleOp extends OpMode {
     private DcMotorEx feeder = null;
     private Follower follower;
     boolean lockOn = false;
-
+    double[] dataDistances = {50.996767, 69.574177, 84.84786, 102.93725, 118.13214};
+    int [] dataShooterSpeeds = {1360, 1420, 1530, 1650, 1740};
     ElapsedTime feederTimer = new ElapsedTime();
     private Alliance alliance = Alliance.UNKNOWN;
 
@@ -106,7 +107,7 @@ public class OlyCowAlexTeleOp extends OpMode {
         else {
             if (gamepad1.bWasPressed()) {
                 //Red starting pose
-                follower.setStartingPose(new Pose(125.200, 70.930, Math.toRadians(0)));
+                follower.setStartingPose(new Pose(97.108, 59.579, Math.toRadians(0)));
                 alliance = Alliance.RED;
             } else if (gamepad1.xWasPressed()) {
                 //Blue starting pose
@@ -182,8 +183,16 @@ public class OlyCowAlexTeleOp extends OpMode {
             } else {
                 telemetry.addData("Goal Ball Velocity", "UNKNOWN ALLIANCE");
             }
-            double flywheelVelocity;
-            if (dist < 60) {
+            double flywheelVelocity = 0;
+            for (int i = 1; i < dataDistances.length; i++) {
+                if (dist < dataDistances[i] && dist >= dataDistances[i-1]) {
+                    flywheelVelocity = dataShooterSpeeds[i] + (dataShooterSpeeds[i]-dataShooterSpeeds[i-1])/(dataDistances[i]-dataDistances[i-1]) * (dist - dataDistances[i]);
+                }
+            }
+            if (flywheelVelocity == 0) {
+                telemetry.addLine("Data not available for current distance!");
+            }
+            /*if (dist < 51) {
                 flywheelVelocity = 1360 + 5.89098 * (dist - 50.99677);
             } else if (dist < 69.57418) {
                 flywheelVelocity = 1420 + 3.22973 * (dist - 69.57418);
@@ -195,17 +204,20 @@ public class OlyCowAlexTeleOp extends OpMode {
                 flywheelVelocity = 1740 + 5.923044 * (dist - 118.13214);
             } else {
                 flywheelVelocity = 1740 + 5.89098 * (dist - 118.13214);
-            }
+            }*/
             launcher.setVelocity(flywheelVelocity);
             telemetry.addData("Shooter Speed", flywheelVelocity);
         }
-
+        if (gamepad2.right_bumper){
+            follower.setStartingPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
+        }
         launch(gamepad2.right_trigger >= 0.1);
 
         telemetry.addData("State", launchState);
         telemetry.addData("motorSpeed", launcher.getVelocity());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("dist", Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2)));
         follower.update();
     }
 

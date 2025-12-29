@@ -31,8 +31,8 @@ public class OlyCowAlexTeleOp extends OpMode {
     final double LAUNCHER_MAX_VELOCITY = 1950;
     final double LAUNCHER_MIN_VELOCITY = 1500;
     final double LAUNCHER_SPINUP_VELOCITY = 1200;
-    final double FEEDER_INTAKE_VELOCITY = 2000;
-    final double FEEDER_LAUNCH_VELOCITY = 1000;
+    final double FEEDER_INTAKE_VELOCITY = 1700;
+    final double FEEDER_LAUNCH_VELOCITY = 1700;
 
     private DcMotor leftFrontDrive = null;
     private DcMotor rightFrontDrive = null;

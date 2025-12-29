@@ -1,11 +1,10 @@
-package org.firstinspires.ftc.teamcode.odometry12Ball;
+package org.firstinspires.ftc.teamcode.odometry12BallFixed;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -15,9 +14,8 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.LimelightPoseCorrector;
 
 @Configurable
-@Autonomous(name = "Odometry 12 Ball Auton")
-@Disabled
-public class Auton extends LinearOpMode {
+@Autonomous(name = "Odometry 12 Ball Auton (Gate)")
+public class AutonGate extends LinearOpMode {
     private Follower follower;
     private ShooterIntakeContinuous shooterIntake;
     private int pathState;
@@ -26,7 +24,6 @@ public class Auton extends LinearOpMode {
     private LimelightPoseCorrector poseCorrector;
     private Timer gateTimer;
     private static final int GATE_TIME = 500;
-    private static final double BALL_INTAKE_MOVEMENT_SPEED=0.5;
     private boolean useLimelight = false;
 
     @Override
@@ -127,7 +124,7 @@ public class Auton extends LinearOpMode {
             case 3:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow1IntakeEnd);
                     pathState = 4;
                 }
@@ -137,13 +134,12 @@ public class Auton extends LinearOpMode {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
-                    follower.followPath(paths.RedRow1ToShooter);
-                    pathState = 8;
+                    follower.followPath(paths.RedRow1ToGate1);
+                    pathState = 5;
                 }
                 break;
-            /*case 5:
+            case 5:
                 if (!follower.isBusy()) {
-
                     follower.setMaxPower(1);
                     follower.followPath(paths.RedRow1ToGate2);
                     pathState = 6;
@@ -161,7 +157,7 @@ public class Auton extends LinearOpMode {
                     follower.followPath(paths.RedGateToShooter);
                     pathState = 8;
                 }
-                break;*/
+                break;
             case 8:
                 if (!follower.isBusy()) {
                     shooterIntake.beginShooting(3);
@@ -177,7 +173,7 @@ public class Auton extends LinearOpMode {
             case 10:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow2IntakeEnd);
                     pathState = 11;
                 }
@@ -206,7 +202,7 @@ public class Auton extends LinearOpMode {
             case 14:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow3IntakeEnd);
                     pathState = 15;
                 }
@@ -264,7 +260,7 @@ public class Auton extends LinearOpMode {
             case 3:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow1IntakeEnd);
                     pathState = 4;
                 }
@@ -274,13 +270,12 @@ public class Auton extends LinearOpMode {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
-                    follower.followPath(paths.BlueRow1ToShooter);
-                    pathState = 8;
+                    follower.followPath(paths.BlueRow1ToGate1);
+                    pathState = 5;
                 }
                 break;
-            /*case 5:
+            case 5:
                 if (!follower.isBusy()) {
-
                     follower.setMaxPower(1);
                     follower.followPath(paths.BlueRow1ToGate2);
                     pathState = 6;
@@ -298,7 +293,7 @@ public class Auton extends LinearOpMode {
                     follower.followPath(paths.BlueGateToShooter);
                     pathState = 8;
                 }
-                break;*/
+                break;
             case 8:
                 if (!follower.isBusy()) {
                     shooterIntake.beginShooting(3);
@@ -314,7 +309,7 @@ public class Auton extends LinearOpMode {
             case 10:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow2IntakeEnd);
                     pathState = 11;
                 }
@@ -343,7 +338,7 @@ public class Auton extends LinearOpMode {
             case 14:
                 if (!follower.isBusy()) {
                     shooterIntake.beginIntaking(true);
-                    follower.setMaxPower(0.25);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow3IntakeEnd);
                     pathState = 15;
                 }

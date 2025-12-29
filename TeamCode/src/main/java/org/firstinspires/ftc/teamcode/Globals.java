@@ -16,6 +16,7 @@ public class Globals {
             RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
             RevHubOrientationOnRobot.UsbFacingDirection.LEFT
     );
+    public static final double INTAKE_SPEED = 0.25;
 
     public static void resetGlobals() {
         alliance = Alliance.UNKNOWN;

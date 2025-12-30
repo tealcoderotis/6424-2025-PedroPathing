@@ -43,6 +43,12 @@ public class SingleControllerTeleOp extends OpMode {
     int [] dataShooterSpeeds = {1360, 1420, 1530, 1650, 1740};
     ElapsedTime feederTimer = new ElapsedTime();
     private Alliance alliance = Alliance.UNKNOWN;
+    //Angles are in radians
+    double angle = 0; // Follows convention that counterclockwise is positive, which means that a positive angle is counteracted with positive rotate.
+    // No need for past angle due to .getAngularVelocity
+    double rotate = 0;
+    final double Pcoeff = 1;
+    final double Dcoeff = 1;
 
     private enum LaunchState {
         IDLE,
@@ -126,9 +132,11 @@ public class SingleControllerTeleOp extends OpMode {
     @Override
     public void loop() {
         if (!lockOn) {
-            mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            rotate = gamepad1.right_stick_x;
+            mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
         } else {
-            double rotate = 0;
+            angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getX(), 144-follower.getPose().getX());
+            rotate = Pcoeff * angle + Dcoeff * follower.getAngularVelocity();
             mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
         }
 
@@ -147,12 +155,14 @@ public class SingleControllerTeleOp extends OpMode {
             telemetry.addData("Shooter Speed", LAUNCHER_IDLE_VELOCITY);
             feeder.setDirection(DcMotor.Direction.REVERSE);
             feeder.setVelocity(FEEDER_INTAKE_VELOCITY);
+            lockOn = true;
         }
 
         if (gamepad1.b) {
             telemetry.addData("Goal Ball Velocity", LAUNCHER_IDLE_VELOCITY);
             launcher.setVelocity(LAUNCHER_IDLE_VELOCITY);
             telemetry.addData("Shooter Speed", LAUNCHER_IDLE_VELOCITY);
+            lockOn = false;
         }
         if (gamepad1.y) {
             launcher.setVelocity(LAUNCHER_SPINUP_VELOCITY);
@@ -208,7 +218,6 @@ public class SingleControllerTeleOp extends OpMode {
         if (gamepad1.right_bumper){
             follower.setPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
         }
-        launch(gamepad1.right_trigger >= 0.1);
 
         telemetry.addData("State", launchState);
         telemetry.addData("motorSpeed", launcher.getVelocity());
@@ -232,43 +241,5 @@ public class SingleControllerTeleOp extends OpMode {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
 
-    }
-
-    void launch(boolean shotRequested) {
-        switch (launchState) {
-            case IDLE:
-                if (shotRequested) {
-                    launchState = LaunchState.SPIN_UP;
-                }
-                break;
-            case SPIN_UP:
-                if (launcher.getVelocity() > LAUNCHER_MIN_VELOCITY) {
-                    launchState = LaunchState.LAUNCH;
-                }
-                break;
-            case SPIN_UP_FAR:
-                if (launcher.getVelocity() > LAUNCHER_MAX_VELOCITY) {
-                    launchState = LaunchState.LAUNCH_FAR;
-                }
-                break;
-            case LAUNCH:
-                feeder.setDirection(DcMotor.Direction.FORWARD);
-                feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
-                feederTimer.reset();
-                launchState = LaunchState.LAUNCHING;
-                break;
-            case LAUNCH_FAR:
-                feeder.setDirection(DcMotor.Direction.FORWARD);
-                feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
-                feederTimer.reset();
-                launchState = LaunchState.LAUNCHING;
-                break;
-            case LAUNCHING:
-                if (feederTimer.seconds() > FEED_TIME_SECONDS) {
-                    launchState = LaunchState.IDLE;
-                    feeder.setPower(STOP_SPEED);
-                }
-                break;
-        }
     }
 }

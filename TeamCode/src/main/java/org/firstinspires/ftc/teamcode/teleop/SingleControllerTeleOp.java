@@ -47,7 +47,7 @@ public class SingleControllerTeleOp extends OpMode {
     // No need for past angle due to .getAngularVelocity
     double rotate = 0;
     final double Pcoeff = 1;
-    final double Dcoeff = 0.2;
+    final double Dcoeff = 0.12;
 
 
     double leftFrontPower;
@@ -127,13 +127,17 @@ public class SingleControllerTeleOp extends OpMode {
     public void loop() {
         if (!lockOn) {
             if (slowMode) {
-                rotate = gamepad1.right_stick_x / 10;
+                rotate = gamepad1.right_stick_x / 4;
             } else {
                 rotate = gamepad1.right_stick_x;
             }
             mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
         } else {
-            angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getY(), 144-follower.getPose().getX());
+            if (alliance == Alliance.RED) {
+                angle = follower.getPose().getHeading() - Math.atan2(144 - follower.getPose().getY(), 144 - follower.getPose().getX());
+            } else {
+                angle = follower.getPose().getHeading() - Math.atan2(144 - follower.getPose().getY(), 0 - follower.getPose().getX());
+            }
             telemetry.addData("angle", angle);
             telemetry.addData("angleVelocity", follower.getAngularVelocity());
             rotate = Pcoeff * angle + Dcoeff * follower.getAngularVelocity();
@@ -221,16 +225,28 @@ public class SingleControllerTeleOp extends OpMode {
             telemetry.addData("Shooter Speed", flywheelVelocity);
         }
         if (gamepad1.right_bumper){
-            follower.setPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
+            if (alliance == Alliance.RED) {
+                follower.setPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
+            } else {
+                follower.setPose((new Pose(33.6366412214, 134.10687022900763, Math.toRadians(180))));
+            }
         } else if (gamepad1.left_bumper) {
-            follower.setPose(new Pose(3.54, 10.357, 0));
+            if (alliance == Alliance.RED) {
+                follower.setPose(new Pose(3.54, 10.357, Math.toRadians(180)));
+            } else {
+                follower.setPose(new Pose(140.46, 10.357, 0));
+            }
         }
 
         telemetry.addData("motorSpeed", launcher.getVelocity());
         telemetry.addData("heading", follower.getHeading());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("dist", Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2)));
+        if (alliance == Alliance.RED) {
+            telemetry.addData("dist", Math.sqrt(Math.pow(144 - follower.getPose().getX(), 2) + Math.pow(144 - follower.getPose().getY(), 2)));
+        } else {
+            telemetry.addData("dist", Math.sqrt(Math.pow(0-follower.getPose().getX(), 2) + Math.pow(144 - follower.getPose().getY(), 2)));
+        }
         follower.update();
     }
 

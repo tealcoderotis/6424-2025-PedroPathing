@@ -4,7 +4,6 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -21,7 +20,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 //@Disabled
 public class SingleControllerTeleOp extends OpMode {
     ShooterMath shootermath;
-    final double FEED_TIME_SECONDS = 0.75;
     final double STOP_SPEED = 0.0;
 
     final double LAUNCHER_IDLE_VELOCITY = 0;
@@ -41,7 +39,6 @@ public class SingleControllerTeleOp extends OpMode {
     boolean lockOn = false;
     double[] dataDistances = {50.996767, 69.574177, 84.84786, 102.93725, 118.13214};
     int [] dataShooterSpeeds = {1360, 1420, 1530, 1650, 1740};
-    ElapsedTime feederTimer = new ElapsedTime();
     private Alliance alliance = Alliance.UNKNOWN;
     //Angles are in radians
     double angle = 0; // Follows convention that counterclockwise is positive, which means that a positive angle is counteracted with positive rotate.
@@ -50,16 +47,6 @@ public class SingleControllerTeleOp extends OpMode {
     final double Pcoeff = 1;
     final double Dcoeff = 1;
 
-    private enum LaunchState {
-        IDLE,
-        SPIN_UP,
-        SPIN_UP_FAR,
-        LAUNCH,
-        LAUNCH_FAR,
-        LAUNCHING,
-    }
-
-    private LaunchState launchState;
 
     double leftFrontPower;
     double rightFrontPower;
@@ -69,7 +56,6 @@ public class SingleControllerTeleOp extends OpMode {
     @Override
     public void init() {
         shootermath = new ShooterMath(telemetry);
-        launchState = LaunchState.IDLE;
         follower = Constants.createFollower(hardwareMap);
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
@@ -121,6 +107,7 @@ public class SingleControllerTeleOp extends OpMode {
         telemetry.addData("alliance", alliance.toString());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getHeading());
         follower.update();
     }
 
@@ -136,6 +123,8 @@ public class SingleControllerTeleOp extends OpMode {
             mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
         } else {
             angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getX(), 144-follower.getPose().getX());
+            telemetry.addData("angle", angle);
+            telemetry.addData("angleVelocity", follower.getAngularVelocity());
             rotate = Pcoeff * angle + Dcoeff * follower.getAngularVelocity();
             mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
         }
@@ -219,7 +208,6 @@ public class SingleControllerTeleOp extends OpMode {
             follower.setPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
         }
 
-        telemetry.addData("State", launchState);
         telemetry.addData("motorSpeed", launcher.getVelocity());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());

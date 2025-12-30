@@ -1,13 +1,11 @@
-package org.firstinspires.ftc.teamcode.odometry12Ball;
+package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-//import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.util.VoltagePowerCompensator;
 
 public class ShooterIntakeContinuous {

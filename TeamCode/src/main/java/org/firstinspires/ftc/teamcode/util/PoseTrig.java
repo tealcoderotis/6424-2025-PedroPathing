@@ -10,6 +10,10 @@ public class PoseTrig {
     public static double angleBetweenPoses(Pose pose1, Pose pose2) {
         double xDistance = pose2.getX() - pose1.getX();
         double yDistance = pose2.getY() - pose1.getY();
-        return Math.atan2(yDistance, xDistance);
+        double angle = Math.atan2(yDistance, xDistance);
+        if (angle < 0) {
+            angle = (Math.PI * 2) - Math.abs(angle);
+        }
+        return angle;
     }
 }

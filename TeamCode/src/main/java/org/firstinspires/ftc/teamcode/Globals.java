@@ -35,6 +35,8 @@ public class Globals {
     public static final String SHOOTER_1_HARDWARE_MAP_NAME = "launcher1";
     public static final String SHOOTER_2_HARDWARE_MAP_NAME = "launcher2";
     public static final String TURRET_ROTATE_HARDWARE_MAP_NAME = "turret";
+    public static final double DEGREES_PER_TURRET_MOTOR_REVOLUTION = 10;
+    public static final double TICKS_PER_TURRET_MOTOR_REVOLUTION = 384.5;
     public static final DcMotorSimple.Direction SHOOTER_1_DIRECTION = DcMotorSimple.Direction.FORWARD;
     public static final DcMotorSimple.Direction SHOOTER_2_DIRECTION = DcMotorSimple.Direction.FORWARD;
 }

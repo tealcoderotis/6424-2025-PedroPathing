@@ -27,6 +27,7 @@ public class SingleControllerTeleOp extends OpMode {
     final double LAUNCHER_MIN_VELOCITY = 1500;
     final double LAUNCHER_SPINUP_VELOCITY = 1200;
     final double FEEDER_INTAKE_VELOCITY = 1700;
+    final double FEEDER_UNJAM_VELOCITY = 700;
     final double FEEDER_LAUNCH_VELOCITY = 1700;
 
     private DcMotor leftFrontDrive = null;
@@ -122,7 +123,7 @@ public class SingleControllerTeleOp extends OpMode {
             rotate = gamepad1.right_stick_x;
             mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
         } else {
-            angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getX(), 144-follower.getPose().getX());
+            angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getY(), 144-follower.getPose().getX());
             telemetry.addData("angle", angle);
             telemetry.addData("angleVelocity", follower.getAngularVelocity());
             rotate = Pcoeff * angle + Dcoeff * follower.getAngularVelocity();
@@ -143,7 +144,7 @@ public class SingleControllerTeleOp extends OpMode {
             launcher.setVelocity(LAUNCHER_IDLE_VELOCITY);
             telemetry.addData("Shooter Speed", LAUNCHER_IDLE_VELOCITY);
             feeder.setDirection(DcMotor.Direction.REVERSE);
-            feeder.setVelocity(FEEDER_INTAKE_VELOCITY);
+            feeder.setVelocity(FEEDER_UNJAM_VELOCITY);
             lockOn = true;
         }
 
@@ -209,6 +210,7 @@ public class SingleControllerTeleOp extends OpMode {
         }
 
         telemetry.addData("motorSpeed", launcher.getVelocity());
+        telemetry.addData("heading", follower.getHeading());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("dist", Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2)));

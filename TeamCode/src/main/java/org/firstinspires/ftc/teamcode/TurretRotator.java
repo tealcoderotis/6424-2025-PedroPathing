@@ -34,25 +34,32 @@ public class TurretRotator {
 
     private void updateAngle() {
         this.currentAngle = ((turretRotate.getCurrentPosition() / Globals.TICKS_PER_TURRET_MOTOR_REVOLUTION) * Globals.DEGREES_PER_TURRET_MOTOR_REVOLUTION) % 360;
-        if (currentAngle < 0) {
-            currentAngle = 360 - currentAngle;
+        //Prevents the angle from going negative
+        if (this.currentAngle < 0) {
+            this.currentAngle = 360 - currentAngle;
         }
     }
 
+    private double getAngleNoCap() {
+        //Returns the angle without capping it or making it positivw
+        return (turretRotate.getCurrentPosition() / Globals.TICKS_PER_TURRET_MOTOR_REVOLUTION) * Globals.DEGREES_PER_TURRET_MOTOR_REVOLUTION;
+    }
+
     private int angleToPosition(double angle) {
-        double angleDifference = angle - getAngleDegrees();
+        double angleDifference = (angle - getAngleDegrees());
         int ticks = (int) ((angleDifference / Globals.DEGREES_PER_TURRET_MOTOR_REVOLUTION) * Globals.TICKS_PER_TURRET_MOTOR_REVOLUTION);
-        return turretRotate.getCurrentPosition() + ticks;
+        return turretRotate.getCurrentPosition() + ticks; // This may cause wiring issues
     }
 
     public double getAngleDegrees() {
+        //Get the current angle
         updateAngle();
         return this.currentAngle;
     }
 
     public void update(Pose botPose) {
-        updateAngle();
         if (alliance != Alliance.UNKNOWN) {
+            //Gets the target angle using atan2 in a sperate class PoseTrig.java
             double targetAngle;
             if (alliance == Alliance.RED) {
                 targetAngle = Math.toDegrees(PoseTrig.angleBetweenPoses(botPose, RED_GOAL_POSE));
@@ -60,12 +67,16 @@ public class TurretRotator {
             else {
                 targetAngle = Math.toDegrees(PoseTrig.angleBetweenPoses(botPose, BLUE_GOAL_POSE));
             }
+            //Set target position to the calculated position snd utilize built-in methods to move to that position
             int ticks = angleToPosition(targetAngle);
             turretRotate.setTargetPosition(ticks);
             turretRotate.setPower(1);
             if (telemetry != null) {
                 telemetry.addData("Angle to goal", targetAngle);
             }
+        }
+        if (telemetry != null) {
+            telemetry.addData("Turret angle", getAngleDegrees());
         }
         turretRotate.setPower(0);
     }

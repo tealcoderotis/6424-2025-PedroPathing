@@ -38,6 +38,7 @@ public class SingleControllerTeleOp extends OpMode {
     private DcMotorEx feeder = null;
     private Follower follower;
     boolean lockOn = false;
+    boolean slowMode = false;
     double[] dataDistances = {50.996767, 69.574177, 84.84786, 102.93725, 118.13214};
     int [] dataShooterSpeeds = {1360, 1420, 1530, 1650, 1740};
     private Alliance alliance = Alliance.UNKNOWN;
@@ -92,7 +93,12 @@ public class SingleControllerTeleOp extends OpMode {
     public void init_loop() {
         if (Globals.alliance != Alliance.UNKNOWN) {
             alliance = Globals.alliance;
-            follower.setStartingPose(Globals.endingPose.copy());
+            //follower.setStartingPose(Globals.endingPose.copy()); //This seems to not work
+            if (Globals.alliance == Alliance.RED) {
+                follower.setStartingPose(new Pose(97.108, 59.579, Math.toRadians(0)));
+            } else {
+                follower.setStartingPose(new Pose(46.892, 59.798, Math.toRadians(180)));
+            }
         }
         else {
             if (gamepad1.bWasPressed()) {
@@ -120,7 +126,11 @@ public class SingleControllerTeleOp extends OpMode {
     @Override
     public void loop() {
         if (!lockOn) {
-            rotate = gamepad1.right_stick_x;
+            if (slowMode) {
+                rotate = gamepad1.right_stick_x / 10;
+            } else {
+                rotate = gamepad1.right_stick_x;
+            }
             mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
         } else {
             angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getY(), 144-follower.getPose().getX());
@@ -128,6 +138,10 @@ public class SingleControllerTeleOp extends OpMode {
             telemetry.addData("angleVelocity", follower.getAngularVelocity());
             rotate = Pcoeff * angle + Dcoeff * follower.getAngularVelocity();
             mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
+            if (Math.abs(angle) < 1) {
+                lockOn = false;
+                slowMode = true;
+            }
         }
 
         if (gamepad1.a) {
@@ -153,6 +167,7 @@ public class SingleControllerTeleOp extends OpMode {
             launcher.setVelocity(LAUNCHER_IDLE_VELOCITY);
             telemetry.addData("Shooter Speed", LAUNCHER_IDLE_VELOCITY);
             lockOn = false;
+            slowMode = false;
         }
         if (gamepad1.y) {
             launcher.setVelocity(LAUNCHER_SPINUP_VELOCITY);
@@ -207,6 +222,8 @@ public class SingleControllerTeleOp extends OpMode {
         }
         if (gamepad1.right_bumper){
             follower.setPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
+        } else if (gamepad1.left_bumper) {
+            follower.setPose(new Pose(3.54, 10.357, 0));
         }
 
         telemetry.addData("motorSpeed", launcher.getVelocity());

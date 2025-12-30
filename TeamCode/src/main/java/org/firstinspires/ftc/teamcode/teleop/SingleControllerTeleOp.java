@@ -122,7 +122,7 @@ public class SingleControllerTeleOp extends OpMode {
             rotate = gamepad1.right_stick_x;
             mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
         } else {
-            angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getX(), 144-follower.getPose().getX());
+            angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getY(), 144-follower.getPose().getX());
             telemetry.addData("angle", angle);
             telemetry.addData("angleVelocity", follower.getAngularVelocity());
             rotate = Pcoeff * angle + Dcoeff * follower.getAngularVelocity();

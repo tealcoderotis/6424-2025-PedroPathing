@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Globals;
+import org.firstinspires.ftc.teamcode.Regression;
 import org.firstinspires.ftc.teamcode.ShooterMath;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -43,8 +44,6 @@ public class OlyCowAlexTeleOp extends OpMode {
     private DcMotorEx feeder = null;
     private Follower follower;
     boolean lockOn = false;
-    double[] dataDistances = {50.996767, 69.574177, 84.84786, 102.93725, 118.13214};
-    int [] dataShooterSpeeds = {1360, 1420, 1530, 1650, 1740};
     ElapsedTime feederTimer = new ElapsedTime();
     private Alliance alliance = Alliance.UNKNOWN;
 
@@ -184,12 +183,7 @@ public class OlyCowAlexTeleOp extends OpMode {
             } else {
                 telemetry.addData("Goal Ball Velocity", "UNKNOWN ALLIANCE");
             }
-            double flywheelVelocity = 0;
-            for (int i = 1; i < dataDistances.length; i++) {
-                if (dist < dataDistances[i] && dist >= dataDistances[i-1]) {
-                    flywheelVelocity = dataShooterSpeeds[i] + (dataShooterSpeeds[i]-dataShooterSpeeds[i-1])/(dataDistances[i]-dataDistances[i-1]) * (dist - dataDistances[i]);
-                }
-            }
+            double flywheelVelocity = Regression.getVelocityForDistance(dist);
             if (flywheelVelocity == 0) {
                 telemetry.addLine("Data not available for current distance!");
             }

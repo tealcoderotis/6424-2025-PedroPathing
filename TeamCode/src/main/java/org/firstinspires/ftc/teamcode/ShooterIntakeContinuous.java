@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.odometry12BallFixed;
+package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Globals;
 
-public class ShooterIntake {
+public class ShooterIntakeContinuous {
     private final DcMotorEx indexer;
     private final DcMotorEx shooter1;
     private final DcMotorEx shooter2;
@@ -20,17 +20,14 @@ public class ShooterIntake {
     private boolean isIntaking = false;
     private boolean isIntakeContinuous = false;
     private boolean isIntakeMovingBack = false;
-    private static final int SHOOTING_TIME = 1500;
     private static final int INDEX_TIME = 300;
     private static final int INTAKE_TIME = 250;
     private static final int INTAKE_END_TIME = Globals.INTAKE_BACK_TIME;
     private static final double SHOOTER_SPEED = Globals.SHOOTER_VELOCITY;
-    private int ballsToShoot = 0;
-    private int currentBall = -1;
+    private int shootingTime = -1;
     private double shooterSpeed = 0;
     private Telemetry telemetry;
-    private boolean hasIndexed = false;
-    public ShooterIntake(HardwareMap hardwareMap) {
+    public ShooterIntakeContinuous(HardwareMap hardwareMap) {
         shootTimer = new Timer();
         intakeTimer = new Timer();
         indexer = (DcMotorEx)hardwareMap.get(Globals.FEEDER_HARDWARE_MAP_NAME);
@@ -52,7 +49,7 @@ public class ShooterIntake {
         shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Globals.SHOOTER_PIDF);
     }
 
-    public ShooterIntake(HardwareMap hardwareMap, Telemetry telemetry) {
+    public ShooterIntakeContinuous(HardwareMap hardwareMap, Telemetry telemetry) {
         this(hardwareMap);
         this.telemetry = telemetry;
     }
@@ -60,15 +57,13 @@ public class ShooterIntake {
     //only called once when we start shooting
     public void beginShooting(int ballsToShoot, double shooterSpeed) {
         isIntaking = false;
-        this.ballsToShoot = ballsToShoot;
-        currentBall = 0;
+        shootingTime = INDEX_TIME * ballsToShoot;
         if (!isReving) {
             shootTimer.resetTimer();
             shooter1.setVelocity(-shooterSpeed);
             shooter2.setVelocity(-shooterSpeed);
             isReving = true;
         }
-        hasIndexed = false;
         isShooterBusy = true;
     }
 
@@ -78,7 +73,7 @@ public class ShooterIntake {
 
     public void beginReving(double shooterSpeed) {
         if (!isIntakeMovingBack) {
-            currentBall = -1;
+            shootingTime = -1;
             isIntaking = false;
             shootTimer.resetTimer();
             shooter1.setVelocity(-shooterSpeed);
@@ -100,6 +95,8 @@ public class ShooterIntake {
         isIntaking = true;
         shootTimer.resetTimer();
         indexer.setPower(Globals.FEEDER_INTAKE_VELOCITY);
+        shooter1.setPower(Globals.SHOOTER_BACK_VELOCITY);
+        shooter2.setPower(Globals.SHOOTER_BACK_VELOCITY);
         isShooterBusy = true;
     }
 
@@ -132,25 +129,15 @@ public class ShooterIntake {
                 if (isReving) {
                     double differenceFromTarget1 = Math.abs(-shooter1.getVelocity() - this.shooterSpeed);
                     double differenceFromTarget2 = Math.abs(-shooter2.getVelocity() - this.shooterSpeed);
-                    if ((differenceFromTarget1 <= Globals.VELOCITY_TOLERANCE && differenceFromTarget2 <= Globals.VELOCITY_TOLERANCE) && currentBall != -1) {
+                    if ((differenceFromTarget1 <= Globals.VELOCITY_TOLERANCE && differenceFromTarget2 <= Globals.VELOCITY_TOLERANCE) && shootingTime != -1) {
                         isReving = false;
                         indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);
                         shootTimer.resetTimer();
                     }
                 }
                 else {
-                    if (shootTimer.getElapsedTime() >= INDEX_TIME && !hasIndexed) {
-                        indexer.setPower(0);
-                        currentBall ++;
-                        if (currentBall >= ballsToShoot) {
-                            stop();
-                        }
-                        hasIndexed = true;
-                    }
-                    if (shootTimer.getElapsedTime() >= SHOOTING_TIME) {
-                        indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);
-                        shootTimer.resetTimer();
-                        hasIndexed = false;
+                    if (shootTimer.getElapsedTime() >= shootingTime) {
+                        stop();
                     }
                 }
             }
@@ -170,8 +157,7 @@ public class ShooterIntake {
         isShooterBusy = false;
         isReving = false;
         isIntaking = false;
-        hasIndexed = false;
-        currentBall = -1;
+        shootingTime = -1;
         shooterSpeed = 0;
     }
 

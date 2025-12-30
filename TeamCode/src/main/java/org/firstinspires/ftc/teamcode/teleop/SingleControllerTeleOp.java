@@ -46,7 +46,7 @@ public class SingleControllerTeleOp extends OpMode {
     // No need for past angle due to .getAngularVelocity
     double rotate = 0;
     final double Pcoeff = 1;
-    final double Dcoeff = 1;
+    final double Dcoeff = 0.2;
 
 
     double leftFrontPower;

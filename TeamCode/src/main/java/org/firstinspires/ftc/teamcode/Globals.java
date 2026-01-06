@@ -19,6 +19,7 @@ public class Globals {
     //Constants
     public static final PIDFCoefficients SHOOTER_PIDF = new PIDFCoefficients(300, 0, 0, 10, MotorControlAlgorithm.PIDF);
     public static final double SHOOTER_VELOCITY = 1400;
+    public static final double SHOOTER_FAR_VELOCITY = 2000;
     public static final RevHubOrientationOnRobot IMU_ORIENTATION = new RevHubOrientationOnRobot(
             RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
             RevHubOrientationOnRobot.UsbFacingDirection.LEFT

@@ -13,16 +13,13 @@ public class ShooterIntake {
     private final DcMotorEx indexer;
     private final DcMotorEx shooter;
     private final Timer shootTimer;
-    private final Timer intakeTimer;
     private boolean isShooterBusy = false;
     private boolean isReving = false;
     private boolean isIntaking = false;
     private boolean isIntakeContinuous = false;
-    private boolean isIntakeMovingBack = false;
     private static final int SHOOTING_TIME = 1500;
     private static final int INDEX_TIME = 300;
     private static final int INTAKE_TIME = 250;
-    private static final int INTAKE_END_TIME = Globals.INTAKE_BACK_TIME;
     private static final double SHOOTER_SPEED = Globals.SHOOTER_VELOCITY;
     private int ballsToShoot = 0;
     private int currentBall = -1;
@@ -31,7 +28,6 @@ public class ShooterIntake {
     private boolean hasIndexed = false;
     public ShooterIntake(HardwareMap hardwareMap) {
         shootTimer = new Timer();
-        intakeTimer = new Timer();
         indexer = (DcMotorEx)hardwareMap.get("feeder");
         shooter = (DcMotorEx)hardwareMap.get("launcher");
         resetEncoders();
@@ -69,13 +65,11 @@ public class ShooterIntake {
     }
 
     public void beginReving(double shooterSpeed) {
-        if (!isIntakeMovingBack) {
-            currentBall = -1;
-            isIntaking = false;
-            shootTimer.resetTimer();
-            shooter.setVelocity(-shooterSpeed);
-            isShooterBusy = true;
-        }
+        currentBall = -1;
+        isIntaking = false;
+        shootTimer.resetTimer();
+        shooter.setVelocity(-shooterSpeed);
+        isShooterBusy = true;
         this.shooterSpeed = shooterSpeed;
         isReving = true;
     }
@@ -86,7 +80,6 @@ public class ShooterIntake {
 
     //only called once when we start intaking
     public void beginIntaking(boolean continuous) {
-        isIntakeMovingBack = false;
         isIntakeContinuous = continuous;
         isIntaking = true;
         shootTimer.resetTimer();
@@ -97,19 +90,6 @@ public class ShooterIntake {
     //called every loop; checks the elapsed time and moves on to the next ball or stops shooting accordingly
     public void update() {
         if (isShooterBusy) {
-            if (isIntakeMovingBack) {
-                if (intakeTimer.getElapsedTime() >= INTAKE_END_TIME) {
-                    indexer.setPower(0);
-                    shooter.setPower(0);
-                    isIntakeMovingBack = false;
-                    if (!isReving) {
-                        stop();
-                    }
-                    else {
-                        beginReving(this.shooterSpeed);
-                    }
-                }
-            }
             if (isIntaking) {
                 if (!isIntakeContinuous) {
                     if (shootTimer.getElapsedTime() >= INTAKE_TIME) {
@@ -163,12 +143,7 @@ public class ShooterIntake {
     }
 
     public void stopIntaking() {
-        indexer.setPower(Globals.FEEDER_BACK_VELOCITY);
-        shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
-        intakeTimer.resetTimer();
-        shootTimer.resetTimer();
-        isIntaking = false;
-        isIntakeMovingBack = true;
+        stop();
     }
 
     //called every loop while the shooter/intake is active; returns true if it is currently shooting or intaking

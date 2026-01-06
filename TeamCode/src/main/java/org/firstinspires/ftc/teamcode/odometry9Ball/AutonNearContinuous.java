@@ -128,8 +128,8 @@ public class AutonNearContinuous extends LinearOpMode {
                 break;
             case 4:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
+                    shooterIntake.beginReving();
                     follower.setMaxPower(1);
                     follower.followPath(paths.RedRow1ToShooter);
                     pathState = 5;
@@ -157,8 +157,8 @@ public class AutonNearContinuous extends LinearOpMode {
                 break;
             case 8:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
+                    shooterIntake.beginReving();
                     follower.setMaxPower(1);
                     follower.followPath(paths.RedRow2ToShooter);
                     pathState = 9;
@@ -215,8 +215,8 @@ public class AutonNearContinuous extends LinearOpMode {
                 break;
             case 4:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
+                    shooterIntake.beginReving();
                     follower.setMaxPower(1);
                     follower.followPath(paths.BlueRow1ToShooter);
                     pathState = 5;
@@ -244,8 +244,8 @@ public class AutonNearContinuous extends LinearOpMode {
                 break;
             case 8:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
+                    shooterIntake.beginReving();
                     follower.setMaxPower(1);
                     follower.followPath(paths.BlueRow2ToShooter);
                     pathState = 9;

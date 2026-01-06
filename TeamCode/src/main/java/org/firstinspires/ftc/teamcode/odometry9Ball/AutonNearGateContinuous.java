@@ -132,8 +132,8 @@ public class AutonNearGateContinuous extends LinearOpMode {
                 break;
             case 4:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
+                    shooterIntake.beginReving();
                     follower.setMaxPower(0.75);
                     follower.followPath(paths.RedRow1ToGate);
                     pathState = 5;
@@ -147,8 +147,6 @@ public class AutonNearGateContinuous extends LinearOpMode {
                 break;
             case 6:
                 if (gateTimer.getElapsedTime() >= GATE_TIME) {
-                    shooterIntake.beginReving();
-                    shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
                     follower.followPath(paths.RedGateToShooter);
                     pathState = 7;
@@ -176,8 +174,8 @@ public class AutonNearGateContinuous extends LinearOpMode {
                 break;
             case 10:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
+                    shooterIntake.beginReving();
                     follower.setMaxPower(1);
                     follower.followPath(paths.RedRow2ToShooter);
                     pathState = 11;
@@ -234,8 +232,8 @@ public class AutonNearGateContinuous extends LinearOpMode {
                 break;
             case 4:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
+                    shooterIntake.beginReving();
                     follower.setMaxPower(0.75);
                     follower.followPath(paths.BlueRow1ToGate);
                     pathState = 5;
@@ -249,8 +247,6 @@ public class AutonNearGateContinuous extends LinearOpMode {
                 break;
             case 6:
                 if (gateTimer.getElapsedTime() >= GATE_TIME) {
-                    shooterIntake.beginReving();
-                    shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
                     follower.followPath(paths.BlueGateToShooter);
                     pathState = 7;
@@ -278,8 +274,8 @@ public class AutonNearGateContinuous extends LinearOpMode {
                 break;
             case 10:
                 if (!follower.isBusy()) {
-                    shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
+                    shooterIntake.beginReving();
                     follower.setMaxPower(1);
                     follower.followPath(paths.BlueRow2ToShooter);
                     pathState = 11;

@@ -32,8 +32,8 @@ public class OlyCowAlexTeleOp extends OpMode {
     final double LAUNCHER_MAX_VELOCITY = 1950;
     final double LAUNCHER_MIN_VELOCITY = 1500;
     final double LAUNCHER_SPINUP_VELOCITY = 1200;
-    final double FEEDER_INTAKE_VELOCITY = 1700;
-    final double FEEDER_LAUNCH_VELOCITY = 1700;
+    final double FEEDER_INTAKE_VELOCITY = 3000;
+    final double FEEDER_LAUNCH_VELOCITY = 3000;
     final double FEEDER_REVERSE_VELOCITY = 900;
 
     private DcMotor leftFrontDrive = null;
@@ -81,7 +81,7 @@ public class OlyCowAlexTeleOp extends OpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
         launcher.setDirection(DcMotor.Direction.REVERSE);
-        feeder.setDirection(DcMotor.Direction.REVERSE);
+        feeder.setDirection(DcMotor.Direction.FORWARD);
 
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 

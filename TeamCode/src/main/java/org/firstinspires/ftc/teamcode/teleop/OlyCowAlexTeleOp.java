@@ -81,7 +81,7 @@ public class OlyCowAlexTeleOp extends OpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
         launcher.setDirection(DcMotor.Direction.REVERSE);
-        feeder.setDirection(DcMotor.Direction.REVERSE);
+        feeder.setDirection(DcMotor.Direction.FORWARD);
 
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 

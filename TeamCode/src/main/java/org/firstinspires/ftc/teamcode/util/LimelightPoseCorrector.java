@@ -19,29 +19,9 @@ public class LimelightPoseCorrector {
 
     public LimelightPoseCorrector(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, LIMELIGHT_HARDWARE_MAP_NAME);
-        limelight.setPollRateHz(100);
+        limelight.setPollRateHz(10);
         limelight.pipelineSwitch(0);
         limelight.start();
-    }
-
-    public LimelightPoseCorrector(HardwareMap hardwareMap, Telemetry telemetry) {
-        this(hardwareMap);
-        this.telemetry = telemetry;
-    }
-
-    public Pose correctPose(Pose pose) {
-        LLResult result = limelight.getLatestResult();
-        if (result != null) {
-            if (result.isValid() && result.getControlHubTimeStamp() > lastTimeStamp) {
-                Pose3D ftcCordinateSystemLimelightPose = result.getBotpose();
-                if (ftcCordinateSystemLimelightPose != null) {
-                    Pose limelightPose = PoseConverter.pose2DToPose(PoseDimensionConverter.pose3DToPose2D(ftcCordinateSystemLimelightPose), InvertedFTCCoordinates.INSTANCE);
-                    pose = limelightPose.copy();
-                }
-                lastTimeStamp = result.getControlHubTimeStamp();
-            }
-        }
-        return pose;
     }
 
     public Pose getLimelightPose() {

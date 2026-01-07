@@ -8,23 +8,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Globals;
-import org.firstinspires.ftc.teamcode.Regression;
-import org.firstinspires.ftc.teamcode.ShooterMath;
+import org.firstinspires.ftc.teamcode.util.Regression;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @TeleOp(name = "OlyCowAlexTeleOp")
 //@Disabled
 public class OlyCowAlexTeleOp extends OpMode {
-    ShooterMath shootermath;
     final double FEED_TIME_SECONDS = 0.75;
     final double STOP_SPEED = 0.0;
 
@@ -47,17 +43,6 @@ public class OlyCowAlexTeleOp extends OpMode {
     ElapsedTime feederTimer = new ElapsedTime();
     private Alliance alliance = Alliance.UNKNOWN;
 
-    private enum LaunchState {
-        IDLE,
-        SPIN_UP,
-        SPIN_UP_FAR,
-        LAUNCH,
-        LAUNCH_FAR,
-        LAUNCHING,
-    }
-
-    private LaunchState launchState;
-
     double leftFrontPower;
     double rightFrontPower;
     double leftBackPower;
@@ -65,8 +50,6 @@ public class OlyCowAlexTeleOp extends OpMode {
 
     @Override
     public void init() {
-        shootermath = new ShooterMath(telemetry);
-        launchState = LaunchState.IDLE;
         follower = Constants.createFollower(hardwareMap);
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
@@ -103,8 +86,7 @@ public class OlyCowAlexTeleOp extends OpMode {
         if (Globals.alliance != Alliance.UNKNOWN) {
             alliance = Globals.alliance;
             follower.setStartingPose(Globals.endingPose.copy());
-        }
-        else {
+        } else {
             if (gamepad1.bWasPressed()) {
                 //Red starting pose
                 follower.setStartingPose(new Pose(97.108, 59.579, Math.toRadians(0)));
@@ -170,16 +152,15 @@ public class OlyCowAlexTeleOp extends OpMode {
             telemetry.addData("Goal Ball Velocity", "MINIMUM");
             launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
             telemetry.addData("Shooter Speed", "MINIMUM");
-        }
-        else {
+        } else {
             feeder.setPower(STOP_SPEED);
         }
         if (gamepad2.dpad_left) {
             double dist = 0;
             if (alliance == Alliance.RED) {
-                dist = Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2));
+                dist = Math.sqrt(Math.pow(144 - follower.getPose().getX(), 2) + Math.pow(144 - follower.getPose().getY(), 2));
             } else if (alliance == Alliance.BLUE) {
-                dist = Math.sqrt(Math.pow(0-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2));
+                dist = Math.sqrt(Math.pow(0 - follower.getPose().getX(), 2) + Math.pow(144 - follower.getPose().getY(), 2));
             } else {
                 telemetry.addData("Goal Ball Velocity", "UNKNOWN ALLIANCE");
             }
@@ -187,36 +168,21 @@ public class OlyCowAlexTeleOp extends OpMode {
             if (flywheelVelocity == 0) {
                 telemetry.addLine("Data not available for current distance!");
             }
-            /*if (dist < 51) {
-                flywheelVelocity = 1360 + 5.89098 * (dist - 50.99677);
-            } else if (dist < 69.57418) {
-                flywheelVelocity = 1420 + 3.22973 * (dist - 69.57418);
-            } else if (dist < 84.84786) {
-                flywheelVelocity = 1530 + 7.20193 * (dist - 84.84786);
-            } else if (dist < 102.93725) {
-                flywheelVelocity = 1650 + 6.63372 * (dist - 102.93725);
-            } else if (dist < 118.13214) {
-                flywheelVelocity = 1740 + 5.923044 * (dist - 118.13214);
-            } else {
-                flywheelVelocity = 1740 + 5.89098 * (dist - 118.13214);
-            }*/
             launcher.setVelocity(flywheelVelocity);
             telemetry.addData("Shooter Speed", flywheelVelocity);
         }
-        if (gamepad2.right_bumper){
+        if (gamepad2.right_bumper) {
             follower.setPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
         }
-        launch(gamepad2.right_trigger >= 0.1);
 
-        telemetry.addData("State", launchState);
         telemetry.addData("motorSpeed", launcher.getVelocity());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("dist", Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2)));
+        telemetry.addData("dist", Math.sqrt(Math.pow(144 - follower.getPose().getX(), 2) + Math.pow(144 - follower.getPose().getY(), 2)));
         follower.update();
     }
 
-    void mecanumDrive(double forward, double strafe, double rotate){
+    void mecanumDrive(double forward, double strafe, double rotate) {
 
         double denominator = Math.max(Math.abs(forward) + Math.abs(strafe) + Math.abs(rotate), 1);
 
@@ -231,43 +197,4 @@ public class OlyCowAlexTeleOp extends OpMode {
         rightBackDrive.setPower(rightBackPower);
 
     }
-
-    void launch(boolean shotRequested) {
-        switch (launchState) {
-            case IDLE:
-                if (shotRequested) {
-                    launchState = LaunchState.SPIN_UP;
-                }
-                break;
-            case SPIN_UP:
-                if (launcher.getVelocity() > LAUNCHER_MIN_VELOCITY) {
-                    launchState = LaunchState.LAUNCH;
-                }
-                break;
-            case SPIN_UP_FAR:
-                if (launcher.getVelocity() > LAUNCHER_MAX_VELOCITY) {
-                    launchState = LaunchState.LAUNCH_FAR;
-                }
-                break;
-            case LAUNCH:
-                feeder.setDirection(DcMotor.Direction.FORWARD);
-                feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
-                feederTimer.reset();
-                launchState = LaunchState.LAUNCHING;
-                break;
-            case LAUNCH_FAR:
-                feeder.setDirection(DcMotor.Direction.FORWARD);
-                feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
-                feederTimer.reset();
-                launchState = LaunchState.LAUNCHING;
-                break;
-            case LAUNCHING:
-                if (feederTimer.seconds() > FEED_TIME_SECONDS) {
-                    launchState = LaunchState.IDLE;
-                    feeder.setPower(STOP_SPEED);
-                }
-                break;
-        }
-    }
 }
-

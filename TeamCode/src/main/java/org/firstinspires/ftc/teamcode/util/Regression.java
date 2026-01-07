@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.util;
 
 public class Regression {
     private static final double[] dataDistances = {50.996767, 69.574177, 84.84786, 102.93725, 118.13214};

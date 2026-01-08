@@ -8,20 +8,16 @@ import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.Pose;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -29,6 +25,7 @@ import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.PoseDimensionConverter;
+import org.firstinspires.ftc.teamcode.util.Regression;
 
 @TeleOp(name = "SingleControllerTeleOp")
 //@Disabled
@@ -54,8 +51,6 @@ public class SingleControllerTeleOp extends OpMode {
     boolean lockOn = false;
     boolean slowMode = false;
     final double SLOW_RATIO = 4; // 4 times slower for manual adjustment of angle
-    double[] dataDistances = {50.996767, 69.574177, 84.84786, 102.93725, 118.13214};
-    int [] dataShooterSpeeds = {1360, 1420, 1530, 1650, 1740};
     private Alliance alliance = Alliance.UNKNOWN;
     double xGoal = 144;
     //Angles are in radians
@@ -220,6 +215,7 @@ public class SingleControllerTeleOp extends OpMode {
             } else {
                 prevDetection = false;
             }
+            telemetry.addData("Artifacts Controlled", artifactCount);
         }
         if (gamepad1.a || artifactCount == 0) {
             feeder.setDirection(DcMotor.Direction.REVERSE);
@@ -275,12 +271,7 @@ public class SingleControllerTeleOp extends OpMode {
             } else {
                 telemetry.addData("Goal Ball Velocity", "UNKNOWN ALLIANCE");
             }
-            double flywheelVelocity = 0;
-            for (int i = 1; i < dataDistances.length; i++) {
-                if (dist < dataDistances[i] && dist >= dataDistances[i-1]) {
-                    flywheelVelocity = dataShooterSpeeds[i] + (dataShooterSpeeds[i]-dataShooterSpeeds[i-1])/(dataDistances[i]-dataDistances[i-1]) * (dist - dataDistances[i]);
-                }
-            }
+            double flywheelVelocity = Regression.getVelocityForDistance(dist);
             if (flywheelVelocity == 0) {
                 telemetry.addLine("Data not available for current distance!");
             }

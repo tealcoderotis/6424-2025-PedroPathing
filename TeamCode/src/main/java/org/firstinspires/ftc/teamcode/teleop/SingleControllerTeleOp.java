@@ -39,10 +39,10 @@ public class SingleControllerTeleOp extends OpMode {
     final double LAUNCHER_MAX_VELOCITY = 1950;
     final double LAUNCHER_MIN_VELOCITY = 1500;
     final double LAUNCHER_SPINUP_VELOCITY = 1200;
-    final double LAUNCHER_UNJAM_VELOCITY = 200; //Backwards
-    final double FEEDER_INTAKE_VELOCITY = 1700;
+    final double LAUNCHER_UNJAM_VELOCITY = 300; //Backwards
+    final double FEEDER_INTAKE_VELOCITY = 2300;
     final double FEEDER_UNJAM_VELOCITY = 700; // Backwards
-    final double FEEDER_LAUNCH_VELOCITY = 1700;
+    final double FEEDER_LAUNCH_VELOCITY = 2300;
 
     private DcMotor leftFrontDrive = null;
     private DcMotor rightFrontDrive = null;
@@ -222,10 +222,10 @@ public class SingleControllerTeleOp extends OpMode {
             }
         }
         if (gamepad1.a || artifactCount == 0) {
-            feeder.setDirection(DcMotor.Direction.FORWARD);
+            feeder.setDirection(DcMotor.Direction.REVERSE);
             feeder.setVelocity(FEEDER_INTAKE_VELOCITY);
             if (launcher.getVelocity() > LAUNCHER_IDLE_VELOCITY) {
-                feeder.setDirection(DcMotor.Direction.FORWARD);
+                feeder.setDirection(DcMotor.Direction.REVERSE);
                 feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
             }
         }
@@ -235,7 +235,7 @@ public class SingleControllerTeleOp extends OpMode {
             launcher.setDirection(DcMotor.Direction.FORWARD);
             launcher.setVelocity(LAUNCHER_UNJAM_VELOCITY);
             telemetry.addData("Shooter Speed", LAUNCHER_UNJAM_VELOCITY * -1);
-            feeder.setDirection(DcMotor.Direction.REVERSE);
+            feeder.setDirection(DcMotor.Direction.FORWARD);
             feeder.setVelocity(FEEDER_UNJAM_VELOCITY);
             lockOn = true;
         }
@@ -300,7 +300,7 @@ public class SingleControllerTeleOp extends OpMode {
             telemetry.addData("tx", result.getTx());
             telemetry.addData("ty", result.getTy());
             // First, tell Limelight which way your robot is facing
-            double robotYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);;
+            double robotYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
             limelight.updateRobotOrientation(robotYaw);
             if (result.isValid()) {
                 Pose3D botpose_mt2 = result.getBotpose_MT2(); //mt2 is MegaTag2

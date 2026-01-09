@@ -29,5 +29,6 @@ public class Globals {
     public static final double FEEDER_BACK_VELOCITY = -200;
     public static final double SHOOTER_BACK_VELOCITY = 1275;
     public static final int INTAKE_BACK_TIME = 100;
+    public static final int INTAKE_END_PAUSE_TIME = 500;
     public static final double VELOCITY_TOLERANCE = 50;
 }

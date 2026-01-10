@@ -31,4 +31,5 @@ public class Globals {
     public static final int INTAKE_BACK_TIME = 100;
     public static final int INTAKE_END_PAUSE_TIME = 500;
     public static final double VELOCITY_TOLERANCE = 50;
+    public static final int REV_TIME = 1500;
 }

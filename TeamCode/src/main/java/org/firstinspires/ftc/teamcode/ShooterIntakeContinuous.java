@@ -117,7 +117,7 @@ public class ShooterIntakeContinuous {
             else {
                 if (isReving) {
                     double differenceFromTarget = Math.abs(-shooter.getVelocity() - this.shooterSpeed);
-                    if (differenceFromTarget <= Globals.VELOCITY_TOLERANCE && shootingTime != -1) {
+                    if ((differenceFromTarget <= Globals.VELOCITY_TOLERANCE || shootTimer.getElapsedTime() >= Globals.REV_TIME) && shootingTime != -1) {
                         isReving = false;
                         indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);
                         shootTimer.resetTimer();

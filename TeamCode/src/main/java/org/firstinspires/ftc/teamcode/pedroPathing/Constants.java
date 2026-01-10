@@ -55,13 +55,13 @@ public class Constants {
             .strafeEncoder_HardwareMapName("leftBackDrive")
             .leftPodY(6)
             .rightPodY(-6.125)
-            .strafePodX(-9)
+            .strafePodX(-7.25)
             .forwardTicksToInches(0.002978295301409603)
             .strafeTicksToInches(0.002969057822227131)
             .turnTicksToInches(0.0029571787252668353)
             .leftEncoderDirection(Encoder.FORWARD)
             .rightEncoderDirection(Encoder.REVERSE)
-            .strafeEncoderDirection(Encoder.FORWARD)
+            .strafeEncoderDirection(Encoder.REVERSE)
             .IMU_HardwareMapName("imu")
             .IMU_Orientation(Globals.IMU_ORIENTATION);
 

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.odometry12BallFixed;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -18,6 +19,7 @@ public class Paths {
     public PathChain RedRow1ToShooter;
     public PathChain RedRow2IntakeBegin;
     public PathChain RedRow2IntakeEnd;
+    public PathChain RedRow2Gate1;
     public PathChain RedRow2ToShooter;
     public PathChain RedRow3IntakeBegin;
     public PathChain RedRow3IntakeEnd;
@@ -42,6 +44,7 @@ public class Paths {
     public PathChain BlueRow1ToShooter;
     public PathChain BlueRow2IntakeBegin;
     public PathChain BlueRow2IntakeEnd;
+    public PathChain BlueRow2ToGate;
     public PathChain BlueRow2ToShooter;
     public PathChain BlueRow3IntakeBegin;
     public PathChain BlueRow3IntakeEnd;
@@ -141,10 +144,18 @@ public class Paths {
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
 
+        RedRow2Gate1 = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(135, 59.579), new Pose(119.200, 72.930))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build();
+
         RedRow2ToShooter = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(135, 59.579), new Pose(96, 95.8))
+                        new BezierCurve(new Pose(135, 59.579), new Pose(96, 59.579), new Pose(96, 95.8))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(42))
                 .build();
@@ -335,10 +346,18 @@ public class Paths {
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
+        BlueRow2ToGate = follower
+                .pathBuilder()
+                .addPath(
+                    new BezierLine(new Pose(12, 59.798), new Pose(24.8, 72.930))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .build();
+
         BlueRow2ToShooter = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(12, 59.798), new Pose(48, 95.8))
+                        new BezierCurve(new Pose(12, 59.798), new Pose(48, 59.798), new Pose(48, 95.8))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(137))
                 .build();

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.odometry9Ball;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -144,7 +145,7 @@ public class Paths {
         RedRow2ToShooter = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(135, 59.579), new Pose(96, 95.8))
+                        new BezierCurve(new Pose(135, 59.579), new Pose(96, 59.579), new Pose(96, 95.8))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build();
@@ -338,7 +339,7 @@ public class Paths {
         BlueRow2ToShooter = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(12, 59.798), new Pose(48, 95.8))
+                        new BezierCurve(new Pose(12, 59.798), new Pose(48, 59.798), new Pose(48, 95.8))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
                 .build();

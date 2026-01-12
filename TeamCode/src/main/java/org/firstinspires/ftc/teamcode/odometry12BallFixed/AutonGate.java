@@ -141,13 +141,14 @@ public class AutonGate extends LinearOpMode {
                 break;
             case 5:
                 if (!follower.isBusy()) {
+                    gateTimer.resetTimer();
                     follower.setMaxPower(1);
                     follower.followPath(paths.RedRow1ToGate2);
                     pathState = 6;
                 }
                 break;
             case 6:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || gateTimer.getElapsedTime() >= GATE_TIME) {
                     gateTimer.resetTimer();
                     pathState = 7;
                 }
@@ -277,13 +278,14 @@ public class AutonGate extends LinearOpMode {
                 break;
             case 5:
                 if (!follower.isBusy()) {
+                    gateTimer.resetTimer();
                     follower.setMaxPower(1);
                     follower.followPath(paths.BlueRow1ToGate2);
                     pathState = 6;
                 }
                 break;
             case 6:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || gateTimer.getElapsedTime() >= GATE_TIME) {
                     gateTimer.resetTimer();
                     pathState = 7;
                 }

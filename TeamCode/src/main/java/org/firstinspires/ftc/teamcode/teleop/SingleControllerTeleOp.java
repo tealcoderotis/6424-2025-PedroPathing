@@ -61,7 +61,7 @@ public class SingleControllerTeleOp extends OpMode {
     final double Dcoeff = 0.2;
 
     private boolean useLimelight = false;
-    private Limelight3A limelight;
+    //private Limelight3A limelight;
 
     private boolean fieldCentric = false;
     private IMU imu;
@@ -110,11 +110,11 @@ public class SingleControllerTeleOp extends OpMode {
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(Globals.IMU_ORIENTATION));
 
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(5);
+        /*limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(5);*/
         telemetry.setMsTransmissionInterval(11);
-        limelight.pipelineSwitch(0);
-        limelight.start();
+        /*limelight.pipelineSwitch(0);
+        limelight.start();*/
 
 
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
@@ -286,7 +286,7 @@ public class SingleControllerTeleOp extends OpMode {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("dist", Math.sqrt(Math.pow(xGoal-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2)));
         follower.update();
-        if (useLimelight) { //Limelight used for odometry correction to ensure accurate localization
+        /*if (useLimelight) { //Limelight used for odometry correction to ensure accurate localization
             LLResult result = limelight.getLatestResult();
             telemetry.addData("tx", result.getTx());
             telemetry.addData("ty", result.getTy());
@@ -303,7 +303,7 @@ public class SingleControllerTeleOp extends OpMode {
                     //This correction should work IF the position of the limelight is configured on the web limeligh access.
                 }
             }
-        }
+        }*/
     }
     void mecanumFieldCentric(double forward, double strafe, double rotate) {
         double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);

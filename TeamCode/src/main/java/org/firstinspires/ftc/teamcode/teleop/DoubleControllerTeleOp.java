@@ -10,6 +10,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -92,7 +93,7 @@ public class DoubleControllerTeleOp extends OpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
         launcher.setDirection(DcMotor.Direction.REVERSE);
-        feeder.setDirection(DcMotor.Direction.REVERSE);
+        feeder.setDirection(DcMotor.Direction.FORWARD);
 
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -108,7 +109,9 @@ public class DoubleControllerTeleOp extends OpMode {
         follower = Constants.createFollower(hardwareMap);
 
         imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(Globals.IMU_ORIENTATION));
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD, RevHubOrientationOnRobot.UsbFacingDirection.LEFT)
+        ));
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(5);
@@ -218,10 +221,10 @@ public class DoubleControllerTeleOp extends OpMode {
             telemetry.addData("Artifacts Controlled", artifactCount);
         }
         if (gamepad2.a || artifactCount == 0) {
-            feeder.setDirection(DcMotor.Direction.REVERSE);
+            feeder.setDirection(DcMotor.Direction.FORWARD);
             feeder.setVelocity(FEEDER_INTAKE_VELOCITY);
             if (launcher.getVelocity() > LAUNCHER_IDLE_VELOCITY) {
-                feeder.setDirection(DcMotor.Direction.REVERSE);
+                feeder.setDirection(DcMotor.Direction.FORWARD);
                 feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
             }
         }
@@ -231,7 +234,7 @@ public class DoubleControllerTeleOp extends OpMode {
             launcher.setDirection(DcMotor.Direction.FORWARD);
             launcher.setVelocity(LAUNCHER_UNJAM_VELOCITY);
             telemetry.addData("Shooter Speed", LAUNCHER_UNJAM_VELOCITY * -1);
-            feeder.setDirection(DcMotor.Direction.FORWARD);
+            feeder.setDirection(DcMotor.Direction.REVERSE);
             feeder.setVelocity(FEEDER_UNJAM_VELOCITY);
             lockOn = true;
         }
@@ -291,7 +294,7 @@ public class DoubleControllerTeleOp extends OpMode {
             telemetry.addData("tx", result.getTx());
             telemetry.addData("ty", result.getTy());
             // First, tell Limelight which way your robot is facing
-            double robotYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            double robotYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             limelight.updateRobotOrientation(robotYaw);
             if (result.isValid()) {
                 Pose3D botpose_mt2 = result.getBotpose_MT2(); //mt2 is MegaTag2

@@ -37,9 +37,9 @@ public class SingleControllerTeleOp extends OpMode {
     final double LAUNCHER_MIN_VELOCITY = 1500;
     final double LAUNCHER_SPINUP_VELOCITY = 1200;
     final double LAUNCHER_UNJAM_VELOCITY = 300; //Backwards
-    final double FEEDER_INTAKE_VELOCITY = 2300;
+    final double FEEDER_INTAKE_VELOCITY = 1150;
     final double FEEDER_UNJAM_VELOCITY = 700; // Backwards
-    final double FEEDER_LAUNCH_VELOCITY = 2300;
+    final double FEEDER_LAUNCH_VELOCITY = 1150;
 
     private DcMotor leftFrontDrive = null;
     private DcMotor rightFrontDrive = null;

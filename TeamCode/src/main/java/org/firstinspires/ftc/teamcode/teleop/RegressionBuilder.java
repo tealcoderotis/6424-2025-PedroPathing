@@ -4,14 +4,22 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.pedropathing.follower.Follower;
 
+import com.pedropathing.ftc.FTCCoordinates;
+import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.util.PoseDimensionConverter;
 
 @TeleOp(name = "RegressionBuilder")
 public class RegressionBuilder extends OpMode {
@@ -22,6 +30,7 @@ public class RegressionBuilder extends OpMode {
     private DcMotorEx launcher = null;
     private DcMotorEx feeder = null;
     private Follower follower;
+    private Limelight3A limelight;
     double leftFrontPower;
     double rightFrontPower;
     double leftBackPower;
@@ -57,6 +66,12 @@ public class RegressionBuilder extends OpMode {
 
         feeder.setPower(0);
 
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(5);
+        telemetry.setMsTransmissionInterval(11);
+        limelight.pipelineSwitch(0);
+        limelight.start();
+
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
         follower.setStartingPose(new Pose(110.36335877862595, 134.10687022900763, Math.toRadians(0)));
 
@@ -65,23 +80,6 @@ public class RegressionBuilder extends OpMode {
 
     @Override
     public void init_loop() {
-        /*if (Globals.alliance != Alliance.UNKNOWN) {
-            alliance = Globals.alliance;
-            follower.setStartingPose(Globals.endingPose.copy());
-        }
-        else {
-            if (gamepad1.bWasPressed()) {
-                //Red starting pose
-                follower.setStartingPose(new Pose(125.200, 70.930, Math.toRadians(0)));
-                alliance = Alliance.RED;
-            } else if (gamepad1.xWasPressed()) {
-                //Blue starting pose
-                follower.setStartingPose(new Pose(46.892, 59.798, Math.toRadians(180)));
-                alliance = Alliance.BLUE;
-            }
-        }*/
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
         follower.update();
     }
 
@@ -97,12 +95,7 @@ public class RegressionBuilder extends OpMode {
             up, down, x, and y on gamepad2 to adjust shooter velocity. Find a good velocity.
             Record the x value, y value, and a good shooter velocity to create a regression.
         */
-        if (!lockOn) {
-            mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        } else {
-            double rotate = 0;
-            mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
-        }
+        mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         if (gamepad2.a) {
             feeder.setDirection(DcMotor.Direction.FORWARD);
             feeder.setVelocity(FEEDER_INTAKE_VELOCITY);
@@ -111,6 +104,12 @@ public class RegressionBuilder extends OpMode {
         } else {
             feeder.setVelocity(0);
             launcher.setVelocity(0);
+        }
+        if (gamepad2.dpadRightWasPressed()) {
+            launchVelocity = launchVelocity + 1;
+        }
+        if (gamepad2.dpadLeftWasPressed()) {
+            launchVelocity = launchVelocity - 1;
         }
         if (gamepad2.dpadUpWasPressed()) {
             launchVelocity = launchVelocity + 10;
@@ -124,9 +123,12 @@ public class RegressionBuilder extends OpMode {
         if (gamepad2.yWasPressed()) {
             launchVelocity = launchVelocity - 100;
         }
+        LLResult result = limelight.getLatestResult();
+        telemetry.addData("tx", result.getTx());// We can probably track the goal here
+        telemetry.addData("ty", result.getTy());
+        telemetry.addData("ta", result.getTa());// We can either use ta or ty for motor power PD, but I prefer ta.
+        // First, tell Limelight which way your robot is facing
         telemetry.addData("motorSpeed", launchVelocity);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
         follower.update();
     }
     void mecanumDrive(double forward, double strafe, double rotate){

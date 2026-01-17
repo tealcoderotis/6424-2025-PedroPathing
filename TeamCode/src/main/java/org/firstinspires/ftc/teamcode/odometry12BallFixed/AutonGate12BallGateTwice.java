@@ -24,6 +24,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
     private Alliance alliance;
     private LimelightPoseCorrector poseCorrector;
     private Timer gateTimer;
+    private Timer maxIntakeTimer;
     private static final int GATE_TIME = 500;
     private boolean useLimelight = false;
 
@@ -31,6 +32,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
     public void runOpMode() {
         //initialization
         gateTimer = new Timer();
+        maxIntakeTimer = new Timer();
         shooterIntake = new ShooterIntakeContinuous(hardwareMap, telemetry);
         follower = Constants.createFollower(hardwareMap);
         follower.setMaxPower(1);
@@ -124,6 +126,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 break;
             case 3:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow1IntakeEnd);
@@ -131,7 +134,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 }
                 break;
             case 4:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
@@ -141,13 +144,15 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 break;
             case 5:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     follower.setMaxPower(1);
                     follower.followPath(paths.RedRow1ToGate2);
                     pathState = 6;
                 }
                 break;
             case 6:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    follower.pausePathFollowing();
                     gateTimer.resetTimer();
                     pathState = 7;
                 }
@@ -155,6 +160,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
             case 7:
                 if (gateTimer.getElapsedTime() >= GATE_TIME) {
                     follower.setMaxPower(1);
+                    follower.resumePathFollowing();
                     follower.followPath(paths.RedGateToShooter);
                     pathState = 8;
                 }
@@ -173,6 +179,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 break;
             case 10:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow2IntakeEnd);
@@ -180,7 +187,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 }
                 break;
             case 11:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
@@ -190,22 +197,23 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 break;
             case 12:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     follower.setMaxPower(1);
                     follower.followPath(paths.RedRow1ToGate2);
                     pathState = 13;
                 }
                 break;
             case 13:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    follower.pausePathFollowing();
                     gateTimer.resetTimer();
                     pathState = 14;
                 }
                 break;
             case 14:
                 if (gateTimer.getElapsedTime() >= GATE_TIME) {
-                    shooterIntake.beginReving();
-                    shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
+                    follower.resumePathFollowing();
                     follower.followPath(paths.RedGateToShooter);
                     pathState = 15;
                 }
@@ -224,6 +232,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 break;
             case 17:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow3IntakeEnd);
@@ -231,7 +240,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 }
                 break;
             case 18:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
@@ -282,6 +291,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 break;
             case 3:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow1IntakeEnd);
@@ -289,7 +299,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 }
                 break;
             case 4:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
@@ -299,13 +309,15 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 break;
             case 5:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     follower.setMaxPower(1);
                     follower.followPath(paths.BlueRow1ToGate2);
                     pathState = 6;
                 }
                 break;
             case 6:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    follower.pausePathFollowing();
                     gateTimer.resetTimer();
                     pathState = 7;
                 }
@@ -313,6 +325,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
             case 7:
                 if (gateTimer.getElapsedTime() >= GATE_TIME) {
                     follower.setMaxPower(1);
+                    follower.resumePathFollowing();
                     follower.followPath(paths.BlueGateToShooter);
                     pathState = 8;
                 }
@@ -331,6 +344,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 break;
             case 10:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow2IntakeEnd);
@@ -338,7 +352,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 }
                 break;
             case 11:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
@@ -348,22 +362,23 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 break;
             case 12:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     follower.setMaxPower(1);
                     follower.followPath(paths.BlueRow1ToGate2);
                     pathState = 13;
                 }
                 break;
             case 13:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    follower.pausePathFollowing();
                     gateTimer.resetTimer();
                     pathState = 14;
                 }
                 break;
             case 14:
                 if (gateTimer.getElapsedTime() >= GATE_TIME) {
-                    shooterIntake.beginReving();
-                    shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
+                    follower.resumePathFollowing();
                     follower.followPath(paths.BlueGateToShooter);
                     pathState = 15;
                 }
@@ -382,6 +397,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 break;
             case 17:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow3IntakeEnd);
@@ -389,7 +405,7 @@ public class AutonGate12BallGateTwice extends LinearOpMode {
                 }
                 break;
             case 18:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);

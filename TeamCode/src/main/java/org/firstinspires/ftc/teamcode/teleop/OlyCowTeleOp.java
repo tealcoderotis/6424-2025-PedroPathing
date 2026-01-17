@@ -8,6 +8,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -184,9 +185,14 @@ public class OlyCowTeleOp extends OpMode {
         if (gamepad2.a) {
             feeder.setDirection(DcMotor.Direction.FORWARD);
             feeder.setPower(FULL_SPEED);
+            launcher.setDirection(DcMotor.Direction.REVERSE);
+            launcher.setPower(0.25);
         }
         else {
             feeder.setPower(STOP_SPEED);
+        }
+        if (gamepad1.a) {
+            feeder.setVelocity(FULL_SPEED);
         }
 
         if (gamepad2.b) {
@@ -207,7 +213,7 @@ public class OlyCowTeleOp extends OpMode {
             double flywheelVelocity = LAUNCHER_MIN_VELOCITY;
             if (result.isValid()) {
                 double ty = result.getTy();
-                flywheelVelocity = Regression.getVelocityForTy(ty);
+                flywheelVelocity = 16.03396*ty+1469.24123;
                 if (flywheelVelocity == 0) {
                     telemetry.addLine("Data not available for current distance!");
                 }

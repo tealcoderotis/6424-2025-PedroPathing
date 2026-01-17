@@ -24,6 +24,7 @@ public class Auton extends LinearOpMode {
     private Alliance alliance;
     private LimelightPoseCorrector poseCorrector;
     private Timer gateTimer;
+    private Timer maxIntakeTimer;
     private static final int GATE_TIME = 500;
     private static final double BALL_INTAKE_MOVEMENT_SPEED=0.5;
     private boolean useLimelight = false;
@@ -32,6 +33,7 @@ public class Auton extends LinearOpMode {
     public void runOpMode() {
         //initialization
         gateTimer = new Timer();
+        maxIntakeTimer = new Timer();
         shooterIntake = new ShooterIntakeContinuous(hardwareMap, telemetry);
         follower = Constants.createFollower(hardwareMap);
         follower.setMaxPower(1);
@@ -125,6 +127,7 @@ public class Auton extends LinearOpMode {
                 break;
             case 3:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow1IntakeEnd);
@@ -132,7 +135,7 @@ public class Auton extends LinearOpMode {
                 }
                 break;
             case 4:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
@@ -175,6 +178,7 @@ public class Auton extends LinearOpMode {
                 break;
             case 10:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow2IntakeEnd);
@@ -182,7 +186,7 @@ public class Auton extends LinearOpMode {
                 }
                 break;
             case 11:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
@@ -204,6 +208,7 @@ public class Auton extends LinearOpMode {
                 break;
             case 14:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.RedRow3IntakeEnd);
@@ -211,7 +216,7 @@ public class Auton extends LinearOpMode {
                 }
                 break;
             case 15:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
@@ -262,6 +267,7 @@ public class Auton extends LinearOpMode {
                 break;
             case 3:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow1IntakeEnd);
@@ -269,7 +275,7 @@ public class Auton extends LinearOpMode {
                 }
                 break;
             case 4:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
@@ -312,6 +318,7 @@ public class Auton extends LinearOpMode {
                 break;
             case 10:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow2IntakeEnd);
@@ -319,7 +326,7 @@ public class Auton extends LinearOpMode {
                 }
                 break;
             case 11:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);
@@ -341,6 +348,7 @@ public class Auton extends LinearOpMode {
                 break;
             case 14:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
                     shooterIntake.beginIntaking(true);
                     follower.setMaxPower(Globals.INTAKE_SPEED);
                     follower.followPath(paths.BlueRow3IntakeEnd);
@@ -348,7 +356,7 @@ public class Auton extends LinearOpMode {
                 }
                 break;
             case 15:
-                if (!follower.isBusy()) {
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving();
                     shooterIntake.stopIntaking();
                     follower.setMaxPower(1);

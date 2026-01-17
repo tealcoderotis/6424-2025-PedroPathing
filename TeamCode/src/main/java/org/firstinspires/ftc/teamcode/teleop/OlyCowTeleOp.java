@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 //import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.Globals;
+import org.firstinspires.ftc.teamcode.Regression;
 import org.firstinspires.ftc.teamcode.ShooterMath;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -28,7 +29,6 @@ import java.util.List;
 @TeleOp(name = "OlyCowTeleOp (Android Studio Version)")
 //@Disabled
 public class OlyCowTeleOp extends OpMode {
-    private ShooterMath shootermath;
     final double FEED_TIME_SECONDS = 0.5;
     final double STOP_SPEED = 0.0;
     //final double HALF_SPEED = 0.5;
@@ -36,6 +36,7 @@ public class OlyCowTeleOp extends OpMode {
 
     final double LAUNCHER_MAX_VELOCITY = 1575;
     final double LAUNCHER_MIN_VELOCITY = 1000;
+    final double LAUNCHER_SPINUP_VELOCITY = 1100;
     final double MINIMUM_ADJUSTMENT = 0.05;
 
     private DcMotor leftFrontDrive = null;
@@ -64,14 +65,12 @@ public class OlyCowTeleOp extends OpMode {
     double rightFrontPower;
     double leftBackPower;
     double rightBackPower;
-    double trackingAngle;
-    double currentShootVelocity = 1575;
-    boolean overrideShootVelocity = false;
     boolean lockOn = false; //Whether to use a PIDF to lock on the goal.
+    boolean slowMode = false;
+    double pCorrection = 0;
 
     @Override
     public void init() {
-        shootermath = new ShooterMath(telemetry);
         launchState = LaunchState.IDLE;
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
@@ -101,7 +100,10 @@ public class OlyCowTeleOp extends OpMode {
 
         follower = Constants.createFollower(hardwareMap);
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(5);
+        telemetry.setMsTransmissionInterval(11);
         limelight.pipelineSwitch(0);
+        limelight.start();
 
         telemetry.addData("Status", "Initialized");
     }
@@ -142,22 +144,34 @@ public class OlyCowTeleOp extends OpMode {
 
     @Override
     public void loop() {
+        LLResult result = limelight.getLatestResult();
         if (!lockOn) {
             follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         } else {
-            //PIDF to control rotation rate while locked on the goal
-            int GoalX = 0; int GoalY=144;
-            if(!overrideShootVelocity && alliance != Alliance.UNKNOWN) {
-                if (alliance == Alliance.RED) {GoalX = 144;}
+            if (slowMode) {
+                follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x/3.5);
+            } else if (result.isValid()) {
+                //PIDF to control rotation rate while locked on the goal
+                double P_gain = 0.05;
+                double headingCorrectionNeeded = result.getTx(); //Degrees
+                telemetry.addData("Heading correction needed", headingCorrectionNeeded);
+                double D_gain = 0.007;
+                double dCorrection = headingCorrectionNeeded-pCorrection;
+                double rotate = P_gain * headingCorrectionNeeded + D_gain * dCorrection;
+                if (Math.abs(rotate) > 0.5) {
+                    rotate = rotate / Math.abs(rotate);
+                }
+                pCorrection = headingCorrectionNeeded;
+                follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, rotate, false);
+                if (Math.abs(headingCorrectionNeeded)<1) {
+                    slowMode = true;
+                }
+            } else {
+                follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x/1.5);
             }
-            double P = 0.05;
-            double headingCorrectionNeeded = shootermath.angleFromGoal(follower.getPose(), GoalX, GoalY); //Degrees
-            telemetry.addData("Heading correction needed", headingCorrectionNeeded);
-            double rotate = P*headingCorrectionNeeded;
-            if (Math.abs(rotate) > 1) {
-                rotate = rotate/Math.abs(rotate);
-            }
-            follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, rotate, false);
+        }
+        if (gamepad1.left_bumper) {
+            lockOn = true;
         }
 
         if (gamepad2.x){
@@ -178,97 +192,40 @@ public class OlyCowTeleOp extends OpMode {
         if (gamepad2.b) {
             launcher.setVelocity(STOP_SPEED);
             feeder.setPower(STOP_SPEED);
+            lockOn = false;
+            slowMode = false;
         }
         if (gamepad2.y) {
-            launcher.setVelocity(currentShootVelocity);
+            launcher.setVelocity(LAUNCHER_SPINUP_VELOCITY);
         } else {
             launcher.setVelocity(STOP_SPEED);
         }
         if (gamepad2.dpad_up) {
-            currentShootVelocity = LAUNCHER_MAX_VELOCITY;
-            overrideShootVelocity = true;
+            launcher.setVelocity(LAUNCHER_MAX_VELOCITY);
         }
         if (gamepad2.dpad_left) {
-            overrideShootVelocity = false;
-        }
-        if (gamepad2.dpad_down) {
-            currentShootVelocity = LAUNCHER_MIN_VELOCITY;
-            overrideShootVelocity = true;
-        }
-        telemetry.addData("Overridden = ", overrideShootVelocity);
-        if (gamepad1.dpad_down) {
-            lockOn = true;
-        } else if (gamepad1.dpad_up) {
-            lockOn = false;
-        }
-        if(!overrideShootVelocity && alliance != Alliance.UNKNOWN) {
-            double goalBallVelocity;
-            if (alliance == Alliance.RED) {
-                goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 144, 144);
-            } else {
-                goalBallVelocity = shootermath.findLateralVelocity(follower.getPose(), 0, 144);
-            }
-            currentShootVelocity = shootermath.ballVelocityToFlywheel(goalBallVelocity);
-            telemetry.addData("Goal Ball Velocity", goalBallVelocity);
-            telemetry.addData("Calculated Shooter Speed", currentShootVelocity);
-            telemetry.addData("Overridden", false);
-        }
-        else{
-            telemetry.addData("Constant Shooter Speed", currentShootVelocity);
-            if (overrideShootVelocity){
-                telemetry.addData("Overridden", true);
-            }
-        }
-
-        launch(gamepad2.rightBumperWasPressed());
-
-        LLResult limelightResult = limelight.getLatestResult();
-
-        if (gamepad1.a) {
-            if (limelightResult != null && limelightResult.isValid()) {
-                double error = -limelightResult.getTx();
-                if (Math.abs(error) >= 1.0) {
-                    double steeringAdjust;
-                    if (error < 0) {
-                        steeringAdjust = -0.1 * error + MINIMUM_ADJUSTMENT;
-                    }
-                    else {
-                        steeringAdjust = -0.1 * error - MINIMUM_ADJUSTMENT;
-                    }
-                    mecanumDrive(0, 0, steeringAdjust);
+            double flywheelVelocity = LAUNCHER_MIN_VELOCITY;
+            if (result.isValid()) {
+                double ty = result.getTy();
+                flywheelVelocity = Regression.getVelocityForTy(ty);
+                if (flywheelVelocity == 0) {
+                    telemetry.addLine("Data not available for current distance!");
                 }
             }
+            launcher.setVelocity(flywheelVelocity);
+            telemetry.addData("Shooter Speed", flywheelVelocity);
+        }
+        if (gamepad2.dpad_down) {
+            launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
         }
 
         telemetry.addData("State", launchState);
         telemetry.addData("motorSpeed", launcher.getVelocity());
-        if (limelightResult != null && limelightResult.isValid()) {
-            List<LLResultTypes.FiducialResult> aprilTags = limelightResult.getFiducialResults();
-            if (!aprilTags.isEmpty()) {
-                LLResultTypes.FiducialResult aprilTag = aprilTags.get(0);
-                telemetry.addData("Tag id", aprilTag.getFiducialId());
-            }
-            else {
-                telemetry.addData("Tag id", "No tag");
-            }
-            telemetry.addData("tx", limelightResult.getTx());
-            telemetry.addData("ty", limelightResult.getTy());
-            telemetry.addData("ta", limelightResult.getTa());
-        }
-        else {
-            telemetry.addData("Limelight result", "Invalid");
-        }
+
         if (alliance != Alliance.UNKNOWN) {
-            if (alliance == Alliance.RED) {
-                trackingAngle = PoseTrig.angleBetweenPoses(follower.getPose(), new Pose(144,144));
-            }
-            else if (alliance == Alliance.BLUE) {
-                trackingAngle = PoseTrig.angleBetweenPoses(follower.getPose(), new Pose(0,144));
-            }
             telemetry.addData("x", follower.getPose().getX());
             telemetry.addData("y", follower.getPose().getY());
             telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
-            telemetry.addData("angleToShooter", Math.toDegrees(trackingAngle));
         }
         telemetry.addData("Status", "Initialized");
         follower.update();
@@ -292,32 +249,5 @@ public class OlyCowTeleOp extends OpMode {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
 
-    }
-
-    void launch(boolean shotRequested) {
-        switch (launchState) {
-            case IDLE:
-                if (shotRequested) {
-                    launchState = LaunchState.SPIN_UP;
-                }
-                break;
-            case SPIN_UP:
-                launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
-                if (launcher.getVelocity() > LAUNCHER_MIN_VELOCITY) {
-                    launchState = LaunchState.LAUNCH;
-                }
-                break;
-            case LAUNCH:
-                feeder.setPower(FULL_SPEED);
-                feederTimer.reset();
-                launchState = LaunchState.LAUNCHING;
-                break;
-            case LAUNCHING:
-                feeder.setPower(FULL_SPEED);
-                if (feederTimer.seconds() > FEED_TIME_SECONDS) {
-                    launchState = LaunchState.IDLE;
-                }
-                break;
-        }
     }
 }

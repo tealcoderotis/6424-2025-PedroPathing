@@ -13,4 +13,8 @@ public class Regression {
         }
         return flywheelVelocity;
     }
+
+    public static double getVelocityForTy(double distance) {
+        return distance * 16.03396 * distance + 1469.24123;
+    }
 }

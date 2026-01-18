@@ -18,19 +18,19 @@ public class LimelightPoseCorrector {
     private Telemetry telemetry;
 
     public LimelightPoseCorrector(HardwareMap hardwareMap) {
-        limelight = hardwareMap.get(Limelight3A.class, LIMELIGHT_HARDWARE_MAP_NAME);
+        /*limelight = hardwareMap.get(Limelight3A.class, LIMELIGHT_HARDWARE_MAP_NAME);
         limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);
-        limelight.start();
+        limelight.start();*/
     }
 
     public LimelightPoseCorrector(HardwareMap hardwareMap, Telemetry telemetry) {
-        this(hardwareMap);
-        this.telemetry = telemetry;
+        /*this(hardwareMap);
+        this.telemetry = telemetry;*/
     }
 
     public Pose correctPose(Pose pose) {
-        LLResult result = limelight.getLatestResult();
+        /*LLResult result = limelight.getLatestResult();
         if (result != null) {
             if (result.isValid() && result.getControlHubTimeStamp() > lastTimeStamp) {
                 Pose3D ftcCordinateSystemLimelightPose = result.getBotpose();
@@ -40,12 +40,12 @@ public class LimelightPoseCorrector {
                 }
                 lastTimeStamp = result.getControlHubTimeStamp();
             }
-        }
+        }*/
         return pose;
     }
 
     public Pose getLimelightPose() {
-        LLResult result = limelight.getLatestResult();
+        /*LLResult result = limelight.getLatestResult();
         if (result != null) {
             if (result.isValid()) {
                 Pose3D ftcCordinateSystemLimelightPose = result.getBotpose();
@@ -59,7 +59,7 @@ public class LimelightPoseCorrector {
                     return limelightPose;
                 }
             }
-        }
+        }*/
         return null;
     }
 }

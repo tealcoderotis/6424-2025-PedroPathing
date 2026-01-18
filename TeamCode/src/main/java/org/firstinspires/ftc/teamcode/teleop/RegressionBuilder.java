@@ -66,11 +66,11 @@ public class RegressionBuilder extends OpMode {
 
         feeder.setPower(0);
 
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(5);
+        /*limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(5);*/
         telemetry.setMsTransmissionInterval(11);
-        limelight.pipelineSwitch(0);
-        limelight.start();
+        /*limelight.pipelineSwitch(0);
+        limelight.start();*/
 
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
         follower.setStartingPose(new Pose(110.36335877862595, 134.10687022900763, Math.toRadians(0)));
@@ -123,10 +123,10 @@ public class RegressionBuilder extends OpMode {
         if (gamepad2.yWasPressed()) {
             launchVelocity = launchVelocity - 100;
         }
-        LLResult result = limelight.getLatestResult();
+        /*LLResult result = limelight.getLatestResult();
         telemetry.addData("tx", result.getTx());// We can probably track the goal here
         telemetry.addData("ty", result.getTy());
-        telemetry.addData("ta", result.getTa());// We can either use ta or ty for motor power PD, but I prefer ta.
+        telemetry.addData("ta", result.getTa());// We can either use ta or ty for motor power PD, but I prefer ta.*/
         // First, tell Limelight which way your robot is facing
         telemetry.addData("motorSpeed", launchVelocity);
         follower.update();

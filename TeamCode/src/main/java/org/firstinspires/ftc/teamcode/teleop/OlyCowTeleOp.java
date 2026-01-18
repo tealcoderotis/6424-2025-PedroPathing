@@ -100,11 +100,11 @@ public class OlyCowTeleOp extends OpMode {
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Globals.SHOOTER_PIDF);
 
         follower = Constants.createFollower(hardwareMap);
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(5);
+        /*limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(5);*/
         telemetry.setMsTransmissionInterval(11);
-        limelight.pipelineSwitch(0);
-        limelight.start();
+        /*limelight.pipelineSwitch(0);
+        limelight.start();*/
 
         telemetry.addData("Status", "Initialized");
     }
@@ -139,19 +139,19 @@ public class OlyCowTeleOp extends OpMode {
 
     @Override
     public void start() {
-        limelight.start();
+        //limelight.start();
         follower.startTeleOpDrive(false);
     }
 
     @Override
     public void loop() {
-        LLResult result = limelight.getLatestResult();
+        //LLResult result = limelight.getLatestResult();
         if (!lockOn) {
             follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
         } else {
             if (slowMode) {
                 follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x/3.5);
-            } else if (result.isValid()) {
+            } /*else if (result.isValid()) {
                 //PIDF to control rotation rate while locked on the goal
                 double P_gain = 0.05;
                 double headingCorrectionNeeded = result.getTx(); //Degrees
@@ -167,7 +167,7 @@ public class OlyCowTeleOp extends OpMode {
                 if (Math.abs(headingCorrectionNeeded)<1) {
                     slowMode = true;
                 }
-            } else {
+            }*/ else {
                 follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x/1.5);
             }
         }
@@ -211,13 +211,13 @@ public class OlyCowTeleOp extends OpMode {
         }
         if (gamepad2.dpad_left) {
             double flywheelVelocity = LAUNCHER_MIN_VELOCITY;
-            if (result.isValid()) {
+            /*if (result.isValid()) {
                 double ty = result.getTy();
                 flywheelVelocity = 16.03396*ty+1469.24123;
                 if (flywheelVelocity == 0) {
                     telemetry.addLine("Data not available for current distance!");
                 }
-            }
+            }*/
             launcher.setVelocity(flywheelVelocity);
             telemetry.addData("Shooter Speed", flywheelVelocity);
         }

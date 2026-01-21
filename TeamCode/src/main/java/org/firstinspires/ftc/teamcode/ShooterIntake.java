@@ -20,7 +20,7 @@ public class ShooterIntake {
     private boolean isIntakeContinuous = false;
     private boolean isIntakeMovingBack = false;
     private static final int SHOOTING_TIME = 1500;
-    private static final int INDEX_TIME = 300;
+    private static final int INDEX_TIME = 600;
     private static final int INTAKE_TIME = 250;
     private static final int INTAKE_END_TIME = Globals.INTAKE_BACK_TIME;
     private static final double SHOOTER_SPEED = Globals.SHOOTER_VELOCITY;

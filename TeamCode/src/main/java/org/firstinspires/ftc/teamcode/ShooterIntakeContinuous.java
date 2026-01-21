@@ -85,8 +85,8 @@ public class ShooterIntakeContinuous {
         isIntakeContinuous = continuous;
         isIntaking = true;
         shootTimer.resetTimer();
-        indexer.setPower(Globals.FEEDER_INTAKE_VELOCITY);
-        shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
+        indexer.setVelocity(Globals.FEEDER_INTAKE_VELOCITY);
+        shooter.setVelocity(Globals.SHOOTER_BACK_VELOCITY);
         isShooterBusy = true;
     }
 
@@ -119,7 +119,7 @@ public class ShooterIntakeContinuous {
                     double differenceFromTarget = Math.abs(-shooter.getVelocity() - this.shooterSpeed);
                     if ((differenceFromTarget <= Globals.VELOCITY_TOLERANCE || shootTimer.getElapsedTime() >= Globals.REV_TIME) && shootingTime != -1) {
                         isReving = false;
-                        indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);
+                        indexer.setVelocity(Globals.FEEDER_LAUNCH_VELOCITY);
                         shootTimer.resetTimer();
                     }
                 }
@@ -148,8 +148,8 @@ public class ShooterIntakeContinuous {
     }
 
     public void stopIntaking() {
-        indexer.setPower(Globals.FEEDER_BACK_VELOCITY);
-        shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
+        indexer.setVelocity(Globals.FEEDER_BACK_VELOCITY);
+        shooter.setVelocity(Globals.SHOOTER_BACK_VELOCITY);
         intakeTimer.resetTimer();
         shootTimer.resetTimer();
         isIntaking = false;

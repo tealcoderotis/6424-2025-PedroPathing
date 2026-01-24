@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.shooterTest;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+@Disabled
 public class ShooterTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

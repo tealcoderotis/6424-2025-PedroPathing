@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.InvertedFTCCoordinates;
@@ -33,11 +35,32 @@ import java.util.List;
 @Configurable
 @TeleOp(name = "JSONfinder")
 public class JSONfinder extends OpMode {
+
+    private DcMotor leftFrontDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightBackDrive = null;
     private Limelight3A limelight;
+    private Follower follower;
     private IMU imu;
     private Alliance alliance = Alliance.UNKNOWN;
     @Override
     public void init() {
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
+
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        leftFrontDrive.setZeroPowerBehavior(BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(BRAKE);
+        leftBackDrive.setZeroPowerBehavior(BRAKE);
+        rightBackDrive.setZeroPowerBehavior(BRAKE);
+        follower = Constants.createFollower(hardwareMap);
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(1); //1 check per second
         telemetry.setMsTransmissionInterval(11);
@@ -51,15 +74,20 @@ public class JSONfinder extends OpMode {
     }
     @Override
     public void init_loop() {
+        follower.update();
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
         telemetry.update();
     }
     @Override
     public void start() {
         limelight.start();
+        follower.startTeleOpDrive(false);
     }
 
     @Override
     public void loop() {
+        follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         limelight.updateRobotOrientation(orientation.getYaw());
         LLResult result = limelight.getLatestResult();
@@ -89,6 +117,9 @@ public class JSONfinder extends OpMode {
         else {
             telemetry.addLine("No valid apriltags");
         }
+        follower.update();
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
         telemetry.update();
     }
 }

@@ -37,7 +37,7 @@ public class Constants {
             .xVelocity(56.7362800788)
             .yVelocity(42.8251357520);
 
-    public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
+    /*public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
             .forwardEncoder_HardwareMapName("leftFrontDrive")
             .strafeEncoder_HardwareMapName("leftBackDrive")
             .forwardPodY(-5.875)
@@ -47,7 +47,7 @@ public class Constants {
             .forwardEncoderDirection(Encoder.FORWARD)
             .strafeEncoderDirection(Encoder.FORWARD)
             .IMU_HardwareMapName("imu")
-            .IMU_Orientation(Globals.IMU_ORIENTATION);
+            .IMU_Orientation(Globals.IMU_ORIENTATION);*/
 
     public static ThreeWheelIMUConstants threeWheelLocalizerConstants = new ThreeWheelIMUConstants()
             .leftEncoder_HardwareMapName("leftFrontDrive")
@@ -64,6 +64,15 @@ public class Constants {
             .strafeEncoderDirection(Encoder.REVERSE)
             .IMU_HardwareMapName("imu")
             .IMU_Orientation(Globals.IMU_ORIENTATION);
+
+    public static PinpointConstants localizerConstants = new PinpointConstants()
+            .hardwareMapName("pinpoint")
+            .distanceUnit(DistanceUnit.INCH)
+            .forwardPodY(6)
+            .strafePodX(-7.25)
+            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
+            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
+            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
 
     public static Follower createFollower(HardwareMap hardwareMap) {

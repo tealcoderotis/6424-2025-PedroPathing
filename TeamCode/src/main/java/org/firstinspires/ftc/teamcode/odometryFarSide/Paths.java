@@ -8,82 +8,113 @@ import com.pedropathing.paths.PathChain;
 
 public class Paths {
     public PathChain RedStart;
-    public PathChain RedObservationIntakeBegin;
-    public PathChain RedObservationIntakeEnd;
-    public PathChain RedObservationToShooter;
+    public PathChain RedIntakeBegin;
+    public PathChain RedIntakeEnd;
+    public PathChain RedIntakeBack;
+    public PathChain RedIntakeEnd2;
+    public PathChain RedIntakeToShooter;
     public PathChain BlueStart;
-    public PathChain BlueObservationIntakeBegin;
-    public PathChain BlueObservationIntakeEnd;
-    public PathChain BlueObservationToShooter;
+    public PathChain BlueIntakeBegin;
+    public PathChain BlueIntakeEnd;
+    public PathChain BlueIntakeBack;
+    public PathChain BlueIntakeEnd2;
+    public PathChain BlueIntakeToShooter;
 
     public Paths(Follower follower) {
         RedStart = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(84.000, 9.700),
-                                new Pose(84.000, 12.000)
+                                new Pose(84.000, 36.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(67.5))
+                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(62))
                 .build();
 
-        RedObservationIntakeBegin = follower.pathBuilder().addPath(
-                        new BezierCurve(
-                                new Pose(84.000, 12.000),
-                                new Pose(84.000, 26.000),
-                                new Pose(130.000, 24.000)
-                        )
-                ).setLinearHeadingInterpolation(Math.toRadians(67.5), Math.toRadians(330))
-                .build();
-
-        RedObservationIntakeEnd = follower.pathBuilder().addPath(
+        RedIntakeBegin = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(130.000, 24.000),
-                                new Pose(132.000, 12.000)
+                                new Pose(84.000, 36.000),
+                                new Pose(108.000, 9.000)
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(330))
+                ).setLinearHeadingInterpolation(Math.toRadians(62), Math.toRadians(0))
                 .build();
 
-        RedObservationToShooter = follower.pathBuilder().addPath(
-                        new BezierCurve(
-                                new Pose(132.000, 12.000),
-                                new Pose(114.000, 24.000),
-                                new Pose(84.000, 12.000)
+        RedIntakeEnd = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(108.000, 9.000),
+                                new Pose(135.000, 9.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(330), Math.toRadians(67.5))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build();
+
+        RedIntakeBack = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(135.000, 9.000),
+                                new Pose(108.000, 9.000)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build();
+
+        RedIntakeEnd2 = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(108.000, 9.000),
+                                new Pose(135.000, 9.000)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build();
+
+        RedIntakeToShooter = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(135.000, 9.000),
+                                new Pose(84.000, 36.000)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(62))
                 .build();
 
         BlueStart = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(60.000, 9.700),
-                                new Pose(60.000, 12.000)
+                                new Pose(60.000, 36.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(112.5))
+                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(118))
                 .build();
 
-        BlueObservationIntakeBegin = follower.pathBuilder().addPath(
+        BlueIntakeBegin = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(60.000, 12.000),
-                                new Pose(60.000, 26.000),
-                                new Pose(14.000, 24.000)
+                                new Pose(60.000, 36.000),
+                                new Pose(36.000, 9.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(112.5), Math.toRadians(210))
+                ).setLinearHeadingInterpolation(Math.toRadians(118), Math.toRadians(180))
                 .build();
 
-        BlueObservationIntakeEnd = follower.pathBuilder().addPath(
+        BlueIntakeEnd = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(14.000, 24.000),
-                                new Pose(12.000, 12.000)
+                                new Pose(36.000, 9.000),
+                                new Pose(9.000, 9.000)
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(210))
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
-        BlueObservationToShooter = follower.pathBuilder().addPath(
+        BlueIntakeBack = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(9.000, 9.000),
+                                new Pose(36.000, 9.000)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build();
+
+        BlueIntakeEnd2 = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(36.000, 9.000),
+                                new Pose(9.000, 9.000)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build();
+
+        BlueIntakeToShooter = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(12.000, 12.000),
-                                new Pose(30.000, 24.000),
-                                new Pose(60.000, 12.000)
+                                new Pose(9.000, 9.000),
+                                new Pose(60.000, 36.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(210), Math.toRadians(112.5))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(118))
                 .build();
-
     }
 }

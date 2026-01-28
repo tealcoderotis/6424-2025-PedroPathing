@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.LimelightPoseCorrector;
 
 @Configurable
-@Autonomous(name = "Odometry 15 Ball Auton (Gate 2x)")
+@Autonomous(name = "Odometry 12 Ball Auton (Gate 2x)")
 public class AutonGate12BallGateTwice extends LinearOpMode {
     private Follower follower;
     private ShooterIntakeContinuous shooterIntake;

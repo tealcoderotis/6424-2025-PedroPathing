@@ -35,7 +35,6 @@ import java.util.List;
 @Configurable
 @TeleOp(name = "JSONfinder")
 public class JSONfinder extends OpMode {
-
     private DcMotor leftFrontDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor leftBackDrive = null;
@@ -85,6 +84,19 @@ public class JSONfinder extends OpMode {
         follower.startTeleOpDrive(false);
     }
 
+    private double distfrompoint(double tpx, int corner) {
+        //Height of apriltag above ground = 29.5
+        //Side length of apriltag = 6.5
+        double cornerheight;
+        if ((corner == 0) || (corner == 1)){ // Maybe 0,1
+            cornerheight = 29.5+3.25;
+        } else {
+            cornerheight = 29.5-3.25;
+        }
+        //960 y axis pixels -> 42 degrees
+        return (cornerheight-13)/Math.tan(((22-tpx*42/1280))*Math.PI/180);//Measured 20.9, changed experimentally to 22 TODO: Don't hardcode
+    }
+
     @Override
     public void loop() {
         follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
@@ -97,14 +109,17 @@ public class JSONfinder extends OpMode {
                 LLResultTypes.FiducialResult firstresult = results.get(0); //There should never be more than 1 result because it is filtered in the pipeline
                 if (firstresult != null) {
                     List<List<Double>> targetcorners = firstresult.getTargetCorners();
-                    telemetry.addData("x0", targetcorners.get(0).get(0));
-                    telemetry.addData("y0", targetcorners.get(0).get(1));
-                    telemetry.addData("x1", targetcorners.get(1).get(0));
-                    telemetry.addData("y1", targetcorners.get(1).get(1));
-                    telemetry.addData("x2", targetcorners.get(2).get(0));
-                    telemetry.addData("y2", targetcorners.get(2).get(1));
-                    telemetry.addData("x3", targetcorners.get(3).get(0));
-                    telemetry.addData("y3", targetcorners.get(3).get(1));
+                    telemetry.addData("x0, y0:", targetcorners.get(0).toString());
+                    telemetry.addData("x1, y1:", targetcorners.get(1).toString());
+                    telemetry.addData("x2, y2:", targetcorners.get(2).toString());
+                    telemetry.addData("x3, y3:", targetcorners.get(3).toString());
+                    double thickness = Math.abs(((targetcorners.get(0).get(0) + targetcorners.get(3).get(0))-(targetcorners.get(1).get(0) + targetcorners.get(2).get(0)))/2);
+                    double angle = thickness * 54.5/960; //Angle of triangle at limelight, Will not use
+                    double R = (distfrompoint(targetcorners.get(1).get(1), 1)+distfrompoint(targetcorners.get(2).get(1), 2))/2;
+                    double L = (distfrompoint(targetcorners.get(0).get(1), 0)+distfrompoint(targetcorners.get(3).get(1), 3))/2;
+                    double x = (Math.pow(L, 2)-Math.pow(R, 2))/(4*3.25);
+                    double y = Math.sqrt(Math.pow(R, 2)-Math.pow(x-3.25, 2));
+                    telemetry.addData("Distance from tag's center", Math.sqrt(Math.pow(x,2)+Math.pow(y, 2)));
                 }
                 else {
                     telemetry.addLine("First Fiducial Result is null");

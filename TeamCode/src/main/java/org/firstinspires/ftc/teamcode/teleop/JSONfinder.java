@@ -60,6 +60,7 @@ public class JSONfinder extends OpMode {
         leftBackDrive.setZeroPowerBehavior(BRAKE);
         rightBackDrive.setZeroPowerBehavior(BRAKE);
         follower = Constants.createFollower(hardwareMap);
+        follower.setPose(new Pose(110.36335877862595, 134.10687022900763));
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(1); //1 check per second
         telemetry.setMsTransmissionInterval(11);
@@ -94,7 +95,7 @@ public class JSONfinder extends OpMode {
             cornerheight = 29.5-3.25;
         }
         //960 y axis pixels -> 42 degrees
-        return (cornerheight-13)/Math.tan((tpx*42/960)*Math.PI/180);//Measured 20.9, changed experimentally to 22 TODO: Don't hardcode
+        return (cornerheight-13)/Math.tan((20.9+tpx*42/960-21)*Math.PI/180);//Measured 20.9
     }
 
     @Override
@@ -122,10 +123,12 @@ public class JSONfinder extends OpMode {
                     double x = (Math.pow(L, 2)-Math.pow(R, 2))/(4*3.25);
                     double y = Math.sqrt(Math.pow(R, 2)-Math.pow(x-3.25, 2));
                     telemetry.addData("Distance from tag's center", Math.sqrt(Math.pow(x,2)+Math.pow(y, 2)));
-                    telemetry.addData("Perpendicular", y);
-                    telemetry.addData("Parallel", x);
+                    telemetry.addData("Perpendicular", y); //This works
+                    telemetry.addData("Parallel", x); //This does not work? Maybe? It should work, we need to test
+                    telemetry.addData("Guessed total distance", Math.sqrt(Math.pow(x, 2)+Math.pow(y+21.3,2)));
+                    telemetry.addData("Odometry Distance", Math.sqrt(Math.pow(follower.getPose().getX(), 2)+Math.pow(follower.getPose().getY(),2)));
                 }
-                else
+                else {
                     telemetry.addLine("First Fiducial Result is null");
                 }
             }
@@ -137,8 +140,5 @@ public class JSONfinder extends OpMode {
             telemetry.addLine("No valid apriltags");
         }
         follower.update();
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.update();
     }
 }

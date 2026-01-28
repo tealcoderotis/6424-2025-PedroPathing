@@ -94,7 +94,7 @@ public class JSONfinder extends OpMode {
             cornerheight = 29.5-3.25;
         }
         //960 y axis pixels -> 42 degrees
-        return (cornerheight-13)/Math.tan(((22-tpx*42/1280))*Math.PI/180);//Measured 20.9, changed experimentally to 22 TODO: Don't hardcode
+        return (cornerheight-13)/Math.tan((tpx*42/960)*Math.PI/180);//Measured 20.9, changed experimentally to 22 TODO: Don't hardcode
     }
 
     @Override
@@ -114,14 +114,18 @@ public class JSONfinder extends OpMode {
                     telemetry.addData("x2, y2:", targetcorners.get(2).toString());
                     telemetry.addData("x3, y3:", targetcorners.get(3).toString());
                     double thickness = Math.abs(((targetcorners.get(0).get(0) + targetcorners.get(3).get(0))-(targetcorners.get(1).get(0) + targetcorners.get(2).get(0)))/2);
-                    double angle = thickness * 54.5/960; //Angle of triangle at limelight, Will not use
+                    double angle = thickness * 54.5/1280; //Angle of triangle at limelight, Will not use
                     double R = (distfrompoint(targetcorners.get(1).get(1), 1)+distfrompoint(targetcorners.get(2).get(1), 2))/2;
                     double L = (distfrompoint(targetcorners.get(0).get(1), 0)+distfrompoint(targetcorners.get(3).get(1), 3))/2;
+                    telemetry.addData("R", R);
+                    telemetry.addData("L", L);
                     double x = (Math.pow(L, 2)-Math.pow(R, 2))/(4*3.25);
                     double y = Math.sqrt(Math.pow(R, 2)-Math.pow(x-3.25, 2));
                     telemetry.addData("Distance from tag's center", Math.sqrt(Math.pow(x,2)+Math.pow(y, 2)));
+                    telemetry.addData("Perpendicular", y);
+                    telemetry.addData("Parallel", x);
                 }
-                else {
+                else
                     telemetry.addLine("First Fiducial Result is null");
                 }
             }

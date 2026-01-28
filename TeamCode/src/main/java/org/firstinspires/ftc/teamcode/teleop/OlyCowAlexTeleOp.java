@@ -4,6 +4,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -21,6 +22,7 @@ import org.firstinspires.ftc.teamcode.ShooterMath;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
+@Disabled
 @TeleOp(name = "OlyCowAlexTeleOp")
 //@Disabled
 public class OlyCowAlexTeleOp extends OpMode {

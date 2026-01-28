@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Globals;
@@ -25,10 +26,10 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
     final double STOP_SPEED = 0.0;
 
     final double LAUNCHER_IDLE_VELOCITY = 0;
-    final double LAUNCHER_MAX_VELOCITY = 1950;
-    final double LAUNCHER_MIN_VELOCITY = 1500;
-    final double LAUNCHER_SPINUP_VELOCITY = 1200;
-    final double LAUNCHER_REVERSE_VELOCITY = -500;
+    final double LAUNCHER_MAX_VELOCITY = 650;
+    final double LAUNCHER_MIN_VELOCITY = 100;
+    final double LAUNCHER_SPINUP_VELOCITY = 100;
+    final double LAUNCHER_REVERSE_VELOCITY = -100;
     final double FEEDER_INTAKE_VELOCITY = 3000;
     final double FEEDER_LAUNCH_VELOCITY = 3000;
     final double FEEDER_REVERSE_VELOCITY = 900;
@@ -37,6 +38,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightBackDrive = null;
+    private Servo stopper;
     private DcMotorEx launcher = null;
     private DcMotorEx feeder = null;
     private Follower follower;
@@ -74,6 +76,8 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         feeder = hardwareMap.get(DcMotorEx.class, "feeder");
+        stopper = hardwareMap.get(Servo.class, "gateServo");
+        stopper.setPosition(0);
 
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -168,6 +172,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
             telemetry.addData("Goal Ball Velocity", LAUNCHER_IDLE_VELOCITY);
             launcher.setVelocity(LAUNCHER_IDLE_VELOCITY);
             telemetry.addData("Shooter Speed", LAUNCHER_IDLE_VELOCITY);
+            stopper.setPosition(0);
             launcherIdle = true;
         }
         if (gamepad2.y) {
@@ -255,6 +260,9 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
                 if (shotRequested) {
                     launchState = LaunchState.SPIN_UP;
                 }
+                else {
+                    stopper.setPosition(0);
+                }
                 break;
             case SPIN_UP:
                 if (launcher.getVelocity() > LAUNCHER_MIN_VELOCITY) {
@@ -267,12 +275,14 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
                 }
                 break;
             case LAUNCH:
+                stopper.setPosition(1);
                 feeder.setDirection(DcMotor.Direction.FORWARD);
                 feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
                 feederTimer.reset();
                 launchState = LaunchState.LAUNCHING;
                 break;
             case LAUNCH_FAR:
+                stopper.setPosition(1);
                 feeder.setDirection(DcMotor.Direction.FORWARD);
                 feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
                 feederTimer.reset();

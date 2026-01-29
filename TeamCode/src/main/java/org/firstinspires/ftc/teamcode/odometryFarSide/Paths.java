@@ -24,14 +24,14 @@ public class Paths {
         RedStart = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(84.000, 9.700),
-                                new Pose(84.000, 36.000)
+                                new Pose(84.000, 18.000)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(62))
                 .build();
 
         RedIntakeBegin = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(84.000, 36.000),
+                                new Pose(84.000, 18.000),
                                 new Pose(108.000, 9.000)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(62), Math.toRadians(0))
@@ -64,7 +64,7 @@ public class Paths {
         RedIntakeToShooter = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(135.000, 9.000),
-                                new Pose(84.000, 36.000)
+                                new Pose(84.000, 18.000)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(62))
                 .build();
@@ -72,14 +72,14 @@ public class Paths {
         BlueStart = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(60.000, 9.700),
-                                new Pose(60.000, 36.000)
+                                new Pose(60.000, 18.000)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(118))
                 .build();
 
         BlueIntakeBegin = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(60.000, 36.000),
+                                new Pose(60.000, 18.000),
                                 new Pose(36.000, 9.000)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(118), Math.toRadians(180))
@@ -112,7 +112,7 @@ public class Paths {
         BlueIntakeToShooter = follower.pathBuilder().addPath(
                         new BezierCurve(
                                 new Pose(9.000, 9.000),
-                                new Pose(60.000, 36.000)
+                                new Pose(60.000, 18.000)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(118))
                 .build();

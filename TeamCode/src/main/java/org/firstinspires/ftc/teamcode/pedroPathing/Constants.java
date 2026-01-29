@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.Globals;
 
 //PedroPathing Constants
 public class Constants {
-    public static FollowerConstants followerConstants = new FollowerConstants().mass(15); //TODO Replace mass with accurate value. Mass is in kilograms
+    public static FollowerConstants followerConstants = new FollowerConstants().mass(8.16466); //TODO Replace mass with accurate value. Mass is in kilograms
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
@@ -68,10 +68,10 @@ public class Constants {
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .hardwareMapName("pinpoint")
             .distanceUnit(DistanceUnit.INCH)
-            .forwardPodY(6)
-            .strafePodX(-7.25)
-            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
-            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
+            .forwardPodY(6.375)
+            .strafePodX(-6.3)
+            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD)
+            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
 

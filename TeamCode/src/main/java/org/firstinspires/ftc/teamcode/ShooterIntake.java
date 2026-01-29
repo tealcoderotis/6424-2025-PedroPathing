@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.VoltagePowerCompensator;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.util.VoltagePowerCompensator;
 public class ShooterIntake {
     private final DcMotorEx indexer;
     private final DcMotorEx shooter;
+    private final Servo gate;
     private final Timer shootTimer;
     private final Timer intakeTimer;
     private boolean isShooterBusy = false;
@@ -29,11 +31,14 @@ public class ShooterIntake {
     private double shooterSpeed = 0;
     private Telemetry telemetry;
     private boolean hasIndexed = false;
+    private final double GATE_OPEN_POSITION = 1;
+    private final double GATE_CLOSE_POSITION = 0.5;
     public ShooterIntake(HardwareMap hardwareMap) {
         shootTimer = new Timer();
         intakeTimer = new Timer();
         indexer = (DcMotorEx)hardwareMap.get("feeder");
         shooter = (DcMotorEx)hardwareMap.get("launcher");
+        gate = (Servo)hardwareMap.get("gateServo");
         resetEncoders();
     }
 
@@ -43,11 +48,16 @@ public class ShooterIntake {
         shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Globals.SHOOTER_PIDF);
+        gate.setPosition(GATE_CLOSE_POSITION);
     }
 
     public ShooterIntake(HardwareMap hardwareMap, Telemetry telemetry) {
         this(hardwareMap);
         this.telemetry = telemetry;
+    }
+
+    public void start() {
+        indexer.setPower(Globals.FEEDER_IDLE_VELOCITY);
     }
 
     //only called once when we start shooting
@@ -99,7 +109,7 @@ public class ShooterIntake {
         if (isShooterBusy) {
             if (isIntakeMovingBack) {
                 if (intakeTimer.getElapsedTime() >= INTAKE_END_TIME) {
-                    indexer.setPower(0);
+                    indexer.setPower(Globals.FEEDER_IDLE_VELOCITY);
                     shooter.setPower(0);
                     isIntakeMovingBack = false;
                     if (!isReving) {
@@ -122,6 +132,7 @@ public class ShooterIntake {
                 if (isReving) {
                     double differenceFromTarget = Math.abs(-shooter.getVelocity() - this.shooterSpeed);
                     if ((differenceFromTarget <= Globals.VELOCITY_TOLERANCE || shootTimer.getElapsedTime() >= Globals.REV_TIME) && currentBall != -1) {
+                        gate.setPosition(GATE_OPEN_POSITION);
                         isReving = false;
                         indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);
                         shootTimer.resetTimer();
@@ -132,6 +143,7 @@ public class ShooterIntake {
                         indexer.setPower(0);
                         currentBall ++;
                         if (currentBall >= ballsToShoot) {
+                            gate.setPosition(GATE_CLOSE_POSITION);
                             stop();
                         }
                         hasIndexed = true;
@@ -153,7 +165,7 @@ public class ShooterIntake {
     //stops the shooter
     public void stop() {
         shooter.setPower(0);
-        indexer.setPower(0);
+        indexer.setPower(Globals.FEEDER_IDLE_VELOCITY);
         isShooterBusy = false;
         isReving = false;
         isIntaking = false;

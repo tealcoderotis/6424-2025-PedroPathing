@@ -69,6 +69,7 @@ public class AutonGate extends LinearOpMode {
             }
         }
         if (alliance != Alliance.UNKNOWN) {
+            shooterIntake.start();
             Globals.resetGlobals();
             if (useLimelight) {
                 poseCorrector = new LimelightPoseCorrector(hardwareMap);

@@ -52,7 +52,9 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
     private DcMotorEx launcher = null;
     private DcMotorEx feeder = null;
     private Follower follower;
-    boolean lockOn = false;
+    final double PGain = 1;
+    final double DGain = 0.2;
+    double xGoal = 144;
     ElapsedTime feederTimer = new ElapsedTime();
     private Alliance alliance = Alliance.UNKNOWN;
 
@@ -127,10 +129,12 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
                 //Red starting pose
                 follower.setStartingPose(new Pose(97.108, 59.579, Math.toRadians(0)));
                 alliance = Alliance.RED;
+                xGoal = 144;
             } else if (gamepad1.xWasPressed()) {
                 //Blue starting pose
                 follower.setStartingPose(new Pose(46.892, 59.798, Math.toRadians(180)));
                 alliance = Alliance.BLUE;
+                xGoal = 0;
             }
         }
         telemetry.addData("alliance", alliance.toString());
@@ -154,11 +158,16 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
             leftStickX = gamepad1.left_stick_x * SLOW_MODE_MULTIPLIER;
             rightStickX = gamepad1.right_stick_x * SLOW_MODE_MULTIPLIER;
         }
-        if (!lockOn) {
-            mecuamnFieldDrive(-leftStickY, leftStickX, rightStickX);
-        } else {
-            double rotate = 0;
+        if (gamepad1.a) {
+            double angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getY(), xGoal-follower.getPose().getX());
+            double pi = Math.PI;
+            angle = ((angle + pi) % (2 * pi)) - pi; //Makes angle between -pi and pi
+            telemetry.addData("angle", angle);
+            telemetry.addData("angleVelocity", follower.getAngularVelocity());
+            double rotate = PGain * angle + DGain * follower.getAngularVelocity();
             mecuamnFieldDrive(-leftStickY, leftStickX, rotate);
+        } else {
+            mecuamnFieldDrive(-leftStickY, leftStickX, rightStickX);
         }
 
         if (gamepad1.aWasPressed()) {

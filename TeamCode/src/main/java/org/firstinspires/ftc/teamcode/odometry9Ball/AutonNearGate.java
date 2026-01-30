@@ -5,6 +5,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.util.LimelightPoseCorrector;
 
 @Configurable
 @Autonomous(name = "Odometry 9 Ball Auton (Gate)")
+@Disabled
 public class AutonNearGate extends LinearOpMode {
     private Follower follower;
     private ShooterIntake shooterIntake;

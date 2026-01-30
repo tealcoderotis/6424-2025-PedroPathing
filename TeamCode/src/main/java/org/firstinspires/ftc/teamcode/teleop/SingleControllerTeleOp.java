@@ -10,6 +10,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -28,7 +29,7 @@ import org.firstinspires.ftc.teamcode.util.PoseDimensionConverter;
 import org.firstinspires.ftc.teamcode.Regression;
 
 @TeleOp(name = "SingleControllerTeleOp")
-//@Disabled
+@Disabled
 public class SingleControllerTeleOp extends OpMode {
     final double STOP_SPEED = 0.0;
 

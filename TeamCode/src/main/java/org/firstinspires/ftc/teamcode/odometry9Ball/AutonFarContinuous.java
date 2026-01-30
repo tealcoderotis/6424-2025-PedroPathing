@@ -4,6 +4,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.LimelightPoseCorrector;
 
 @Configurable
+@Disabled
 @Autonomous(name = "Odometry 9 Ball Auton (Far Side) (Continuous Shooting)")
 public class AutonFarContinuous extends LinearOpMode {
     private Follower follower;

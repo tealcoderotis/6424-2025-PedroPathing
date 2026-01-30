@@ -145,12 +145,14 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
     public void init_loop() {
         if (gamepad1.bWasPressed()) {
             //Red starting pose
+            limelight.pipelineSwitch(0);
             recentPoseEstimate = new Pose(97.108, 59.579, Math.toRadians(0));
             follower.setPose(new Pose(97.108, 59.579, Math.toRadians(0)));
             alliance = Alliance.RED;
             xGoal = 144;
         } else if (gamepad1.xWasPressed()) {
             //Blue starting pose
+            limelight.pipelineSwitch(1);
             recentPoseEstimate = new Pose(46.892, 59.798, Math.toRadians(180));
             follower.setPose(new Pose(46.892, 59.798, Math.toRadians(180)));
             alliance = Alliance.BLUE;

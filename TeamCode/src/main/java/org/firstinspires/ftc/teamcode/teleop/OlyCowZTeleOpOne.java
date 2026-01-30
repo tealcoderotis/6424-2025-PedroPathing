@@ -135,7 +135,7 @@ public class OlyCowZTeleOpOne extends OpMode {
             cornerHeight = 29.5 - 3.25;
         }
         //960 y axis pixels -> 42 degrees
-        return (cornerHeight - 13) / Math.tan((20.9 + tpx * 42 / 960 - 21) * Math.PI / 180);//Measured 20.9
+        return (cornerHeight - 13) / Math.tan((tpx * 42 / 960 - 21) * Math.PI / 180);//Measured 20.9
     }
 
     @Override

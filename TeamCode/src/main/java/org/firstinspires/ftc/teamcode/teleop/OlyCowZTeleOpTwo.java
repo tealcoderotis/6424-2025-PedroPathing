@@ -125,7 +125,7 @@ public class OlyCowZTeleOpTwo extends OpMode {
         return recentPoseEstimate;
     }
 
-    public void LocalizerZ(Limelight3A limelight) {
+    public double LocalizerZ(Limelight3A limelight) {
         LLResult result = limelight.getLatestResult();
         if (result.isValid() && Math.abs(result.getTx())<7) {
             List<LLResultTypes.FiducialResult> results = result.getFiducialResults();
@@ -138,6 +138,7 @@ public class OlyCowZTeleOpTwo extends OpMode {
                     double x = (Math.pow(L, 2) - Math.pow(R, 2)) / (4 * 3.25);
                     double y = Math.sqrt(Math.pow(R, 2) - Math.pow(x - 3.25, 2));
                     PoseAverager(Converter(y, x), 0.3);
+                    return Math.sqrt(Math.pow(x, 2) + Math.pow(y + 21.3, 2));
                 } else {
                     telemetry.addLine("First Fiducial Result is null");
                 }
@@ -147,6 +148,7 @@ public class OlyCowZTeleOpTwo extends OpMode {
         } else {
             telemetry.addLine("No valid apriltags");
         }
+        return 0;
     }
 
     private double distFromPoint(double tpx, int corner) {

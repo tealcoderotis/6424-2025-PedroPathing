@@ -125,30 +125,6 @@ public class OlyCowZTeleOpOne extends OpMode {
         return recentPoseEstimate;
     }
 
-    public void LocalizerZ(Limelight3A limelight) {
-        LLResult result = limelight.getLatestResult();
-        if (result.isValid() && Math.abs(result.getTx())<7) {
-            List<LLResultTypes.FiducialResult> results = result.getFiducialResults();
-            if (results != null) {
-                LLResultTypes.FiducialResult firstResult = results.get(0); //There should never be more than 1 result because it is filtered in the pipeline
-                if (firstResult != null) {
-                    List<List<Double>> targetCorners = firstResult.getTargetCorners();
-                    double R = (distFromPoint(targetCorners.get(1).get(1), 1) + distFromPoint(targetCorners.get(2).get(1), 2)) / 2;
-                    double L = (distFromPoint(targetCorners.get(0).get(1), 0) + distFromPoint(targetCorners.get(3).get(1), 3)) / 2;
-                    double x = (Math.pow(L, 2) - Math.pow(R, 2)) / (4 * 3.25);
-                    double y = Math.sqrt(Math.pow(R, 2) - Math.pow(x - 3.25, 2));
-                    PoseAverager(Converter(y, x), 0.3);
-                } else {
-                    telemetry.addLine("First Fiducial Result is null");
-                }
-            } else {
-                telemetry.addLine("getFiducialResults returns null, have you 'enabled in output tab'?");
-            }
-        } else {
-            telemetry.addLine("No valid apriltags");
-        }
-    }
-
     private double distFromPoint(double tpx, int corner) {
         //Height of apriltag above ground = 29.5
         //Side length of apriltag = 6.5

@@ -127,7 +127,7 @@ public class OlyCowZTeleOpOne extends OpMode {
 
     public void LocalizerZ(Limelight3A limelight) {
         LLResult result = limelight.getLatestResult();
-        if (result.isValid()) {
+        if (result.isValid() && Math.abs(result.getTx())<7) {
             List<LLResultTypes.FiducialResult> results = result.getFiducialResults();
             if (results != null) {
                 LLResultTypes.FiducialResult firstResult = results.get(0); //There should never be more than 1 result because it is filtered in the pipeline

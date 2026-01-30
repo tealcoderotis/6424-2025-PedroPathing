@@ -93,7 +93,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
         shootermath = new ShooterMath(telemetry);
         launchState = LaunchState.IDLE;
         launcherIdle = true;
-        fieldCentric = true;
+        fieldCentric = false;
         follower = Constants.createFollower(hardwareMap);
 
         shooterIntake = new ShooterIntakeContinuous(hardwareMap, telemetry);

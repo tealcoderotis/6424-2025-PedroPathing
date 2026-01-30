@@ -24,11 +24,19 @@ import org.firstinspires.ftc.teamcode.ShooterMath;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 
-//b slow mode
+//1
+
+//left dpad slow mode
 //y reset
 //a robot
 //x field
+//b lockon
 
+//2
+
+//Right bumper: reset position
+//a: Intake
+//b: Stop launcher
 @TeleOp(name = "OlyCowAlexTeleOp (Backwards Launcher)")
 //@Disabled
 public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
@@ -126,27 +134,20 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
 
     @Override
     public void init_loop() {
-        if (Globals.alliance != Alliance.UNKNOWN) {
-            alliance = Globals.alliance;
-            follower.setStartingPose(Globals.endingPose.copy());
-        }
-        else {
-            if (gamepad1.bWasPressed()) {
-                //Red starting pose
-                follower.setStartingPose(new Pose(97.108, 59.579, Math.toRadians(0)));
-                alliance = Alliance.RED;
-                xGoal = 144;
-            } else if (gamepad1.xWasPressed()) {
-                //Blue starting pose
-                follower.setStartingPose(new Pose(46.892, 59.798, Math.toRadians(180)));
-                alliance = Alliance.BLUE;
-                xGoal = 0;
-            }
+        if (gamepad1.bWasPressed()) {
+            //Red starting pose
+            follower.setPose(new Pose(97.108, 59.579, Math.toRadians(0)));
+            alliance = Alliance.RED;
+            xGoal = 144;
+        } else if (gamepad1.xWasPressed()) {
+            //Blue starting pose
+            follower.setPose(new Pose(46.892, 59.798, Math.toRadians(180)));
+            alliance = Alliance.BLUE;
+            xGoal = 0;
         }
         telemetry.addData("alliance", alliance.toString());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
-        follower.update();
     }
 
     @Override

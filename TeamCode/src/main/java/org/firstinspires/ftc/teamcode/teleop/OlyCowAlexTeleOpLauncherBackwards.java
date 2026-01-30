@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.teleop;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,6 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.Regression;
+import org.firstinspires.ftc.teamcode.ShooterIntakeContinuous;
 import org.firstinspires.ftc.teamcode.ShooterMath;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -47,6 +50,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightBackDrive = null;
+    private ShooterIntakeContinuous shooterIntake;
     private Servo stopper;
     private IMU imu = null;
     private DcMotorEx launcher = null;
@@ -83,6 +87,8 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
         launcherIdle = true;
         fieldCentric = true;
         follower = Constants.createFollower(hardwareMap);
+
+        shooterIntake = new ShooterIntakeContinuous(hardwareMap, telemetry);
 
         imu = (IMU) hardwareMap.get("imu");
         imu.resetYaw();
@@ -153,12 +159,12 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
         double leftStickY = gamepad1.left_stick_y;
         double leftStickX = gamepad1.left_stick_x;
         double rightStickX = gamepad1.right_stick_x;
-        if (gamepad1.b) {
+        if (gamepad1.dpad_left) {
             leftStickY = gamepad1.left_stick_y * SLOW_MODE_MULTIPLIER;
             leftStickX = gamepad1.left_stick_x * SLOW_MODE_MULTIPLIER;
             rightStickX = gamepad1.right_stick_x * SLOW_MODE_MULTIPLIER;
         }
-        if (gamepad1.a) {
+        if (gamepad1.left_bumper) {
             double angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getY(), xGoal-follower.getPose().getX());
             double pi = Math.PI;
             angle = ((angle + pi) % (2 * pi)) - pi; //Makes angle between -pi and pi
@@ -180,6 +186,31 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
 
         if (gamepad1.yWasPressed()) {
             imu.resetYaw();
+        }
+        if (gamepad1.bWasPressed()) {
+            boolean autonomous = true;
+            int pathState = 1;
+            PathChain RedStart = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(follower.getPose().getX(), follower.getPose().getY()), new Pose(96, 95.8))
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw()), Math.toRadians(42))
+                    .build();
+            while (autonomous) {
+                if (pathState == 1) {
+                    shooterIntake.beginReving();
+                    follower.followPath(RedStart);
+                    pathState = 2;
+                }
+                if (!follower.isBusy() && pathState == 2) {
+                    shooterIntake.beginShooting(3);
+                    pathState = 3;
+                }
+                if (pathState == 3 && !shooterIntake.isBusy()) {
+                    autonomous = false;
+                }
+            }
         }
 
         if (gamepad2.a) {

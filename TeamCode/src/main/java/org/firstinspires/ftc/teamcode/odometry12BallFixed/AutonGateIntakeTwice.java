@@ -180,7 +180,7 @@ public class AutonGateIntakeTwice extends LinearOpMode {
             case 10:
                 if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     maxIntakeTimer.resetTimer();
-                    follower.setMaxPower(1);
+                    follower.setMaxPower(0.5);
                     follower.followPath(paths.RedGateIntakeEnd);
                     shooterIntake.beginIntaking(true);
                     pathState = 11;
@@ -262,7 +262,7 @@ public class AutonGateIntakeTwice extends LinearOpMode {
             case 21:
                 if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     maxIntakeTimer.resetTimer();
-                    follower.setMaxPower(1);
+                    follower.setMaxPower(0.5);
                     follower.followPath(paths.RedGateIntakeEnd);
                     shooterIntake.beginIntaking(true);
                     pathState = 22;
@@ -401,7 +401,7 @@ public class AutonGateIntakeTwice extends LinearOpMode {
             case 10:
                 if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     maxIntakeTimer.resetTimer();
-                    follower.setMaxPower(1);
+                    follower.setMaxPower(0.5);
                     follower.followPath(paths.BlueGateIntakeEnd);
                     shooterIntake.beginIntaking(true);
                     pathState = 11;
@@ -483,7 +483,7 @@ public class AutonGateIntakeTwice extends LinearOpMode {
             case 21:
                 if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     maxIntakeTimer.resetTimer();
-                    follower.setMaxPower(1);
+                    follower.setMaxPower(0.5);
                     follower.followPath(paths.BlueGateIntakeEnd);
                     shooterIntake.beginIntaking(true);
                     pathState = 22;

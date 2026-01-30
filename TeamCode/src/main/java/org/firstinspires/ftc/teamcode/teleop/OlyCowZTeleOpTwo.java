@@ -41,6 +41,7 @@ public class OlyCowZTeleOpTwo extends OpMode {
     double xGoal = 144;
     Alliance alliance = Alliance.UNKNOWN;
     private Follower follower;
+    Pose recentPoseEstimate = new Pose(97.108, 59.579, Math.toRadians(0));
     boolean visualTrack = false;
     final double PGain = 1;
     final double DGain = 0.2;
@@ -83,12 +84,14 @@ public class OlyCowZTeleOpTwo extends OpMode {
     public void init_loop() {
         if (gamepad1.bWasPressed()) {
             //Red starting pose
-            follower.setStartingPose(new Pose(97.108, 59.579, Math.toRadians(0)));
+            recentPoseEstimate = new Pose(97.108, 59.579, Math.toRadians(0));
+            follower.setStartingPose(recentPoseEstimate);
             alliance = Alliance.RED;
             xGoal = 144;
         } else if (gamepad1.xWasPressed()) {
             //Blue starting pose
-            follower.setStartingPose(new Pose(46.892, 59.798, Math.toRadians(180)));
+            recentPoseEstimate = new Pose(46.892, 59.798, Math.toRadians(180));
+            follower.setStartingPose(recentPoseEstimate);
             alliance = Alliance.BLUE;
             xGoal = 0;
         }
@@ -115,10 +118,11 @@ public class OlyCowZTeleOpTwo extends OpMode {
         perpendicular = perpendicular * 0.70710678118;
         parallel = parallel * 0.70710678118;
         if (alliance == Alliance.BLUE) {
-            return new Pose(16.3582677 + perpendicular - parallel, 130.3740157 - perpendicular - parallel);
+            recentPoseEstimate = new Pose(16.3582677 + perpendicular - parallel, 130.3740157 - perpendicular - parallel);
         } else {
-            return new Pose(127.6417323 - perpendicular - parallel * 0.70710678118, 130.3740157 - perpendicular + parallel);
+            recentPoseEstimate = new Pose(127.6417323 - perpendicular - parallel * 0.70710678118, 130.3740157 - perpendicular + parallel);
         }
+        return recentPoseEstimate;
     }
 
     public void LocalizerZ(Limelight3A limelight) {
@@ -160,6 +164,7 @@ public class OlyCowZTeleOpTwo extends OpMode {
 
     @Override
     public void loop() {
+        telemetry.addData("PoseEstimate", recentPoseEstimate);
         LLResult result = limelight.getLatestResult();
         if (state == 1) { //Lineup Phase
             follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, false);//Field-Centric

@@ -120,7 +120,7 @@ public class OlyCowZTeleOpOne extends OpMode {
         if (alliance == Alliance.BLUE) {
             recentPoseEstimate = new Pose(16.3582677 + perpendicular - parallel, 130.3740157 - perpendicular - parallel);
         } else {
-            recentPoseEstimate = new Pose(127.6417323 - perpendicular - parallel * 0.70710678118, 130.3740157 - perpendicular + parallel);
+            recentPoseEstimate = new Pose(127.6417323 - perpendicular - parallel, 130.3740157 - perpendicular + parallel);
         }
         return recentPoseEstimate;
     }

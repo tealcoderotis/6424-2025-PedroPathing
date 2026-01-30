@@ -146,14 +146,12 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
     public void init_loop() {
         if (gamepad1.bWasPressed()) {
             //Red starting pose
-            limelight.pipelineSwitch(0);
             recentPoseEstimate = new Pose(97.108, 59.579, Math.toRadians(0));
             follower.setPose(new Pose(97.108, 59.579, Math.toRadians(0)));
             alliance = Alliance.RED;
             xGoal = 144;
         } else if (gamepad1.xWasPressed()) {
             //Blue starting pose
-            limelight.pipelineSwitch(1);
             recentPoseEstimate = new Pose(46.892, 59.798, Math.toRadians(180));
             follower.setPose(new Pose(46.892, 59.798, Math.toRadians(180)));
             alliance = Alliance.BLUE;
@@ -184,7 +182,9 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
     private Pose Converter(double perpendicular, double parallel) {
         perpendicular = perpendicular * 0.70710678118;
         parallel = parallel * 0.70710678118;
-        if (alliance == Alliance.BLUE) {
+        LLResult result = limelight.getLatestResult();
+        List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+        if (fiducials.get(0).getFiducialId() == 20) {
             recentPoseEstimate = new Pose(16.3582677 + perpendicular - parallel, 130.3740157 - perpendicular - parallel);
         } else {
             recentPoseEstimate = new Pose(127.6417323 - perpendicular - parallel, 130.3740157 - perpendicular + parallel);

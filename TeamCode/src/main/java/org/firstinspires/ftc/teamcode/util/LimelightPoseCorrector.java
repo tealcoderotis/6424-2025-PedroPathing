@@ -15,6 +15,10 @@ public class LimelightPoseCorrector {
     private Limelight3A limelight;
     private static final String LIMELIGHT_HARDWARE_MAP_NAME = "limelight";
     private long lastTimeStamp = 0;
+
+    private static final double LIMELIGHT_HEIGHT = 13.75;
+    private static final double LIMELIGHT_ANGLE = 20.9;
+    private static final double TAG_HEIGHT = 29.5;
     private Telemetry telemetry;
 
     public LimelightPoseCorrector(HardwareMap hardwareMap) {

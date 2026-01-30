@@ -282,7 +282,7 @@ public class Paths {
                 .addPath(
                         new BezierLine(new Pose(18.800, 83.762), new Pose(18.800, 70.930))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
 
@@ -291,7 +291,7 @@ public class Paths {
                 .addPath(
                         new BezierLine(new Pose(18.800, 70.930), new Pose(14.647, 70.930))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
         BlueRow1ToGate = follower
@@ -356,7 +356,7 @@ public class Paths {
                 .addPath(
                         new BezierLine(new Pose(46.892, 35.383), new Pose(18.800, 35.383))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
         BlueRow3ToShooter = follower

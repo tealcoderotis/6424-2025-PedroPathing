@@ -16,7 +16,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
-import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.Regression;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -32,53 +31,36 @@ public class OlyCowZTeleOpOne extends OpMode {
     final double FEEDER_LAUNCH_VELOCITY = 1200;
     final double FEEDER_STOP_VELOCITY = 0;
 
-    private DcMotor leftFrontDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor leftBackDrive = null;
-    private DcMotor rightBackDrive = null;
     private Servo stopper;
     private DcMotorEx launcher = null;
     private DcMotorEx feeder = null;
     private Limelight3A limelight;
     int state;
-    double leftFrontPower;
-    double rightFrontPower;
-    double leftBackPower;
-    double rightBackPower;
+
     double flywheelVelocity = 0;
     double xGoal = 144;
     Alliance alliance = Alliance.UNKNOWN;
     private Follower follower;
+    Pose recentPoseEstimate = new Pose(97.108, 59.579, Math.toRadians(0));
     boolean visualTrack = false;
     final double PGain = 1;
     final double DGain = 0.2;
-    Pose pCoords = new Pose(0, 0, 0);
+    Pose pCoordinates = new Pose(0, 0, 0);
 
     public void init() {
         state = 1;//Intake
         follower = Constants.createFollower(hardwareMap);
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
+
         stopper = hardwareMap.get(Servo.class, "gateServo");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         feeder = hardwareMap.get(DcMotorEx.class, "feeder");
         stopper.setPosition(1);
 
-        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
         launcher.setDirection(DcMotor.Direction.REVERSE);
         feeder.setDirection(DcMotor.Direction.FORWARD);
 
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFrontDrive.setZeroPowerBehavior(BRAKE);
-        rightFrontDrive.setZeroPowerBehavior(BRAKE);
-        leftBackDrive.setZeroPowerBehavior(BRAKE);
-        rightBackDrive.setZeroPowerBehavior(BRAKE);
         launcher.setZeroPowerBehavior(BRAKE);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -102,12 +84,14 @@ public class OlyCowZTeleOpOne extends OpMode {
     public void init_loop() {
         if (gamepad1.bWasPressed()) {
             //Red starting pose
-            follower.setStartingPose(new Pose(97.108, 59.579, Math.toRadians(0)));
+            recentPoseEstimate = new Pose(97.108, 59.579, Math.toRadians(0));
+            follower.setStartingPose(recentPoseEstimate);
             alliance = Alliance.RED;
             xGoal = 144;
         } else if (gamepad1.xWasPressed()) {
             //Blue starting pose
-            follower.setStartingPose(new Pose(46.892, 59.798, Math.toRadians(180)));
+            recentPoseEstimate = new Pose(46.892, 59.798, Math.toRadians(180));
+            follower.setStartingPose(recentPoseEstimate);
             alliance = Alliance.BLUE;
             xGoal = 0;
         }
@@ -124,7 +108,7 @@ public class OlyCowZTeleOpOne extends OpMode {
         follower.update();
     }
 
-    private void PoseAverager(Pose newPose, double proportion) { // Only x and y averagin
+    private void PoseAverager(Pose newPose, double proportion) { // Only x and y averaged
         double newX = newPose.getX() * proportion + follower.getPose().getX() * (1 - proportion);
         double newY = newPose.getY() * proportion + follower.getPose().getY() * (1 - proportion);
         follower.setPose(new Pose(newX, newY));
@@ -134,27 +118,53 @@ public class OlyCowZTeleOpOne extends OpMode {
         perpendicular = perpendicular * 0.70710678118;
         parallel = parallel * 0.70710678118;
         if (alliance == Alliance.BLUE) {
-            return new Pose(16.3582677 + perpendicular - parallel, 130.3740157 - perpendicular - parallel);
+            recentPoseEstimate = new Pose(16.3582677 + perpendicular - parallel, 130.3740157 - perpendicular - parallel);
         } else {
-            return new Pose(127.6417323 - perpendicular - parallel * 0.70710678118, 130.3740157 - perpendicular + parallel);
+            recentPoseEstimate = new Pose(127.6417323 - perpendicular - parallel * 0.70710678118, 130.3740157 - perpendicular + parallel);
+        }
+        return recentPoseEstimate;
+    }
+
+    public void LocalizerZ(Limelight3A limelight) {
+        LLResult result = limelight.getLatestResult();
+        if (result.isValid()) {
+            List<LLResultTypes.FiducialResult> results = result.getFiducialResults();
+            if (results != null) {
+                LLResultTypes.FiducialResult firstResult = results.get(0); //There should never be more than 1 result because it is filtered in the pipeline
+                if (firstResult != null) {
+                    List<List<Double>> targetCorners = firstResult.getTargetCorners();
+                    double R = (distFromPoint(targetCorners.get(1).get(1), 1) + distFromPoint(targetCorners.get(2).get(1), 2)) / 2;
+                    double L = (distFromPoint(targetCorners.get(0).get(1), 0) + distFromPoint(targetCorners.get(3).get(1), 3)) / 2;
+                    double x = (Math.pow(L, 2) - Math.pow(R, 2)) / (4 * 3.25);
+                    double y = Math.sqrt(Math.pow(R, 2) - Math.pow(x - 3.25, 2));
+                    PoseAverager(Converter(y, x), 0.3);
+                } else {
+                    telemetry.addLine("First Fiducial Result is null");
+                }
+            } else {
+                telemetry.addLine("getFiducialResults returns null, have you 'enabled in output tab'?");
+            }
+        } else {
+            telemetry.addLine("No valid apriltags");
         }
     }
 
-    private double distfrompoint(double tpx, int corner) {
+    private double distFromPoint(double tpx, int corner) {
         //Height of apriltag above ground = 29.5
         //Side length of apriltag = 6.5
-        double cornerheight;
+        double cornerHeight;
         if ((corner == 0) || (corner == 1)) { // Maybe 0,1
-            cornerheight = 29.5 + 3.25;
+            cornerHeight = 29.5 + 3.25;
         } else {
-            cornerheight = 29.5 - 3.25;
+            cornerHeight = 29.5 - 3.25;
         }
         //960 y axis pixels -> 42 degrees
-        return (cornerheight - 13) / Math.tan((20.9 + tpx * 42 / 960 - 21) * Math.PI / 180);//Measured 20.9
+        return (cornerHeight - 13) / Math.tan((20.9 + tpx * 42 / 960 - 21) * Math.PI / 180);//Measured 20.9
     }
 
     @Override
     public void loop() {
+        telemetry.addData("PoseEstimate", recentPoseEstimate);
         LLResult result = limelight.getLatestResult();
         if (state == 1) { //Lineup Phase
             follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, false);//Field-Centric
@@ -202,17 +212,18 @@ public class OlyCowZTeleOpOne extends OpMode {
         if (result.isValid()) {
             List<LLResultTypes.FiducialResult> results = result.getFiducialResults();
             if (results != null) {
-                LLResultTypes.FiducialResult firstresult = results.get(0); //There should never be more than 1 result because it is filtered in the pipeline
-                if (firstresult != null) {
-                    List<List<Double>> targetcorners = firstresult.getTargetCorners();
-                    telemetry.addData("x0, y0:", targetcorners.get(0).toString());
-                    telemetry.addData("x1, y1:", targetcorners.get(1).toString());
-                    telemetry.addData("x2, y2:", targetcorners.get(2).toString());
-                    telemetry.addData("x3, y3:", targetcorners.get(3).toString());
-                    double thickness = Math.abs(((targetcorners.get(0).get(0) + targetcorners.get(3).get(0)) - (targetcorners.get(1).get(0) + targetcorners.get(2).get(0))) / 2);
+                LLResultTypes.FiducialResult firstResult = results.get(0); //There should never be more than 1 result because it is filtered in the pipeline
+                if (firstResult != null) {
+                    List<List<Double>> targetCorners = firstResult.getTargetCorners();
+                    telemetry.addData("x0, y0:", targetCorners.get(0).toString());
+                    telemetry.addData("x1, y1:", targetCorners.get(1).toString());
+                    telemetry.addData("x2, y2:", targetCorners.get(2).toString());
+                    telemetry.addData("x3, y3:", targetCorners.get(3).toString());
+                    double thickness = Math.abs(((targetCorners.get(0).get(0) + targetCorners.get(3).get(0)) - (targetCorners.get(1).get(0) + targetCorners.get(2).get(0))) / 2);
                     double angle = thickness * 54.5 / 1280; //Angle of triangle at limelight, Will not use
-                    double R = (distfrompoint(targetcorners.get(1).get(1), 1) + distfrompoint(targetcorners.get(2).get(1), 2)) / 2;
-                    double L = (distfrompoint(targetcorners.get(0).get(1), 0) + distfrompoint(targetcorners.get(3).get(1), 3)) / 2;
+                    telemetry.addData("angle", angle);
+                    double R = (distFromPoint(targetCorners.get(1).get(1), 1) + distFromPoint(targetCorners.get(2).get(1), 2)) / 2;
+                    double L = (distFromPoint(targetCorners.get(0).get(1), 0) + distFromPoint(targetCorners.get(3).get(1), 3)) / 2;
                     telemetry.addData("R", R);
                     telemetry.addData("L", L);
                     double x = (Math.pow(L, 2) - Math.pow(R, 2)) / (4 * 3.25);
@@ -223,10 +234,10 @@ public class OlyCowZTeleOpOne extends OpMode {
                     double guessedDist = Math.sqrt(Math.pow(x, 2) + Math.pow(y + 21.3, 2));
                     telemetry.addData("Guessed total distance", guessedDist);
                     telemetry.addData("Odometry Distance", Math.sqrt(Math.pow(follower.getPose().getX(), 2) + Math.pow(follower.getPose().getY(), 2)));
-                    if (!Converter(y, x).equals(pCoords)) {
-                        PoseAverager(Converter(y, x), 0.3);
+                    if (!Converter(y, x).equals(pCoordinates)) {
+                        PoseAverager(Converter(y, x), 0.3); //Only update position if limelight is up to date
                     }
-                    pCoords = Converter(y, x);
+                    pCoordinates = Converter(y, x);
                 } else {
                     telemetry.addLine("First Fiducial Result is null");
                 }

@@ -81,7 +81,7 @@ public class Paths {
                 .addPath(
                         new BezierLine(new Pose(96, 95.8), new Pose(96, 95.8))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(42), Math.toRadians(42))
+                .setConstantHeadingInterpolation(Math.toRadians(42))
                 .build();
 
         RedRow1IntakeBegin = follower
@@ -235,6 +235,7 @@ public class Paths {
                         new BezierCurve(new Pose(126, 35.383), new Pose(96, 35.383), new Pose(96, 95.8))
                 )
                 .setTangentHeadingInterpolation()
+                .setReversed()
                 .build();
 
         RedLeave = follower
@@ -306,7 +307,7 @@ public class Paths {
                 .addPath(
                         new BezierLine(new Pose(48, 95.8), new Pose(48, 95.8))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(138), Math.toRadians(138))
+                .setConstantHeadingInterpolation(Math.toRadians(138))
                 .build();
 
         BlueRow1IntakeBegin = follower
@@ -451,6 +452,7 @@ public class Paths {
                         new BezierCurve(new Pose(18, 35.383), new Pose(48, 35.383), new Pose(48, 95.8))
                 )
                 .setTangentHeadingInterpolation()
+                .setReversed()
                 .build();
 
         BlueLeave = follower

@@ -24,7 +24,7 @@ public class Globals {
             RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
             RevHubOrientationOnRobot.UsbFacingDirection.LEFT
     );
-    public static final double INTAKE_SPEED = 1;
+    public static final double INTAKE_SPEED = 0.75;
     public static final double FEEDER_INTAKE_VELOCITY = 573;
     public static final double FEEDER_IDLE_VELOCITY = 200;
     public static final double FEEDER_LAUNCH_VELOCITY = 573;

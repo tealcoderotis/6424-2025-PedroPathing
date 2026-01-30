@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.LimelightPoseCorrector;
 
 @Configurable
-@Autonomous(name = "Odometry 18 Ball Auton")
+@Autonomous(name = "Odometry 18 Ball Auton (Straight)")
 public class Auton extends LinearOpMode {
     private Follower follower;
     private ShooterIntakeContinuous shooterIntake;
@@ -46,13 +46,13 @@ public class Auton extends LinearOpMode {
         while (opModeInInit()) {
             if (gamepad1.bWasPressed()) {
                 //Red starting pose
-                follower.setStartingPose(new Pose(122.6, 121.6, Math.toRadians(37)));
+                follower.setStartingPose(new Pose(122.6, 121.6, Math.toRadians(42)));
                 alliance = Alliance.RED;
                 telemetry.addLine("Red alliance");
                 telemetry.update();
             } else if (gamepad1.xWasPressed()) {
                 //Blue starting pose
-                follower.setStartingPose(new Pose(21.4, 121.6, Math.toRadians(143)));
+                follower.setStartingPose(new Pose(21.4, 121.6, Math.toRadians(138)));
                 alliance = Alliance.BLUE;
                 telemetry.addLine("Blue alliance");
                 telemetry.update();

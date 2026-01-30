@@ -194,7 +194,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
 
     private double LocalizerZ() {
         LLResult result = limelight.getLatestResult();
-        if (result.isValid() && Math.abs(result.getTx())<7) {
+        if (result.isValid()) {
             List<LLResultTypes.FiducialResult> results = result.getFiducialResults();
             if (results != null) {
                 LLResultTypes.FiducialResult firstResult = results.get(0); //There should never be more than 1 result because it is filtered in the pipeline
@@ -233,7 +233,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
             leftStickX = gamepad1.left_stick_x * SLOW_MODE_MULTIPLIER;
             rightStickX = gamepad1.right_stick_x * SLOW_MODE_MULTIPLIER;
         }
-        if (gamepad1.left_bumper) {
+        if (gamepad1.a) {
             double angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getY(), xGoal-follower.getPose().getX());
             double pi = Math.PI;
             angle = ((angle + pi) % (2 * pi)) - pi; //Makes angle between -pi and pi
@@ -245,7 +245,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
             mecuamnFieldDrive(-leftStickY, leftStickX, rightStickX);
         }
 
-        if (gamepad1.aWasPressed()) {
+        if (gamepad1.dpadLeftWasPressed()) {
             fieldCentric = false;
         }
 

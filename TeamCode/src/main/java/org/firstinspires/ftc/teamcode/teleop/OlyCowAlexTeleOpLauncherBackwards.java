@@ -189,13 +189,14 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
         }
         if (gamepad1.bWasPressed()) {
             boolean autonomous = true;
+            telemetry.addLine("autonomous");
             int pathState = 1;
             PathChain RedStart = follower
                     .pathBuilder()
                     .addPath(
                             new BezierLine(new Pose(follower.getPose().getX(), follower.getPose().getY()), new Pose(96, 95.8))
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw()), Math.toRadians(42))
+                    .setLinearHeadingInterpolation(follower.getPose().getHeading(), Math.toRadians(42))
                     .build();
             while (autonomous) {
                 if (pathState == 1) {
@@ -210,6 +211,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
                 if (pathState == 3 && !shooterIntake.isBusy()) {
                     autonomous = false;
                 }
+                telemetry.addData("pathState", pathState);
             }
         }
 

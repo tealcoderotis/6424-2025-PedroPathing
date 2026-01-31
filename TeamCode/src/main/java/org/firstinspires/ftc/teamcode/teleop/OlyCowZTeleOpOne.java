@@ -138,11 +138,19 @@ public class OlyCowZTeleOpOne extends OpMode {
         perpendicular = perpendicular * 0.70710678118;
         parallel = parallel * 0.70710678118;
         LLResult result = limelight.getLatestResult();
-        List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
-        if (fiducials.get(0).getFiducialId() == 20) {
-            recentPoseEstimate = new Pose(16.3582677 + perpendicular - parallel, 130.3740157 - perpendicular - parallel);
+        if (result.isValid()) {
+            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+            if (fiducials.get(0).getFiducialId() == 20) {
+                recentPoseEstimate = new Pose(16.3582677 + perpendicular - parallel, 130.3740157 - perpendicular - parallel);
+            } else {
+                recentPoseEstimate = new Pose(127.6417323 - perpendicular - parallel, 130.3740157 - perpendicular + parallel);
+            }
         } else {
-            recentPoseEstimate = new Pose(127.6417323 - perpendicular - parallel, 130.3740157 - perpendicular + parallel);
+            if (alliance == Alliance.BLUE) {
+                recentPoseEstimate = new Pose(16.3582677 + perpendicular - parallel, 130.3740157 - perpendicular - parallel);
+            } else {
+                recentPoseEstimate = new Pose(127.6417323 - perpendicular - parallel, 130.3740157 - perpendicular + parallel);
+            }
         }
         return recentPoseEstimate;
     }

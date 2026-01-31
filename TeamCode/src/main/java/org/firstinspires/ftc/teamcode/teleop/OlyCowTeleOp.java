@@ -8,6 +8,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -28,7 +29,7 @@ import java.util.List;
 
 @Configurable
 @TeleOp(name = "OlyCowTeleOp (Android Studio Version)")
-//@Disabled
+@Disabled
 public class OlyCowTeleOp extends OpMode {
     final double FEED_TIME_SECONDS = 0.5;
     final double STOP_SPEED = 0.0;

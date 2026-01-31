@@ -148,6 +148,23 @@ public class Auton extends LinearOpMode {
                 }
                 break;
             case 6:
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    shooterIntake.stopIntaking();
+                    follower.setMaxPower(1);
+                    follower.followPath(paths.RedIntakeBack);
+                    pathState = 7;
+                }
+                break;
+            case 7:
+                if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
+                    shooterIntake.beginIntaking(true);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
+                    follower.followPath(paths.RedIntakeEnd2);
+                    pathState = 8;
+                }
+                break;
+            case 8:
                 if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving(Globals.SHOOTER_FAR_VELOCITY);
                     shooterIntake.stopIntaking();
@@ -205,6 +222,23 @@ public class Auton extends LinearOpMode {
                 }
                 break;
             case 6:
+                if ((!follower.isBusy()) || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    shooterIntake.stopIntaking();
+                    follower.setMaxPower(1);
+                    follower.followPath(paths.BlueIntakeBack);
+                    pathState = 7;
+                }
+                break;
+            case 7:
+                if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
+                    shooterIntake.beginIntaking(true);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
+                    follower.followPath(paths.BlueIntakeEnd2);
+                    pathState = 8;
+                }
+                break;
+            case 8:
                 if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
                     shooterIntake.beginReving(Globals.SHOOTER_FAR_VELOCITY);
                     shooterIntake.stopIntaking();

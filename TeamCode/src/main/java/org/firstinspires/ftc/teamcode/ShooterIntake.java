@@ -22,7 +22,7 @@ public class ShooterIntake {
     private boolean isIntakeContinuous = false;
     private boolean isIntakeMovingBack = false;
     private static final int SHOOTING_TIME = 1500;
-    private static final int INDEX_TIME = 400;
+    private static final int INDEX_TIME = 150;
     private static final int INTAKE_TIME = 250;
     private static final int INTAKE_END_TIME = Globals.INTAKE_BACK_TIME;
     private static final double SHOOTER_SPEED = Globals.SHOOTER_VELOCITY;
@@ -131,7 +131,7 @@ public class ShooterIntake {
             else {
                 if (isReving) {
                     double differenceFromTarget = Math.abs(-shooter.getVelocity() - this.shooterSpeed);
-                    if ((differenceFromTarget <= Globals.VELOCITY_TOLERANCE || shootTimer.getElapsedTime() >= Globals.REV_TIME) && currentBall != -1) {
+                    if ((shootTimer.getElapsedTime() >= Globals.REV_TIME) && currentBall != -1) {
                         gate.setPosition(GATE_OPEN_POSITION);
                         isReving = false;
                         indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);

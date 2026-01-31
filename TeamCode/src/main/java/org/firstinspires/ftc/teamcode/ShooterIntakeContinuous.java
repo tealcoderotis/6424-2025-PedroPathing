@@ -127,7 +127,7 @@ public class ShooterIntakeContinuous {
             else {
                 if (isReving) {
                     double differenceFromTarget = Math.abs(-shooter.getVelocity() - this.shooterSpeed);
-                    if ((differenceFromTarget <= Globals.VELOCITY_TOLERANCE || shootTimer.getElapsedTime() >= Globals.REV_TIME) && shootingTime != -1) {
+                    if ((shootTimer.getElapsedTime() >= Globals.REV_TIME) && shootingTime != -1) {
                         gate.setPosition(GATE_OPEN_POSITION);
                         isReving = false;
                         indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);

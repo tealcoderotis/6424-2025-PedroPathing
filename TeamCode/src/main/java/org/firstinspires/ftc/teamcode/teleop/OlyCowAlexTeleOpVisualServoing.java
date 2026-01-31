@@ -49,11 +49,11 @@ public class OlyCowAlexTeleOpVisualServoing extends OpMode {
 
     final double LAUNCHER_IDLE_VELOCITY = 0;
     final double LAUNCHER_MAX_VELOCITY = 1462.5;
-    final double LAUNCHER_MIN_VELOCITY = 1125;
+    final double LAUNCHER_MIN_VELOCITY = 1120;
     final double LAUNCHER_SPINUP_VELOCITY = 900;
     final double LAUNCHER_REVERSE_VELOCITY = -375;
     final double FEEDER_INTAKE_VELOCITY = 3000;
-    final double FEEDER_LAUNCH_VELOCITY = 3000;
+    final double FEEDER_LAUNCH_VELOCITY = 2000;
     final double FEEDER_REVERSE_VELOCITY = 900;
     final double SLOW_MODE_MULTIPLIER = 0.5;
 
@@ -301,14 +301,8 @@ public class OlyCowAlexTeleOpVisualServoing extends OpMode {
             feeder.setPower(STOP_SPEED);
         }
         if (gamepad2.dpad_left) {
-            double dist = 0;
-            if (alliance == Alliance.RED) {
-                dist = Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2));
-            } else if (alliance == Alliance.BLUE) {
-                dist = Math.sqrt(Math.pow(0-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2));
-            } else {
-                telemetry.addData("Goal Ball Velocity", "UNKNOWN ALLIANCE");
-            }
+            LLResult result = limelight.getLatestResult();
+            double dist = 11.85/Math.tan(-result.getTy());
             double flywheelVelocity = Regression.getVelocityForDistance(dist);
             if (flywheelVelocity == 0) {
                 telemetry.addLine("Data not available for current distance!");
@@ -329,9 +323,6 @@ public class OlyCowAlexTeleOpVisualServoing extends OpMode {
             launcher.setVelocity(flywheelVelocity);
             telemetry.addData("Shooter Speed", flywheelVelocity);
             launcherIdle = false;
-        }
-        if (gamepad2.right_bumper){
-            follower.setPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
         }
         if (gamepad2.right_trigger >= 0.1) {
             stopper.setPosition(1);

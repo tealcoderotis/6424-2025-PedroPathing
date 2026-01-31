@@ -182,7 +182,7 @@ public class OlyCowAlexTeleOpVisualServoing extends OpMode {
             angle = ((angle + pi) % (2 * pi)) - pi; //Makes angle between -pi and pi
             telemetry.addData("angle", angle);
             telemetry.addData("angleVelocity", follower.getAngularVelocity());
-            rightStickX = PGain * angle + DGain * follower.getAngularVelocity();
+            rightStickX = -(PGain * angle + DGain * follower.getAngularVelocity());
         }
         if (gamepad1.left_bumper) {
             double angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getY(), xGoal-follower.getPose().getX());

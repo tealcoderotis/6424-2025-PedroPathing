@@ -16,6 +16,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Regression;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -32,10 +35,20 @@ public class OlyCowZTeleOpOne extends OpMode {
     final double FEEDER_STOP_VELOCITY = 0;
 
     private Servo stopper;
+    private IMU imu = null;
     private DcMotorEx launcher = null;
     private DcMotorEx feeder = null;
     private Limelight3A limelight;
     int state;
+
+    private DcMotor leftFrontDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightBackDrive = null;
+    double leftFrontPower;
+    double rightFrontPower;
+    double leftBackPower;
+    double rightBackPower;
 
     double flywheelVelocity = 0;
     double xGoal = 144;
@@ -44,13 +57,20 @@ public class OlyCowZTeleOpOne extends OpMode {
     Pose recentPoseEstimate = new Pose(97.108, 59.579, Math.toRadians(0));
     boolean visualTrack = false;
     final double PGain = 1;
-    final double DGain = 0.2;
+    final double DGain = 0.3;
     Pose pCoordinates = new Pose(0, 0, 0);
 
     public void init() {
         state = 1;//Intake
         follower = Constants.createFollower(hardwareMap);
 
+        imu = (IMU) hardwareMap.get("imu");
+        imu.resetYaw();
+
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
         stopper = hardwareMap.get(Servo.class, "gateServo");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         feeder = hardwareMap.get(DcMotorEx.class, "feeder");
@@ -117,10 +137,12 @@ public class OlyCowZTeleOpOne extends OpMode {
     private Pose Converter(double perpendicular, double parallel) {
         perpendicular = perpendicular * 0.70710678118;
         parallel = parallel * 0.70710678118;
-        if (alliance == Alliance.BLUE) {
-            recentPoseEstimate = new Pose(16.3582677 + perpendicular + parallel, 130.3740157 - perpendicular + parallel);
+        LLResult result = limelight.getLatestResult();
+        List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+        if (fiducials.get(0).getFiducialId() == 20) {
+            recentPoseEstimate = new Pose(16.3582677 + perpendicular - parallel, 130.3740157 - perpendicular - parallel);
         } else {
-            recentPoseEstimate = new Pose(127.6417323 - perpendicular + parallel, 130.3740157 - perpendicular - parallel);
+            recentPoseEstimate = new Pose(127.6417323 - perpendicular - parallel, 130.3740157 - perpendicular + parallel);
         }
         return recentPoseEstimate;
     }
@@ -143,7 +165,7 @@ public class OlyCowZTeleOpOne extends OpMode {
         telemetry.addData("PoseEstimate", recentPoseEstimate);
         LLResult result = limelight.getLatestResult();
         if (state == 1) { //Lineup Phase
-            follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, false);//Field-Centric
+            mecuamnFieldDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);//Field-Centric
             if (gamepad1.a) {
                 double angle;
                 if (visualTrack) {
@@ -156,7 +178,7 @@ public class OlyCowZTeleOpOne extends OpMode {
                 telemetry.addData("angle", angle);
                 telemetry.addData("angleVelocity", follower.getAngularVelocity());
                 double rotate = PGain * angle + DGain * follower.getAngularVelocity();
-                follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate, false);
+                mecuamnFieldDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
             }
             if (gamepad1.dpad_down) {
                 flywheelVelocity = LAUNCHER_MIN_VELOCITY;
@@ -168,7 +190,7 @@ public class OlyCowZTeleOpOne extends OpMode {
             stopper.setPosition(0.5);
             feeder.setDirection(DcMotor.Direction.FORWARD);
             feeder.setVelocity(FEEDER_INTAKE_VELOCITY);
-            launcher.setDirection(DcMotor.Direction.FORWARD);
+            launcher.setDirection(DcMotor.Direction.REVERSE);
             if (gamepad1.b) {
                 feeder.setVelocity(FEEDER_STOP_VELOCITY);
             }
@@ -176,10 +198,10 @@ public class OlyCowZTeleOpOne extends OpMode {
                 state = 2;
             }
         } else if (state == 2) { //shooting
-            follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x * 0.4, false);//Field-Centric
+            mecuamnFieldDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x * 0.4);//Field-Centric
             feeder.setDirection(DcMotor.Direction.FORWARD);
             feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
-            launcher.setDirection(DcMotor.Direction.FORWARD);
+            launcher.setDirection(DcMotor.Direction.REVERSE);
             stopper.setPosition(1);
             if (gamepad1.rightBumperWasPressed()) {
                 state = 1;
@@ -227,5 +249,26 @@ public class OlyCowZTeleOpOne extends OpMode {
         telemetry.addData("state", state);
         telemetry.addData("flywheelVelocity", flywheelVelocity);
         telemetry.update();
+    }
+    void mecanumDrive(double forward, double strafe, double rotate){
+
+        double denominator = Math.max(Math.abs(forward) + Math.abs(strafe) + Math.abs(rotate), 1);
+
+        leftFrontPower = (forward + strafe + rotate) / denominator;
+        rightFrontPower = (forward - strafe - rotate) / denominator;
+        leftBackPower = (forward - strafe + rotate) / denominator;
+        rightBackPower = (forward + strafe - rotate) / denominator;
+
+        leftFrontDrive.setPower(leftFrontPower);
+        rightFrontDrive.setPower(rightFrontPower);
+        leftBackDrive.setPower(leftBackPower);
+        rightBackDrive.setPower(rightBackPower);
+
+    }
+    void mecuamnFieldDrive(double forward, double strafe, double rotate) {
+        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        double fieldStrafe = strafe * Math.cos(-botHeading) - forward * Math.sin(-botHeading);
+        double fieldForward = strafe * Math.sin(-botHeading) + forward * Math.cos(-botHeading);
+        mecanumDrive(fieldForward, fieldStrafe, rotate);
     }
 }

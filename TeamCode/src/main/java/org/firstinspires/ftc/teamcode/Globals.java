@@ -19,7 +19,7 @@ public class Globals {
     //Constants
     public static final PIDFCoefficients SHOOTER_PIDF = new PIDFCoefficients(300, 0, 0, 10, MotorControlAlgorithm.PIDF);
     public static final double SHOOTER_VELOCITY = 1050;
-    public static final double SHOOTER_FAR_VELOCITY = 1875;
+    public static final double SHOOTER_FAR_VELOCITY = 2250;
     public static final RevHubOrientationOnRobot IMU_ORIENTATION = new RevHubOrientationOnRobot(
             RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
             RevHubOrientationOnRobot.UsbFacingDirection.LEFT
@@ -32,7 +32,7 @@ public class Globals {
     public static final double SHOOTER_BACK_VELOCITY = 375;
     public static final int INTAKE_BACK_TIME = 0;
     public static final double VELOCITY_TOLERANCE = 50;
-    public static final int REV_TIME = 1500;
+    public static final int REV_TIME = 2000;
     public static final int MAX_INTAKE_TIME = 2000;
     public static final int MAX_GATE_INTAKE_TIME = 1000;
 }

@@ -44,7 +44,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
     final double FEED_TIME_SECONDS = 0.1;
     final double STOP_SPEED = 0.0;
 
-    final double LAUNCHER_IDLE_VELOCITY = 0;
+    final double LAUNCHER_IDLE_VELOCITY = 650;
     final double LAUNCHER_MAX_VELOCITY = 1462.5;
     final double LAUNCHER_MIN_VELOCITY = 1125;
     final double LAUNCHER_SPINUP_VELOCITY = 900;

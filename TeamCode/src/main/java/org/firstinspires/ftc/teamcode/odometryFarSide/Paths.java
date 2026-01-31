@@ -26,7 +26,7 @@ public class Paths {
                                 new Pose(84.000, 9.700),
                                 new Pose(84.000, 18.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(62))
+                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(68))
                 .build();
 
         RedIntakeBegin = follower.pathBuilder().addPath(
@@ -34,7 +34,7 @@ public class Paths {
                                 new Pose(84.000, 18.000),
                                 new Pose(108.000, 9.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(62), Math.toRadians(0))
+                ).setLinearHeadingInterpolation(Math.toRadians(68), Math.toRadians(0))
                 .build();
 
         RedIntakeEnd = follower.pathBuilder().addPath(
@@ -66,7 +66,7 @@ public class Paths {
                                 new Pose(135.000, 9.000),
                                 new Pose(84.000, 18.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(62))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(68))
                 .build();
 
         BlueStart = follower.pathBuilder().addPath(
@@ -74,7 +74,7 @@ public class Paths {
                                 new Pose(60.000, 9.700),
                                 new Pose(60.000, 18.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(118))
+                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(112))
                 .build();
 
         BlueIntakeBegin = follower.pathBuilder().addPath(
@@ -82,7 +82,7 @@ public class Paths {
                                 new Pose(60.000, 18.000),
                                 new Pose(36.000, 9.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(118), Math.toRadians(180))
+                ).setLinearHeadingInterpolation(Math.toRadians(112), Math.toRadians(180))
                 .build();
 
         BlueIntakeEnd = follower.pathBuilder().addPath(
@@ -98,7 +98,7 @@ public class Paths {
                                 new Pose(9.000, 9.000),
                                 new Pose(36.000, 9.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
         BlueIntakeEnd2 = follower.pathBuilder().addPath(
@@ -106,7 +106,7 @@ public class Paths {
                                 new Pose(36.000, 9.000),
                                 new Pose(9.000, 9.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();
 
         BlueIntakeToShooter = follower.pathBuilder().addPath(
@@ -114,7 +114,7 @@ public class Paths {
                                 new Pose(9.000, 9.000),
                                 new Pose(60.000, 18.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(118))
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(112))
                 .build();
     }
 }

@@ -163,7 +163,7 @@ public class OlyCowAlexTeleOpLauncherBackwardsSingleController extends OpMode {
             leftStickX = gamepad1.left_stick_x * SLOW_MODE_MULTIPLIER;
             rightStickX = gamepad1.right_stick_x * SLOW_MODE_MULTIPLIER;
         }
-        if (gamepad1.left_bumper) {
+        if (/*gamepad1.left_bumper*/ false) {
             double angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getY(), xGoal-follower.getPose().getX());
             double pi = Math.PI;
             angle = ((angle + pi) % (2 * pi)) - pi; //Makes angle between -pi and pi
@@ -245,12 +245,12 @@ public class OlyCowAlexTeleOpLauncherBackwardsSingleController extends OpMode {
             }
         }
 
-        /*if (gamepad1.left_bumper) {
+        if (gamepad1.left_bumper) {
             stopper.setPosition(1);
         }
         if (gamepad1.left_trigger >= 0.1) {
             stopper.setPosition(0.5);
-        }*/
+        }
 
         if (gamepad1.b) {
             telemetry.addData("Goal Ball Velocity", LAUNCHER_IDLE_VELOCITY);

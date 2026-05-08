@@ -7,6 +7,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -37,6 +38,7 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 //Right bumper: reset position
 //a: Intake
 //b: Stop launcher
+@Disabled
 @TeleOp(name = "OlyCowAlexTeleOp (Backwards Launcher)")
 //@Disabled
 public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {

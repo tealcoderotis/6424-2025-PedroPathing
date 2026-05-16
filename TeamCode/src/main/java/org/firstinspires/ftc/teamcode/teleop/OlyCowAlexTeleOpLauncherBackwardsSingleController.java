@@ -109,7 +109,7 @@ public class OlyCowAlexTeleOpLauncherBackwardsSingleController extends OpMode {
 
         DcMotorEx launcher1 = hardwareMap.get(DcMotorEx.class, "shooter_left");
         DcMotorEx launcher2 = hardwareMap.get(DcMotorEx.class, "shooter_right");
-        launcher = new DualMotor(launcher1, DcMotorSimple.Direction.REVERSE, launcher2, DcMotorSimple.Direction.FORWARD);
+        launcher = new DualMotor(launcher1, DcMotorSimple.Direction.FORWARD, launcher2, DcMotorSimple.Direction.REVERSE);
 
         feeder = hardwareMap.get(DcMotorEx.class, "feeder");
         stopper = hardwareMap.get(Servo.class, "gateServo");

@@ -38,7 +38,7 @@ public class ShooterIntakeContinuous {
 
         DcMotorEx shooter1 = hardwareMap.get(DcMotorEx.class, "shooter_left");
         DcMotorEx shooter2 = hardwareMap.get(DcMotorEx.class, "shooter_right");
-        shooter = new DualMotor(shooter1, DcMotorSimple.Direction.FORWARD, shooter2, DcMotorSimple.Direction.REVERSE);
+        shooter = new DualMotor(shooter1, DcMotorSimple.Direction.REVERSE, shooter2, DcMotorSimple.Direction.FORWARD);
 
         gate = (Servo)hardwareMap.get("gateServo");
         resetEncoders();

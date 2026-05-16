@@ -9,10 +9,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Globals;
+import org.firstinspires.ftc.teamcode.util.DualMotor;
 
 public class ShooterIntakeContinuous {
     private final DcMotorEx indexer;
-    private final DcMotorEx shooter;
+    private final DualMotor shooter;
     private final Servo gate;
     private final Timer shootTimer;
     private final Timer intakeTimer;
@@ -34,7 +35,11 @@ public class ShooterIntakeContinuous {
         shootTimer = new Timer();
         intakeTimer = new Timer();
         indexer = (DcMotorEx)hardwareMap.get("feeder");
-        shooter = (DcMotorEx)hardwareMap.get("launcher");
+
+        DcMotorEx shooter1 = hardwareMap.get(DcMotorEx.class, "shooter_left");
+        DcMotorEx shooter2 = hardwareMap.get(DcMotorEx.class, "shooter_right");
+        shooter = new DualMotor(shooter1, DcMotorSimple.Direction.FORWARD, shooter2, DcMotorSimple.Direction.REVERSE);
+
         gate = (Servo)hardwareMap.get("gateServo");
         resetEncoders();
     }
@@ -42,9 +47,12 @@ public class ShooterIntakeContinuous {
     private void resetEncoders() {
         indexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         indexer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Globals.SHOOTER_PIDF);
+        shooter.getMotor1().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooter.getMotor2().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooter.getMotor1().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.getMotor2().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.getMotor1().setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Globals.SHOOTER_PIDF);
+        shooter.getMotor2().setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, Globals.SHOOTER_PIDF);
         gate.setPosition(GATE_CLOSE_POSITION);
     }
 
@@ -96,7 +104,7 @@ public class ShooterIntakeContinuous {
         isIntaking = true;
         shootTimer.resetTimer();
         indexer.setPower(Globals.FEEDER_INTAKE_VELOCITY);
-        shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
+        shooter.setVelocity(Globals.SHOOTER_BACK_VELOCITY);
         isShooterBusy = true;
     }
 
@@ -106,7 +114,7 @@ public class ShooterIntakeContinuous {
             if (isIntakeMovingBack) {
                 if (intakeTimer.getElapsedTime() >= INTAKE_END_TIME) {
                     indexer.setPower(Globals.FEEDER_IDLE_VELOCITY);
-                    shooter.setPower(0);
+                    shooter.stop();
                     isIntakeMovingBack = false;
                     if (!isReving) {
                         stop();
@@ -126,7 +134,7 @@ public class ShooterIntakeContinuous {
             }
             else {
                 if (isReving) {
-                    double differenceFromTarget = Math.abs(-shooter.getVelocity() - this.shooterSpeed);
+                    double differenceFromTarget = Math.abs(-shooter.getAverageVelocity() - this.shooterSpeed);
                     if ((shootTimer.getElapsedTime() >= Globals.REV_TIME) && shootingTime != -1) {
                         gate.setPosition(GATE_OPEN_POSITION);
                         isReving = false;
@@ -141,16 +149,12 @@ public class ShooterIntakeContinuous {
                 }
             }
         }
-        if (telemetry != null) {
-            telemetry.addData("Indexer Encoder Position", indexer.getCurrentPosition());
-            telemetry.addData("Shooter Encoder Position", shooter.getCurrentPosition());
-        }
     }
 
     //stops the shooter
     public void stop() {
         gate.setPosition(GATE_CLOSE_POSITION);
-        shooter.setPower(0);
+        shooter.stop();
         indexer.setPower(Globals.FEEDER_IDLE_VELOCITY);
         isShooterBusy = false;
         isReving = false;
@@ -161,7 +165,7 @@ public class ShooterIntakeContinuous {
 
     public void stopIntaking() {
         indexer.setPower(Globals.FEEDER_BACK_VELOCITY);
-        shooter.setPower(Globals.SHOOTER_BACK_VELOCITY);
+        shooter.setVelocity(Globals.SHOOTER_BACK_VELOCITY);
         intakeTimer.resetTimer();
         shootTimer.resetTimer();
         isIntaking = false;

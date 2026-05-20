@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.ShooterMath;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.DualMotor;
+import org.firstinspires.ftc.teamcode.util.Hood;
 
 //1
 
@@ -64,6 +65,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
     private DcMotor rightBackDrive = null;
     private ShooterIntakeContinuous shooterIntake;
     private Servo stopper;
+    private Hood hood;
     private IMU imu = null;
     private DualMotor launcher = null;
     private DcMotorEx feeder = null;
@@ -116,6 +118,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
 
         feeder = hardwareMap.get(DcMotorEx.class, "feeder");
         stopper = hardwareMap.get(Servo.class, "gateServo");
+        hood = new Hood(hardwareMap.get(Servo.class, "hoodServo"));
         stopper.setPosition(1);
 
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -311,6 +314,9 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
             telemetry.addData("Shooter Speed", flywheelVelocity);
             launcherIdle = false;
         }
+        if (gamepad2.startWasPressed()) {
+            hood.toggle();
+        }
         if (gamepad2.right_bumper){
             follower.setPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
         }
@@ -325,6 +331,7 @@ public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("dist", Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2)));
         follower.update();
+        hood.update();
     }
 
     void mecanumDrive(double forward, double strafe, double rotate){

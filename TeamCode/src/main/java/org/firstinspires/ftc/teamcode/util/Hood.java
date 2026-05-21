@@ -10,7 +10,7 @@ public class Hood {
     private boolean hasExtended = false;
     private boolean hasRetracted = true;
     private final int MOVEMENT_TIME = 500;
-    private long timeLeft = 500;
+    private long timeLeft = MOVEMENT_TIME;
     private HoodState hoodState = HoodState.STOPPED;
     private enum HoodState {
             STOPPED,
@@ -55,7 +55,7 @@ public class Hood {
     }
 
     public void toggle() {
-        if (hasExtended) {
+        if (hasExtended || hoodState == HoodState.EXTENDING) {
             retract();
         }
         else {

@@ -41,9 +41,8 @@ import org.firstinspires.ftc.teamcode.util.Hood;
 //Right bumper: reset position
 //a: Intake
 //b: Stop launcher
-@Disabled
 @TeleOp(name = "OlyCowAlexTeleOp (Backwards Launcher)")
-//@Disabled
+@Disabled
 public class OlyCowAlexTeleOpLauncherBackwards extends OpMode {
     ShooterMath shootermath;
     final double FEED_TIME_SECONDS = 0.1;

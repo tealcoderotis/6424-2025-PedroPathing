@@ -6,6 +6,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -59,6 +60,7 @@ public class OlyCowPremierCode extends OpMode {
     private ShooterIntakeContinuous shooterIntake;
     private Servo stopper;
     private IMU imu = null;
+    private Limelight3A limelight;
     private DcMotorEx launcher = null;
     private DcMotorEx feeder = null;
     private Follower follower;
@@ -98,6 +100,10 @@ public class OlyCowPremierCode extends OpMode {
 
         imu = (IMU) hardwareMap.get("imu");
         imu.resetYaw();
+
+        limelight = (Limelight3A) hardwareMap.get("limelight");
+        limelight.pipelineSwitch(0);
+        limelight.setPollRateHz(10); //This definitely should be tuned
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
@@ -163,10 +169,9 @@ public class OlyCowPremierCode extends OpMode {
             leftStickX = gamepad1.left_stick_x * SLOW_MODE_MULTIPLIER;
             rightStickX = gamepad1.right_stick_x * SLOW_MODE_MULTIPLIER;
         }
-        if (/*gamepad1.left_bumper*/ false) {
-            double angle = follower.getPose().getHeading() - Math.atan2(144-follower.getPose().getY(), xGoal-follower.getPose().getX());
+        if (gamepad1.left_bumper) {
             double pi = Math.PI;
-            angle = ((angle + pi) % (2 * pi)) - pi; //Makes angle between -pi and pi
+            double angle = limelight.getLatestResult().getTx() * pi/180;
             telemetry.addData("angle", angle);
             telemetry.addData("angleVelocity", follower.getAngularVelocity());
             double rotate = PGain * angle + DGain * follower.getAngularVelocity();

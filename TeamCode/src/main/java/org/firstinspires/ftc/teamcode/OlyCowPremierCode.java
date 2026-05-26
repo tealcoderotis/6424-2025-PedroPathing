@@ -6,7 +6,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
-import com.pedropathing.util.Timer;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,8 +23,6 @@ import org.firstinspires.ftc.teamcode.ShooterIntakeContinuous;
 import org.firstinspires.ftc.teamcode.ShooterMath;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
-import org.firstinspires.ftc.teamcode.util.DualMotor;
-import org.firstinspires.ftc.teamcode.util.Hood;
 
 //1
 
@@ -62,7 +60,6 @@ public class OlyCowPremierCode extends OpMode {
     private DcMotor rightBackDrive = null;
     private ShooterIntakeContinuous shooterIntake;
     private Servo stopper;
-    private Hood hood;
     private IMU imu = null;
     private DcMotorEx launcher = null;
     private DcMotorEx feeder = null;
@@ -72,8 +69,6 @@ public class OlyCowPremierCode extends OpMode {
     double xGoal = 144;
     ElapsedTime feederTimer = new ElapsedTime();
     private Alliance alliance = Alliance.UNKNOWN;
-    private Timer stopperCloseTimer = new Timer();
-    private boolean gateAutoClosed = false;
 
     private enum LaunchState {
         IDLE,
@@ -114,8 +109,6 @@ public class OlyCowPremierCode extends OpMode {
         feeder = hardwareMap.get(DcMotorEx.class, "feeder");
         stopper = hardwareMap.get(Servo.class, "gateServo");
         stopper.setPosition(1);
-        stopperCloseTimer.resetTimer();
-        hood = new Hood(hardwareMap.get(Servo.class, "hoodServo"));
 
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -141,10 +134,6 @@ public class OlyCowPremierCode extends OpMode {
 
     @Override
     public void init_loop() {
-        if (stopperCloseTimer.getElapsedTime() >= 1000 && !gateAutoClosed) {
-            stopper.setPosition(0);
-            gateAutoClosed = true;
-        }
         if (gamepad1.bWasPressed()) {
             //Red starting pose
             follower.setPose(new Pose(97.108, 59.579, Math.toRadians(0)));
@@ -168,10 +157,6 @@ public class OlyCowPremierCode extends OpMode {
 
     @Override
     public void loop() {
-        if (stopperCloseTimer.getElapsedTime() >= 1000 && !gateAutoClosed) {
-            stopper.setPosition(0);
-            gateAutoClosed = true;
-        }
         double leftStickY = gamepad1.left_stick_y;
         double leftStickX = gamepad1.left_stick_x;
         double rightStickX = gamepad1.right_stick_x;
@@ -263,7 +248,7 @@ public class OlyCowPremierCode extends OpMode {
         }
 
         if (gamepad1.left_bumper) {
-            hood.toggle();
+            stopper.setPosition(1);
         }
         if (gamepad1.left_trigger >= 0.1) {
             stopper.setPosition(0.5);
@@ -340,7 +325,6 @@ public class OlyCowPremierCode extends OpMode {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("dist", Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2)));
         follower.update();
-        hood.update();
     }
 
     void mecanumDrive(double forward, double strafe, double rotate){

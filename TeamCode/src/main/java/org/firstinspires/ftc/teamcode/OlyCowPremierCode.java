@@ -171,7 +171,12 @@ public class OlyCowPremierCode extends OpMode {
         }
         if (gamepad1.left_bumper) {
             double pi = Math.PI;
-            double angle = limelight.getLatestResult().getTx() * pi/180;
+            double angle;
+            try {
+                angle = limelight.getLatestResult().getTx() * pi / 180;
+            } catch (Exception e) {
+                angle = 0;
+            }
             telemetry.addData("angle", angle);
             telemetry.addData("angleVelocity", follower.getAngularVelocity());
             double rotate = PGain * angle + DGain * follower.getAngularVelocity();

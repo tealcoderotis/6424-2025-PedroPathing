@@ -6,6 +6,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -172,17 +173,14 @@ public class OlyCowPremierCode extends OpMode {
         if (gamepad1.left_bumper) {
             double pi = Math.PI;
             double angle;
-            try {
+            LLResult result = limelight.getLatestResult();
+            if (result.isValid()) {
                 angle = limelight.getLatestResult().getTx() * pi / 180;
-                telemetry.addLine("Found tag");
-            } catch (Exception e) {
-                angle = 0;
-                telemetry.addLine("exception caught");
+                telemetry.addData("angle", angle);
+                telemetry.addData("angleVelocity", follower.getAngularVelocity());
+                double rotate = PGain * angle + DGain * follower.getAngularVelocity();
+                mecuamnFieldDrive(-leftStickY, leftStickX, rotate);
             }
-            telemetry.addData("angle", angle);
-            telemetry.addData("angleVelocity", follower.getAngularVelocity());
-            double rotate = PGain * angle + DGain * follower.getAngularVelocity();
-            mecuamnFieldDrive(-leftStickY, leftStickX, rotate);
         } else {
             mecuamnFieldDrive(-leftStickY, leftStickX, rightStickX);
         }

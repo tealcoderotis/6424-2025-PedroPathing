@@ -174,8 +174,10 @@ public class OlyCowPremierCode extends OpMode {
             double angle;
             try {
                 angle = limelight.getLatestResult().getTx() * pi / 180;
+                telemetry.addLine("Found tag");
             } catch (Exception e) {
                 angle = 0;
+                telemetry.addLine("exception caught");
             }
             telemetry.addData("angle", angle);
             telemetry.addData("angleVelocity", follower.getAngularVelocity());

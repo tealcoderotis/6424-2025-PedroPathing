@@ -3,40 +3,37 @@ package org.firstinspires.ftc.teamcode;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.Regression;
-import org.firstinspires.ftc.teamcode.ShooterIntakeContinuous;
-import org.firstinspires.ftc.teamcode.ShooterMath;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 
-//1
+//Controls
 
 //left dpad slow mode
+//right_bumper lockOn
 //y reset
-//a robot
-//x field
-//b lockon
+//a intake
+    //x reversing? should use gate
+//b launcher idle
+//left bumper 1 gate
+//left trigger 0.5 gate
+//right trigger fire
+//dpad up/down far/close zone speeds
+    //dpad right attempt at speed control by distance, probably not working
 
-//2
 
-//Right bumper: reset position
-//a: Intake
-//b: Stop launcher
 @TeleOp(name = "OlyCowPremierCode")
 //@Disabled
 public class OlyCowPremierCode extends OpMode {
@@ -170,22 +167,23 @@ public class OlyCowPremierCode extends OpMode {
             leftStickX = gamepad1.left_stick_x * SLOW_MODE_MULTIPLIER;
             rightStickX = gamepad1.right_stick_x * SLOW_MODE_MULTIPLIER;
         }
-        if (gamepad1.left_bumper) {
+        if (gamepad1.right_bumper) {
             double pi = Math.PI;
             double angle;
-            try {
-                angle = limelight.getLatestResult().getTx() * pi / 180;
+            LLResult result = limelight.getLatestResult();
+            if (result.isValid()) {
+                angle = result.getTx() * pi / 180;
                 telemetry.addLine("Found tag");
-            } catch (Exception e) {
+            } else {
                 angle = 0;
-                telemetry.addLine("exception caught");
+                telemetry.addLine("No tag");
             }
             telemetry.addData("angle", angle);
             telemetry.addData("angleVelocity", follower.getAngularVelocity());
             double rotate = PGain * angle + DGain * follower.getAngularVelocity();
-            mecuamnFieldDrive(-leftStickY, leftStickX, rotate);
+            mecanumFieldDrive(-leftStickY, leftStickX, rotate);
         } else {
-            mecuamnFieldDrive(-leftStickY, leftStickX, rightStickX);
+            mecanumFieldDrive(-leftStickY, leftStickX, rightStickX);
         }
 
         /*if (gamepad1.aWasPressed()) {
@@ -280,6 +278,7 @@ public class OlyCowPremierCode extends OpMode {
             telemetry.addData("Goal Ball Velocity", "MAXIMUM");
             launcher.setVelocity(LAUNCHER_MAX_VELOCITY);
             telemetry.addData("Shooter Speed", "MAXIMUM");
+            //TODO: servo extended
             launcherIdle = false;
         }
 
@@ -287,6 +286,7 @@ public class OlyCowPremierCode extends OpMode {
             telemetry.addData("Goal Ball Velocity", "MINIMUM");
             launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
             telemetry.addData("Shooter Speed", "MINIMUM");
+            //TODO: servo retracted
             launcherIdle = false;
         }
         else {
@@ -322,9 +322,9 @@ public class OlyCowPremierCode extends OpMode {
             telemetry.addData("Shooter Speed", flywheelVelocity);
             launcherIdle = false;
         }
-        if (gamepad1.right_bumper){
+        /*if (gamepad1.right_bumper){
             follower.setPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
-        }
+        }*/
         if (gamepad1.right_trigger >= 0.1) {
             stopper.setPosition(1);
         }
@@ -354,7 +354,7 @@ public class OlyCowPremierCode extends OpMode {
 
     }
 
-    void mecuamnFieldDrive(double forward, double strafe, double rotate) {
+    void mecanumFieldDrive(double forward, double strafe, double rotate) {
         if (fieldCentric) {
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
             double fieldStrafe = strafe * Math.cos(-botHeading) - forward * Math.sin(-botHeading);

@@ -7,6 +7,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.Globals;
 import org.firstinspires.ftc.teamcode.ShooterIntakeContinuous;
@@ -31,6 +32,8 @@ public class Auton extends LinearOpMode {
     @Override
     public void runOpMode() {
         //initialization
+        IMU imu = (IMU) hardwareMap.get("imu");
+        imu.initialize(new IMU.Parameters(Globals.IMU_ORIENTATION));
         gateTimer = new Timer();
         maxIntakeTimer = new Timer();
         shooterIntake = new ShooterIntakeContinuous(hardwareMap, telemetry);

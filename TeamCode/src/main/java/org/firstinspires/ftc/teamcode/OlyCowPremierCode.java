@@ -62,8 +62,7 @@ public class OlyCowPremierCode extends OpMode {
     private DcMotor rightBackDrive = null;
     private ShooterIntakeContinuous shooterIntake;
     private Servo stopper;
-    //private Hood hood;
-    private Servo hood;
+    private Hood hood;
     private IMU imu = null;
     private Limelight3A limelight;
     private DcMotorEx launcher = null;
@@ -104,6 +103,7 @@ public class OlyCowPremierCode extends OpMode {
         shooterIntake = new ShooterIntakeContinuous(hardwareMap, telemetry);
 
         imu = (IMU) hardwareMap.get("imu");
+        imu.resetYaw();
 
         limelight = (Limelight3A) hardwareMap.get("limelight");
         limelight.pipelineSwitch(0);
@@ -116,10 +116,8 @@ public class OlyCowPremierCode extends OpMode {
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         feeder = hardwareMap.get(DcMotorEx.class, "feeder");
         stopper = hardwareMap.get(Servo.class, "gateServo");
-        hood = hardwareMap.get(Servo.class, "hoodServo");
-        ///hood = new Hood(hardwareMap.get(Servo.class, "hoodServo"));
+        hood = new Hood(hardwareMap.get(Servo.class, "hoodServo"));
         stopper.setPosition(1);
-        hood.setPosition(0);
 
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -288,8 +286,7 @@ public class OlyCowPremierCode extends OpMode {
             telemetry.addData("Goal Ball Velocity", "MAXIMUM");
             launcher.setVelocity(LAUNCHER_MAX_VELOCITY);
             telemetry.addData("Shooter Speed", "MAXIMUM");
-            //hood.extend();
-            hood.setPosition(1);
+            hood.extend();
             launcherIdle = false;
         }
 
@@ -297,8 +294,7 @@ public class OlyCowPremierCode extends OpMode {
             telemetry.addData("Goal Ball Velocity", "MINIMUM");
             launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
             telemetry.addData("Shooter Speed", "MINIMUM");
-            //hood.retract();
-            hood.setPosition(0);
+            hood.retract();
             launcherIdle = false;
         }
         else {
@@ -341,13 +337,7 @@ public class OlyCowPremierCode extends OpMode {
             stopper.setPosition(1);
         }
         if (gamepad2.startWasPressed()) {
-            if (hood.getPosition() >= 0.5) {
-                hood.setPosition(0);
-            }
-            else {
-                hood.setPosition(1);
-            }
-            //hood.toggle();
+            hood.toggle();
         }
         launch(gamepad1.right_trigger >= 0.1);
 
@@ -357,7 +347,7 @@ public class OlyCowPremierCode extends OpMode {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("dist", Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2)));
         follower.update();
-        //hood.update();
+        hood.update();
     }
 
     void mecanumDrive(double forward, double strafe, double rotate){

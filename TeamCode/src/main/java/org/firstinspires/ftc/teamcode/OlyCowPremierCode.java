@@ -30,7 +30,7 @@ import org.firstinspires.ftc.teamcode.util.Hood;
 //a intake
 //x reversing? should use gate
 //b launcher idle
-//left bumper 1 gate
+//left bumper 1 gate toggle
 //left trigger 0.5 gate
 //right trigger fire
 //dpad up/down far/close zone speeds
@@ -53,6 +53,7 @@ public class OlyCowPremierCode extends OpMode {
     final double FEEDER_LAUNCH_VELOCITY = 3000;
     final double FEEDER_REVERSE_VELOCITY = 900;
     final double SLOW_MODE_MULTIPLIER = 0.5;
+    double launcherGoVelocity = LAUNCHER_MIN_VELOCITY;
 
     final double AIM_SPEED = 1.5;
 
@@ -103,7 +104,6 @@ public class OlyCowPremierCode extends OpMode {
         shooterIntake = new ShooterIntakeContinuous(hardwareMap, telemetry);
 
         imu = (IMU) hardwareMap.get("imu");
-        imu.resetYaw();
 
         limelight = (Limelight3A) hardwareMap.get("limelight");
         limelight.pipelineSwitch(0);
@@ -167,15 +167,17 @@ public class OlyCowPremierCode extends OpMode {
 
     @Override
     public void loop() {
+    //b robot centric
+    //a field centric
+    //left trigger intake
+    //right trigger spinup, lockOn
+    //right bumper gate hold open
         double leftStickY = gamepad1.left_stick_y;
         double leftStickX = gamepad1.left_stick_x;
         double rightStickX = gamepad1.right_stick_x;
-        if (gamepad1.dpad_left) {
-            leftStickY = gamepad1.left_stick_y * SLOW_MODE_MULTIPLIER;
-            leftStickX = gamepad1.left_stick_x * SLOW_MODE_MULTIPLIER;
-            rightStickX = gamepad1.right_stick_x * SLOW_MODE_MULTIPLIER;
-        }
-        if (gamepad1.right_bumper) {
+        //Slow mode removed
+        if (gamepad1.right_trigger >= 0.1) {
+            // lockOn code
             double pi = Math.PI;
             double angle;
             LLResult result = limelight.getLatestResult();
@@ -183,7 +185,7 @@ public class OlyCowPremierCode extends OpMode {
                 angle = (result.getTx() * pi / 180) * AIM_SPEED;
                 telemetry.addLine("Found tag");
             } else {
-                angle = 1;
+                angle = 1; //TODO: move to 45 or 135 angle using IMU
                 telemetry.addLine("No tag");
             }
             telemetry.addData("angle", angle);
@@ -194,53 +196,22 @@ public class OlyCowPremierCode extends OpMode {
             mecanumFieldDrive(-leftStickY, leftStickX, rightStickX);
         }
 
-        /*if (gamepad1.aWasPressed()) {
-            fieldCentric = false;
-        }
-
-        if (gamepad1.xWasPressed()) {
+        if (gamepad1.aWasPressed()) {
             fieldCentric = true;
         }
 
-        if (gamepad1.yWasPressed()) {
-            imu.resetYaw();
-        }
         if (gamepad1.bWasPressed()) {
-            boolean autonomous = true;
-            telemetry.addLine("autonomous");
-            int pathState = 1;
-            PathChain RedStart = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierLine(new Pose(follower.getPose().getX(), follower.getPose().getY()), new Pose(96, 95.8))
-                    )
-                    .setLinearHeadingInterpolation(follower.getPose().getHeading(), Math.toRadians(42))
-                    .build();
-            while (autonomous) {
-                if (pathState == 1) {
-                    shooterIntake.beginReving();
-                    follower.followPath(RedStart);
-                    pathState = 2;
-                }
-                if (!follower.isBusy() && pathState == 2) {
-                    shooterIntake.beginShooting(3);
-                    pathState = 3;
-                }
-                if (pathState == 3 && !shooterIntake.isBusy()) {
-                    autonomous = false;
-                }
-                telemetry.addData("pathState", pathState);
-            }
-        }*/
+            fieldCentric = false;
+        }
 
-        if (gamepad1.a) {
-            if (launcherIdle) {
+        if (gamepad1.left_trigger >= 0.1) { //INTAKE
+            /*if (launcherIdle) {
                 launcher.setDirection(DcMotor.Direction.REVERSE);
                 telemetry.addData("Goal Ball Velocity", LAUNCHER_REVERSE_VELOCITY);
                 launcher.setVelocity(LAUNCHER_REVERSE_VELOCITY);
                 telemetry.addData("Shooter Speed", LAUNCHER_REVERSE_VELOCITY);
                 stopper.setPosition(0.5);
-            }
+            }*/
             feeder.setDirection(DcMotor.Direction.FORWARD);
             feeder.setVelocity(FEEDER_INTAKE_VELOCITY);
             if (launcher.getVelocity() > LAUNCHER_IDLE_VELOCITY) {
@@ -248,7 +219,7 @@ public class OlyCowPremierCode extends OpMode {
                 feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
             }
         }
-        else if (gamepad1.x) {
+        /*else if (gamepad1.x) { //REVERSE
             if (launcherIdle) {
                 launcher.setDirection(DcMotor.Direction.REVERSE);
                 telemetry.addData("Goal Ball Velocity", LAUNCHER_REVERSE_VELOCITY);
@@ -262,45 +233,43 @@ public class OlyCowPremierCode extends OpMode {
             if (launcherIdle) {
                 launcher.setVelocity(LAUNCHER_IDLE_VELOCITY);
             }
-        }
+        }*/
 
-        if (gamepad1.left_bumper) {
+        if (gamepad1.right_bumper) { //GATE HOLD OPEN
             stopper.setPosition(1);
         }
-        if (gamepad1.left_trigger >= 0.1) {
+        else {
             stopper.setPosition(0.5);
         }
-
-        if (gamepad1.b) {
-            telemetry.addData("Goal Ball Velocity", LAUNCHER_IDLE_VELOCITY);
+        if (gamepad1.left_trigger >= 0.1) { // SHOOTER TO PROPER VELOCITY (SET WITH DPAD)
+            launcher.setVelocity(launcherGoVelocity);
+            if (launcherGoVelocity == LAUNCHER_MAX_VELOCITY) {
+                telemetry.addData("Shooter Speed", "MAXIMUM");
+            } else {
+                telemetry.addData("Shooter Speed", "MINIMUM");
+            }
+        }
+        else { // IDLE SHOOTER
             launcher.setVelocity(LAUNCHER_IDLE_VELOCITY);
             telemetry.addData("Shooter Speed", LAUNCHER_IDLE_VELOCITY);
             //stopper.setPosition(1);
             launcherIdle = true;
         }
-        if (gamepad1.y) {
-            launcher.setVelocity(LAUNCHER_SPINUP_VELOCITY);
-            launcherIdle = false;
-        }
         if (gamepad1.dpad_up) {
-            telemetry.addData("Goal Ball Velocity", "MAXIMUM");
-            launcher.setVelocity(LAUNCHER_MAX_VELOCITY);
-            telemetry.addData("Shooter Speed", "MAXIMUM");
+            launcherGoVelocity = LAUNCHER_MAX_VELOCITY;
+            //telemetry.addData("Shooter Speed", "MAXIMUM");
             hood.extend();
             launcherIdle = false;
         }
 
         if (gamepad1.dpad_down) {
-            telemetry.addData("Goal Ball Velocity", "MINIMUM");
-            launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
-            telemetry.addData("Shooter Speed", "MINIMUM");
+            launcherGoVelocity = LAUNCHER_MIN_VELOCITY;
+            //telemetry.addData("Shooter Speed", "MINIMUM");
             hood.retract();
             launcherIdle = false;
         }
-        else {
-            feeder.setPower(STOP_SPEED);
-        }
-        if (gamepad1.dpad_right) {
+
+        /*if (gamepad1.dpad_right) {
             double dist = 0;
             if (alliance == Alliance.RED) {
                 dist = Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2));
@@ -325,23 +294,22 @@ public class OlyCowPremierCode extends OpMode {
                 flywheelVelocity = 1740 + 5.923044 * (dist - 118.13214);
             } else {
                 flywheelVelocity = 1740 + 5.89098 * (dist - 118.13214);
-            }*/
+            }
             launcher.setVelocity(flywheelVelocity);
             telemetry.addData("Shooter Speed", flywheelVelocity);
             launcherIdle = false;
-        }
+        }*/
         /*if (gamepad1.right_bumper){
             follower.setPose((new Pose(110.36335877862595, 134.10687022900763, 0)));
         }*/
-        if (gamepad1.right_trigger >= 0.1) {
+        /*if (gamepad1.right_trigger >= 0.1) {
             stopper.setPosition(1);
-        }
+        }*/
         if (gamepad2.startWasPressed()) {
             hood.toggle();
         }
-        launch(gamepad1.right_trigger >= 0.1);
 
-        telemetry.addData("State", launchState);
+        //telemetry.addData("State", launchState);
         telemetry.addData("motorSpeed", launcher.getVelocity());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());

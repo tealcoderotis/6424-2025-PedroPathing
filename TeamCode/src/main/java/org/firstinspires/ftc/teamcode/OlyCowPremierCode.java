@@ -26,13 +26,13 @@ import org.firstinspires.ftc.teamcode.util.Hood;
 //right_bumper lockOn
 //y reset
 //a intake
-    //x reversing? should use gate
+//x reversing? should use gate
 //b launcher idle
 //left bumper 1 gate
 //left trigger 0.5 gate
 //right trigger fire
 //dpad up/down far/close zone speeds
-    //dpad right attempt at speed control by distance, probably not working
+//dpad right attempt at speed control by distance, probably not working
 
 
 @TeleOp(name = "OlyCowPremierCode")
@@ -51,6 +51,8 @@ public class OlyCowPremierCode extends OpMode {
     final double FEEDER_LAUNCH_VELOCITY = 3000;
     final double FEEDER_REVERSE_VELOCITY = 900;
     final double SLOW_MODE_MULTIPLIER = 0.5;
+
+    final double AIM_SPEED = 1.5;
 
     private DcMotor leftFrontDrive = null;
     private DcMotor rightFrontDrive = null;
@@ -158,6 +160,7 @@ public class OlyCowPremierCode extends OpMode {
     @Override
     public void start() {
         follower.startTeleOpDrive(false);
+        limelight.start();
     }
 
     @Override
@@ -175,10 +178,10 @@ public class OlyCowPremierCode extends OpMode {
             double angle;
             LLResult result = limelight.getLatestResult();
             if (result.isValid()) {
-                angle = result.getTx() * pi / 180;
+                angle = (result.getTx() * pi / 180) * AIM_SPEED;
                 telemetry.addLine("Found tag");
             } else {
-                angle = 0;
+                angle = 1;
                 telemetry.addLine("No tag");
             }
             telemetry.addData("angle", angle);

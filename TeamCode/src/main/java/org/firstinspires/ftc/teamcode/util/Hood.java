@@ -10,6 +10,7 @@ public class Hood {
     private boolean hasExtended = false;
     private boolean hasRetracted = true;
     private final int MOVEMENT_TIME = 500;
+    private long stopTime;
     private long timeLeft = MOVEMENT_TIME;
     private HoodState hoodState = HoodState.STOPPED;
     private enum HoodState {
@@ -21,13 +22,14 @@ public class Hood {
     public Hood(Servo hood) {
         hoodTimer = new Timer();
         this.hood = hood;
+        stopTime = MOVEMENT_TIME;
         hood.setPosition(0.5);
     }
 
     public void retract() {
         if (!hasRetracted) {
             if (hoodState == HoodState.EXTENDING) {
-                timeLeft = MOVEMENT_TIME - hoodTimer.getElapsedTime();
+                timeLeft = stopTime;
             }
             else if (hoodState == HoodState.STOPPED) {
                 timeLeft = MOVEMENT_TIME;
@@ -42,7 +44,7 @@ public class Hood {
     public void extend() {
         if (!hasExtended) {
             if (hoodState == HoodState.RETRACTING) {
-                timeLeft = MOVEMENT_TIME - hoodTimer.getElapsedTime();
+                timeLeft = stopTime;
             }
             else if (hoodState == HoodState.STOPPED) {
                 timeLeft = MOVEMENT_TIME;
@@ -68,6 +70,7 @@ public class Hood {
         hasExtended = false;
         hasRetracted = false;
         isBusy = false;
+        stopTime = hoodTimer.getElapsedTime();
     }
 
     public void update() {
@@ -81,6 +84,7 @@ public class Hood {
                 hasRetracted = true;
                 hasExtended = false;
             }
+            stopTime = MOVEMENT_TIME;
             isBusy = false;
         }
     }

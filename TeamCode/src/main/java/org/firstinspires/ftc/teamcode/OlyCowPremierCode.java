@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.Hood;
 
 //Controls
 
@@ -57,6 +58,7 @@ public class OlyCowPremierCode extends OpMode {
     private DcMotor rightBackDrive = null;
     private ShooterIntakeContinuous shooterIntake;
     private Servo stopper;
+    private Hood hood;
     private IMU imu = null;
     private Limelight3A limelight;
     private DcMotorEx launcher = null;
@@ -110,6 +112,7 @@ public class OlyCowPremierCode extends OpMode {
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         feeder = hardwareMap.get(DcMotorEx.class, "feeder");
         stopper = hardwareMap.get(Servo.class, "gateServo");
+        hood = new Hood(hardwareMap.get(Servo.class, "hoodServo"));
         stopper.setPosition(1);
 
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -278,7 +281,7 @@ public class OlyCowPremierCode extends OpMode {
             telemetry.addData("Goal Ball Velocity", "MAXIMUM");
             launcher.setVelocity(LAUNCHER_MAX_VELOCITY);
             telemetry.addData("Shooter Speed", "MAXIMUM");
-            //TODO: servo extended
+            hood.extend();
             launcherIdle = false;
         }
 
@@ -286,7 +289,7 @@ public class OlyCowPremierCode extends OpMode {
             telemetry.addData("Goal Ball Velocity", "MINIMUM");
             launcher.setVelocity(LAUNCHER_MIN_VELOCITY);
             telemetry.addData("Shooter Speed", "MINIMUM");
-            //TODO: servo retracted
+            hood.retract();
             launcherIdle = false;
         }
         else {
@@ -328,6 +331,9 @@ public class OlyCowPremierCode extends OpMode {
         if (gamepad1.right_trigger >= 0.1) {
             stopper.setPosition(1);
         }
+        if (gamepad2.startWasPressed()) {
+            hood.toggle();
+        }
         launch(gamepad1.right_trigger >= 0.1);
 
         telemetry.addData("State", launchState);
@@ -336,6 +342,7 @@ public class OlyCowPremierCode extends OpMode {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("dist", Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2)));
         follower.update();
+        hood.update();
     }
 
     void mecanumDrive(double forward, double strafe, double rotate){

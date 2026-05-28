@@ -24,17 +24,15 @@ import org.firstinspires.ftc.teamcode.util.Hood;
 
 //Controls
 
-//left dpad slow mode
-//right_bumper lockOn
-//y reset
-//a intake
-//x reversing? should use gate
-//b launcher idle
-//left bumper 1 gate toggle
-//left trigger 0.5 gate
-//right trigger fire
-//dpad up/down far/close zone speeds
-//dpad right attempt at speed control by distance, probably not working
+//A: field centric (default)
+//B: robot centric
+
+//dpad up: high launch velocity
+//dpad down: low launch velocity
+
+//LEFT TRIGGER: intake
+//RIGHT TRIGGER: lock on, spin up to launch velocity (hold)
+//RIGHT BUMPER: hold to open gate (keep holding right trigger)
 
 
 @TeleOp(name = "OlyCowPremierCode")
@@ -99,7 +97,7 @@ public class OlyCowPremierCode extends OpMode {
         shootermath = new ShooterMath(telemetry);
         launchState = LaunchState.IDLE;
         launcherIdle = true;
-        fieldCentric = false;
+        fieldCentric = true;
         follower = Constants.createFollower(hardwareMap);
 
         shooterIntake = new ShooterIntakeContinuous(hardwareMap, telemetry);
@@ -239,7 +237,7 @@ public class OlyCowPremierCode extends OpMode {
         else {
             stopper.setPosition(0.5);
         }
-        if (gamepad1.left_trigger >= 0.1) { // SHOOTER TO PROPER VELOCITY (SET WITH DPAD)
+        if (gamepad1.right_trigger >= 0.1) { // SHOOTER TO PROPER VELOCITY (SET WITH DPAD)
             launcher.setVelocity(launcherGoVelocity);
             if (launcherGoVelocity == LAUNCHER_MAX_VELOCITY) {
                 telemetry.addData("Shooter Speed", "MAXIMUM");

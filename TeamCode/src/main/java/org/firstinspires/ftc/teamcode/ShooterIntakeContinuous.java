@@ -30,6 +30,7 @@ public class ShooterIntakeContinuous {
     private Telemetry telemetry;
     private final double GATE_OPEN_POSITION = 1;
     private final double GATE_CLOSE_POSITION = 0.5;
+    private double feederIdleVelocity = Globals.FEEDER_IDLE_VELOCITY;
     public ShooterIntakeContinuous(HardwareMap hardwareMap) {
         shootTimer = new Timer();
         intakeTimer = new Timer();
@@ -49,7 +50,12 @@ public class ShooterIntakeContinuous {
     }
 
     public void start() {
-        indexer.setPower(Globals.FEEDER_IDLE_VELOCITY);
+        start(Globals.FEEDER_IDLE_VELOCITY);
+    }
+
+    public void start(double feederIdleVelocity) {
+        indexer.setPower(feederIdleVelocity);
+        this.feederIdleVelocity = feederIdleVelocity;
     }
 
     public ShooterIntakeContinuous(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -58,9 +64,9 @@ public class ShooterIntakeContinuous {
     }
 
     //only called once when we start shooting
-    public void beginShooting(int ballsToShoot, double shooterSpeed) {
+    public void beginShooting(int ballsToShoot, double shooterSpeed, int timePerBall) {
         isIntaking = false;
-        shootingTime = INDEX_TIME * ballsToShoot;
+        shootingTime = (timePerBall * ballsToShoot);
         if (!isReving) {
             shootTimer.resetTimer();
             shooter.setVelocity(-shooterSpeed);
@@ -70,7 +76,7 @@ public class ShooterIntakeContinuous {
     }
 
     public void beginShooting(int ballsToShoot) {
-        beginShooting(ballsToShoot, SHOOTER_SPEED);
+        beginShooting(ballsToShoot, SHOOTER_SPEED, INDEX_TIME);
     }
 
     public void beginReving(double shooterSpeed) {
@@ -105,7 +111,7 @@ public class ShooterIntakeContinuous {
         if (isShooterBusy) {
             if (isIntakeMovingBack) {
                 if (intakeTimer.getElapsedTime() >= INTAKE_END_TIME) {
-                    indexer.setPower(Globals.FEEDER_IDLE_VELOCITY);
+                    indexer.setPower(feederIdleVelocity);
                     shooter.setPower(0);
                     isIntakeMovingBack = false;
                     if (!isReving) {
@@ -119,7 +125,7 @@ public class ShooterIntakeContinuous {
             if (isIntaking) {
                 if (!isIntakeContinuous) {
                     if (shootTimer.getElapsedTime() >= INTAKE_TIME) {
-                        indexer.setPower(0);
+                        indexer.setPower(feederIdleVelocity);
                         isShooterBusy = false;
                     }
                 }
@@ -130,7 +136,7 @@ public class ShooterIntakeContinuous {
                     if ((shootTimer.getElapsedTime() >= Globals.REV_TIME) && shootingTime != -1) {
                         gate.setPosition(GATE_OPEN_POSITION);
                         isReving = false;
-                        indexer.setPower(Globals.FEEDER_LAUNCH_VELOCITY);
+                        indexer.setPower(feederIdleVelocity);
                         shootTimer.resetTimer();
                     }
                 }

@@ -64,15 +64,16 @@ public class OlyCowPremierCode extends OpMode {
     //private Hood hood;
     private Servo hood;
     private IMU imu = null;
-    private Limelight3A limelight;
+    //private Limelight3A limelight;
     private DcMotorEx launcher = null;
     private DcMotorEx feeder = null;
     private Follower follower;
-    final double PGain = 1;
+    final double PGain = 1.5;
     final double DGain = 0.2;
     double xGoal = 144;
     ElapsedTime feederTimer = new ElapsedTime();
     private Alliance alliance = Alliance.UNKNOWN;
+    private boolean poseSet = false;
 
     private enum LaunchState {
         IDLE,
@@ -97,16 +98,22 @@ public class OlyCowPremierCode extends OpMode {
         shootermath = new ShooterMath(telemetry);
         launchState = LaunchState.IDLE;
         launcherIdle = true;
-        fieldCentric = true;
+        fieldCentric = false;
         follower = Constants.createFollower(hardwareMap);
 
         shooterIntake = new ShooterIntakeContinuous(hardwareMap, telemetry);
 
         imu = (IMU) hardwareMap.get("imu");
 
-        limelight = (Limelight3A) hardwareMap.get("limelight");
+        /*limelight = (Limelight3A) hardwareMap.get("limelight");
         limelight.pipelineSwitch(0);
-        limelight.setPollRateHz(10); //This definitely should be tuned
+        limelight.setPollRateHz(10); //This definitely should be tuned*/
+
+        try {
+            alliance = Globals.alliance;
+        } catch(Exception e) {
+            alliance = Alliance.UNKNOWN;
+        }
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
@@ -163,7 +170,12 @@ public class OlyCowPremierCode extends OpMode {
     @Override
     public void start() {
         follower.startTeleOpDrive(false);
-        limelight.start();
+        //limelight.start();
+        if (alliance == Alliance.RED) {
+            xGoal = 144;
+        } else {
+            xGoal = 0;
+        }
     }
 
     @Override
@@ -172,24 +184,29 @@ public class OlyCowPremierCode extends OpMode {
         double leftStickX = gamepad1.left_stick_x;
         double rightStickX = gamepad1.right_stick_x;
         //Slow mode removed
-        if (gamepad1.right_trigger >= 0.1) {
+        if (gamepad1.left_bumper && poseSet) {
             // lockOn code
-            double pi = Math.PI;
-            double angle;
-            LLResult result = limelight.getLatestResult();
-            if (result.isValid()) {
-                angle = (result.getTx() * pi / 180) * AIM_SPEED;
-                telemetry.addLine("Found tag");
-            } else {
-                angle = 1; //TODO: move to 45 or 135 angle using IMU
-                telemetry.addLine("No tag");
-            }
-            telemetry.addData("angle", angle);
+            telemetry.addLine("AutoAim");
+            double goalAngle = Math.atan2(144-follower.getPose().getY(), xGoal-follower.getPose().getX());
+            double currentAngle = follower.getPose().getHeading();
+            double angle = goalAngle - currentAngle; // Positive clockwise
+            telemetry.addData("unnormalizedAngle", angle);
+            angle = ((((angle + Math.PI) % (2*Math.PI)) + (2*Math.PI)) % (2*Math.PI)) - Math.PI; //Normalize
+            telemetry.addData("goalAngle", goalAngle);
+            telemetry.addData("currentAngle", currentAngle);
+            telemetry.addData("normalizedAngle", angle);
             telemetry.addData("angleVelocity", follower.getAngularVelocity());
             double rotate = PGain * angle + DGain * follower.getAngularVelocity();
+            telemetry.addData("rotation", rotate);
             mecanumFieldDrive(-leftStickY, leftStickX, rotate);
         } else {
-            mecanumFieldDrive(-leftStickY, leftStickX, rightStickX);
+            if (gamepad1.right_trigger < 0.1) {
+                telemetry.addLine("Full Rotation");
+                mecanumFieldDrive(-leftStickY, leftStickX, rightStickX);
+            } else {
+                telemetry.addLine("Slow Rotation");
+                mecanumFieldDrive(-leftStickY, leftStickX, rightStickX * 0.5);
+            }
         }
 
         if (gamepad1.aWasPressed()) {
@@ -198,6 +215,11 @@ public class OlyCowPremierCode extends OpMode {
 
         if (gamepad1.bWasPressed()) {
             fieldCentric = false;
+        }
+
+        if (gamepad1.xWasPressed()) {
+            follower.setPose(new Pose(72, 72, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)));
+            poseSet = true;
         }
 
         if (gamepad1.left_trigger >= 0.1) { //INTAKE
@@ -214,6 +236,8 @@ public class OlyCowPremierCode extends OpMode {
                 feeder.setDirection(DcMotor.Direction.FORWARD);
                 feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
             }
+        } else if (!gamepad1.right_bumper) {
+            feeder.setVelocity(0);
         }
         /*else if (gamepad1.x) { //REVERSE
             if (launcherIdle) {
@@ -233,6 +257,7 @@ public class OlyCowPremierCode extends OpMode {
 
         if (gamepad1.right_bumper) { //GATE HOLD OPEN
             stopper.setPosition(1);
+            feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
         }
         else {
             stopper.setPosition(0.5);
@@ -245,6 +270,7 @@ public class OlyCowPremierCode extends OpMode {
                 telemetry.addData("Shooter Speed", "MINIMUM");
             }
         }
+
         else { // IDLE SHOOTER
             launcher.setVelocity(LAUNCHER_IDLE_VELOCITY);
             telemetry.addData("Shooter Speed", LAUNCHER_IDLE_VELOCITY);
@@ -312,9 +338,15 @@ public class OlyCowPremierCode extends OpMode {
         }
 
         //telemetry.addData("State", launchState);
+        if (alliance == Alliance.RED) {
+            telemetry.addData("alliance", "RED");
+        } else {
+            telemetry.addData("alliance", "BLUE");
+        }
         telemetry.addData("motorSpeed", launcher.getVelocity());
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("yaw", follower.getPose().getHeading());
         telemetry.addData("dist", Math.sqrt(Math.pow(144-follower.getPose().getX(),2)+Math.pow(144-follower.getPose().getY(),2)));
         follower.update();
         //hood.update();

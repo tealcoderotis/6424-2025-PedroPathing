@@ -23,10 +23,10 @@ public class Paths {
     public Paths(Follower follower) {
         RedStart = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(84.000, 9.700),
+                                new Pose(84.000, 12.000),
                                 new Pose(84.000, 24.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(68))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(68))
                 .build();
 
         RedIntakeBegin = follower.pathBuilder().addPath(
@@ -71,10 +71,10 @@ public class Paths {
 
         BlueStart = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(60.000, 9.700),
+                                new Pose(60.000, 12.000),
                                 new Pose(60.000, 24.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(112))
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(112))
                 .build();
 
         BlueIntakeBegin = follower.pathBuilder().addPath(

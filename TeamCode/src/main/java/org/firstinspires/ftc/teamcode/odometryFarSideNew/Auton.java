@@ -49,13 +49,13 @@ public class Auton extends LinearOpMode {
         while (opModeInInit()) {
             if (gamepad1.bWasPressed()) {
                 //Red starting pose
-                follower.setStartingPose(new Pose(84.000, 9.700, Math.toRadians(90)));
+                follower.setStartingPose(new Pose(84.000, 12.000, Math.toRadians(0)));
                 alliance = Alliance.RED;
                 telemetry.addLine("Red alliance");
                 telemetry.update();
             } else if (gamepad1.xWasPressed()) {
                 //Blue starting pose
-                follower.setStartingPose(new Pose(60.000, 9.700, Math.toRadians(90)));
+                follower.setStartingPose(new Pose(60.000, 12.000, Math.toRadians(180)));
                 alliance = Alliance.BLUE;
                 telemetry.addLine("Blue alliance");
                 telemetry.update();

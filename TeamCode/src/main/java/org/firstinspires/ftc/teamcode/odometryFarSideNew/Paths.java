@@ -8,12 +8,18 @@ import com.pedropathing.paths.PathChain;
 
 public class Paths {
     public PathChain RedStart;
+    public PathChain RedIntakeSpikeMarkBegin;
+    public PathChain RedIntakeSpikeMarkEnd;
+    public PathChain RedIntakeSpikeMarkToShooter;
     public PathChain RedIntakeBegin;
     public PathChain RedIntakeEnd;
     public PathChain RedIntakeBack;
     public PathChain RedIntakeEnd2;
     public PathChain RedIntakeToShooter;
     public PathChain BlueStart;
+    public PathChain BlueIntakeSpikeMarkBegin;
+    public PathChain BlueIntakeSpikeMarkEnd;
+    public PathChain BlueIntakeSpikeMarkToShooter;
     public PathChain BlueIntakeBegin;
     public PathChain BlueIntakeEnd;
     public PathChain BlueIntakeBack;
@@ -24,6 +30,30 @@ public class Paths {
         RedStart = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(84.000, 12.000),
+                                new Pose(84.000, 24.000)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(68))
+                .build();
+
+        RedIntakeSpikeMarkBegin = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(84.000, 24.000),
+                                new Pose(91.108, 35.005)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(68), Math.toRadians(0))
+                .build();
+
+        RedIntakeSpikeMarkEnd = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(97.108, 35.005),
+                                new Pose(126, 35.383)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build();
+
+        RedIntakeSpikeMarkToShooter = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(126, 35.383),
                                 new Pose(84.000, 24.000)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(68))
@@ -72,6 +102,30 @@ public class Paths {
         BlueStart = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(60.000, 12.000),
+                                new Pose(60.000, 24.000)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(112))
+                .build();
+
+        BlueIntakeSpikeMarkBegin = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(60.000, 24.000),
+                                new Pose(52.892, 35.005)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(112), Math.toRadians(180))
+                .build();
+
+        BlueIntakeSpikeMarkEnd = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(46.892, 35.005),
+                                new Pose(18, 35.383)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .build();
+
+        BlueIntakeSpikeMarkToShooter = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(18, 35.383),
                                 new Pose(60.000, 24.000)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(112))

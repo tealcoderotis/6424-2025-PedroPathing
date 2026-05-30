@@ -5,13 +5,11 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Globals;
-import org.firstinspires.ftc.teamcode.ShooterIntake;
 import org.firstinspires.ftc.teamcode.ShooterIntakeContinuous;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -19,8 +17,8 @@ import org.firstinspires.ftc.teamcode.util.Hood;
 import org.firstinspires.ftc.teamcode.util.LimelightPoseCorrector;
 
 @Configurable
-@Autonomous(name = "Odometry Far Side Preload Only Auto")
-public class Auton extends LinearOpMode {
+@Autonomous(name = "Odometry Far Side Spike + Corner")
+public class AutonCornerSpike extends LinearOpMode {
     private Follower follower;
     private ShooterIntakeContinuous shooterIntake;
     private int pathState;
@@ -123,13 +121,73 @@ public class Auton extends LinearOpMode {
                 break;
             case 2:
                 if (!shooterIntake.isBusy()) {
-                    follower.followPath(paths.RedIntakeBegin);
+                    follower.followPath(paths.RedIntakeSpikeMarkBegin);
                     pathState = 3;
                 }
                 break;
             case 3:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
+                    shooterIntake.beginIntaking(true);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
+                    follower.followPath(paths.RedIntakeSpikeMarkEnd);
                     pathState = 4;
+                }
+                break;
+            case 4:
+                if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    shooterIntake.beginReving();
+                    shooterIntake.stopIntaking();
+                    follower.setMaxPower(1);
+                    follower.followPath(paths.RedIntakeSpikeMarkToShooter);
+                    pathState = 5;
+                }
+                break;
+            case 5:
+                if (!follower.isBusy()) {
+                    shooterIntake.beginShooting(3, Globals.SHOOTER_FAR_VELOCITY, Globals.INDEX_FAR_TIME);
+                    pathState = 6;
+                }
+                break;
+            case 6:
+                if (!shooterIntake.isBusy()) {
+                    follower.followPath(paths.RedIntakeBegin);
+                    pathState = 7;
+                }
+                break;
+            case 7:
+                if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
+                    shooterIntake.beginIntaking(true);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
+                    follower.followPath(paths.RedIntakeEnd);
+                    pathState = 8;
+                }
+                break;
+            case 8:
+                if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    shooterIntake.stopIntaking();
+                    follower.setMaxPower(1);
+                    follower.followPath(paths.RedIntakeBack);
+                    pathState = 9;
+                }
+                break;
+            case 9:
+                if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
+                    shooterIntake.beginIntaking(true);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
+                    follower.followPath(paths.RedIntakeEnd);
+                    pathState = 10;
+                }
+                break;
+            case 10:
+                if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    shooterIntake.beginReving();
+                    shooterIntake.stopIntaking();
+                    follower.setMaxPower(1);
+                    follower.followPath(paths.RedIntakeToShooter);
+                    pathState = 5;
                 }
                 break;
         }
@@ -150,13 +208,73 @@ public class Auton extends LinearOpMode {
                 break;
             case 2:
                 if (!shooterIntake.isBusy()) {
-                    follower.followPath(paths.BlueIntakeBegin);
+                    follower.followPath(paths.BlueIntakeSpikeMarkBegin);
                     pathState = 3;
                 }
                 break;
             case 3:
                 if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
+                    shooterIntake.beginIntaking(true);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
+                    follower.followPath(paths.BlueIntakeSpikeMarkEnd);
                     pathState = 4;
+                }
+                break;
+            case 4:
+                if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    shooterIntake.beginReving();
+                    shooterIntake.stopIntaking();
+                    follower.setMaxPower(1);
+                    follower.followPath(paths.BlueIntakeSpikeMarkToShooter);
+                    pathState = 5;
+                }
+                break;
+            case 5:
+                if (!follower.isBusy()) {
+                    shooterIntake.beginShooting(3, Globals.SHOOTER_FAR_VELOCITY, Globals.INDEX_FAR_TIME);
+                    pathState = 6;
+                }
+                break;
+            case 6:
+                if (!shooterIntake.isBusy()) {
+                    follower.followPath(paths.BlueIntakeBegin);
+                    pathState = 7;
+                }
+                break;
+            case 7:
+                if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
+                    shooterIntake.beginIntaking(true);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
+                    follower.followPath(paths.BlueIntakeEnd);
+                    pathState = 8;
+                }
+                break;
+            case 8:
+                if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    shooterIntake.stopIntaking();
+                    follower.setMaxPower(1);
+                    follower.followPath(paths.BlueIntakeBack);
+                    pathState = 9;
+                }
+                break;
+            case 9:
+                if (!follower.isBusy()) {
+                    maxIntakeTimer.resetTimer();
+                    shooterIntake.beginIntaking(true);
+                    follower.setMaxPower(Globals.INTAKE_SPEED);
+                    follower.followPath(paths.BlueIntakeEnd);
+                    pathState = 10;
+                }
+                break;
+            case 10:
+                if (!follower.isBusy() || maxIntakeTimer.getElapsedTime() >= Globals.MAX_INTAKE_TIME) {
+                    shooterIntake.beginReving();
+                    shooterIntake.stopIntaking();
+                    follower.setMaxPower(1);
+                    follower.followPath(paths.BlueIntakeToShooter);
+                    pathState = 5;
                 }
                 break;
         }

@@ -43,12 +43,14 @@ public class OlyCowPremierCode extends OpMode {
     final double STOP_SPEED = 0.0;
 
     final double LAUNCHER_IDLE_VELOCITY = 650;
-    final double LAUNCHER_MAX_VELOCITY = 1462.5;
+    final double LAUNCHER_MAX_VELOCITY = 1450;
+    final double LAUNCHER_MID_VELOCITY = 1300;
     final double LAUNCHER_MIN_VELOCITY = 1125;
     final double LAUNCHER_SPINUP_VELOCITY = 900;
     final double LAUNCHER_REVERSE_VELOCITY = -375;
     final double FEEDER_INTAKE_VELOCITY = 3000;
     final double FEEDER_LAUNCH_VELOCITY = 3000;
+    final double FEEDER_LAUNCH_FAR_VELOCITY = 2000;
     final double FEEDER_REVERSE_VELOCITY = 900;
     final double SLOW_MODE_MULTIPLIER = 0.5;
     double launcherGoVelocity = LAUNCHER_MIN_VELOCITY;
@@ -257,7 +259,11 @@ public class OlyCowPremierCode extends OpMode {
 
         if (gamepad1.right_bumper) { //GATE HOLD OPEN
             stopper.setPosition(1);
-            feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
+            if (launcherGoVelocity == LAUNCHER_MAX_VELOCITY) {
+                feeder.setVelocity(FEEDER_LAUNCH_FAR_VELOCITY);
+            } else {
+                feeder.setVelocity(FEEDER_LAUNCH_VELOCITY);
+            }
         }
         else {
             stopper.setPosition(0.5);
@@ -280,7 +286,7 @@ public class OlyCowPremierCode extends OpMode {
         if (gamepad1.dpad_up) {
             launcherGoVelocity = LAUNCHER_MAX_VELOCITY;
             //telemetry.addData("Shooter Speed", "MAXIMUM");
-            hood.setPosition(1);
+            hood.setPosition(0.5);
             launcherIdle = false;
         }
 
@@ -290,7 +296,11 @@ public class OlyCowPremierCode extends OpMode {
             hood.setPosition(0.5);
             launcherIdle = false;
         }
-
+        if (gamepad1.dpad_left) {
+            launcherGoVelocity = LAUNCHER_MID_VELOCITY;
+            hood.setPosition(0.5);
+            launcherIdle = false;
+        }
         /*if (gamepad1.dpad_right) {
             double dist = 0;
             if (alliance == Alliance.RED) {
